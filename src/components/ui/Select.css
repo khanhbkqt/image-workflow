@@ -1,0 +1,98 @@
+/* ═══════════════════════════════════════════════════════════════════════════
+   Select Component Styles
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+.select-wrapper {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-1);
+}
+
+/* ── Label ────────────────────────────────────────────────────────────── */
+.select-label {
+    font-family: var(--font-body);
+    font-size: var(--text-sm);
+    font-weight: 500;
+    color: var(--text-secondary);
+}
+
+/* ── Field Container ──────────────────────────────────────────────────── */
+.select-field {
+    position: relative;
+    display: flex;
+    align-items: center;
+}
+
+/* ── Control ──────────────────────────────────────────────────────────── */
+.select-control {
+    width: 100%;
+    background: var(--surface-0);
+    border: 1px solid var(--border-default);
+    border-radius: var(--radius-md);
+    color: var(--text-primary);
+    font-family: var(--font-body);
+    outline: none;
+    cursor: pointer;
+    appearance: none;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    padding-right: calc(var(--space-3) + 12px + var(--space-2));
+    transition:
+        border-color var(--duration-normal) var(--ease-default),
+        box-shadow var(--duration-normal) var(--ease-default);
+}
+
+/* Size: md (default) */
+.select-wrapper--md .select-control {
+    min-height: 36px;
+    padding: var(--space-2) var(--space-3);
+    font-size: var(--text-sm);
+}
+
+/* Size: sm */
+.select-wrapper--sm .select-control {
+    min-height: 28px;
+    padding: var(--space-1) var(--space-2);
+    font-size: var(--text-xs);
+}
+
+/* ── Custom Arrow ────────────────────────────────────────────────────── */
+.select-arrow {
+    position: absolute;
+    right: var(--space-3);
+    display: inline-flex;
+    align-items: center;
+    color: var(--text-muted);
+    pointer-events: none;
+    transition: color var(--duration-normal) var(--ease-default);
+}
+
+/* ── Focus ────────────────────────────────────────────────────────────── */
+.select-control:focus {
+    border-color: var(--accent);
+    box-shadow: 0 0 0 3px var(--accent-subtle);
+}
+
+.select-field:has(.select-control:focus) .select-arrow {
+    color: var(--accent);
+}
+
+/* ── Error ────────────────────────────────────────────────────────────── */
+.select-wrapper--error .select-control {
+    border-color: var(--error);
+}
+
+.select-wrapper--error .select-control:focus {
+    border-color: var(--error);
+    box-shadow: 0 0 0 3px var(--error-subtle);
+}
+
+.select-error {
+    font-size: var(--text-xs);
+    color: var(--error);
+}
+
+/* ── Disabled option placeholder ─────────────────────────────────────── */
+.select-control option[disabled] {
+    color: var(--text-muted);
+}

@@ -2,48 +2,54 @@
   "hash": "831a2e60",
   "configHash": "7e01d186",
   "lockfileHash": "1507bf0b",
-  "browserHash": "0664c6a6",
+  "browserHash": "535fbb49",
   "optimized": {
     "react/jsx-dev-runtime": {
       "src": "../../node_modules/react/jsx-dev-runtime.js",
       "file": "react_jsx-dev-runtime.js",
-      "fileHash": "d32f7522",
+      "fileHash": "ede3468f",
       "needsInterop": true
     },
     "react": {
       "src": "../../node_modules/react/index.js",
       "file": "react.js",
-      "fileHash": "b6af6069",
+      "fileHash": "ea8a755b",
       "needsInterop": true
     },
     "react-dom/client": {
       "src": "../../node_modules/react-dom/client.js",
       "file": "react-dom_client.js",
-      "fileHash": "12fc4331",
+      "fileHash": "7f8c346f",
       "needsInterop": true
     },
     "@xyflow/react": {
       "src": "../../node_modules/@xyflow/react/dist/esm/index.js",
       "file": "@xyflow_react.js",
-      "fileHash": "4d0b3a27",
+      "fileHash": "4cf20f67",
       "needsInterop": false
     },
     "zustand": {
       "src": "../../node_modules/zustand/esm/index.mjs",
       "file": "zustand.js",
-      "fileHash": "91ae048e",
+      "fileHash": "e2b25c0f",
       "needsInterop": false
     },
     "zustand/middleware": {
       "src": "../../node_modules/zustand/esm/middleware.mjs",
       "file": "zustand_middleware.js",
-      "fileHash": "c9ada119",
+      "fileHash": "202e6754",
       "needsInterop": false
+    },
+    "react-dom": {
+      "src": "../../node_modules/react-dom/index.js",
+      "file": "react-dom.js",
+      "fileHash": "6e9b3a64",
+      "needsInterop": true
     }
   },
   "chunks": {
-    "chunk-X5EBYUPF": {
-      "file": "chunk-X5EBYUPF.js"
+    "chunk-O2TXMA6R": {
+      "file": "chunk-O2TXMA6R.js"
     },
     "chunk-NO6UH6X3": {
       "file": "chunk-NO6UH6X3.js"
