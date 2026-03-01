@@ -1,6 +1,7 @@
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 import type { Ingredient, IngredientType, CreateIngredientInput } from '../types/ingredient';
+import { DEMO_INGREDIENTS } from '../data/seedIngredients';
 
 /* ── Helpers ─────────────────────────────────────────────────────────── */
 
@@ -36,7 +37,7 @@ export const useIngredientStore = create<IngredientState>()(
     persist(
         (set, get) => ({
             /* ── Data ── */
-            ingredients: [],
+            ingredients: DEMO_INGREDIENTS as Ingredient[],
             isLoading: false,
 
             /* ── CRUD Actions ── */
