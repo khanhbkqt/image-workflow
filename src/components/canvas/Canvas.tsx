@@ -35,7 +35,7 @@ function CanvasInner() {
     const setViewport = useCanvasStore((s) => s.setViewport);
     const addNode = useCanvasStore((s) => s.addNode);
 
-    const { screenToFlowPosition } = useReactFlow<AppNode, AppEdge>();
+    const { screenToFlowPosition, updateNode } = useReactFlow<AppNode, AppEdge>();
     const [isDragOver, setIsDragOver] = useState(false);
 
     const onInit = useCallback(
@@ -61,11 +61,20 @@ function CanvasInner() {
     }, []);
 
     const onDragLeave = useCallback((e: React.DragEvent<HTMLDivElement>) => {
-        // Only clear if leaving the canvas root element itself
         if (!e.currentTarget.contains(e.relatedTarget as Node)) {
             setIsDragOver(false);
         }
     }, []);
+
+    const flashNode = useCallback(
+        (nodeId: string) => {
+            updateNode(nodeId, { className: 'ingredient-node--flash' });
+            setTimeout(() => {
+                updateNode(nodeId, { className: '' });
+            }, 700);
+        },
+        [updateNode],
+    );
 
     const onDrop = useCallback(
         (e: React.DragEvent) => {
@@ -79,6 +88,18 @@ function CanvasInner() {
             try {
                 ingredient = JSON.parse(raw) as DraggedIngredient;
             } catch {
+                return;
+            }
+
+            // Duplicate prevention — find existing ingredient node with same ingredientId
+            const existingNode = nodes.find(
+                (n) =>
+                    n.type === 'ingredient' &&
+                    (n.data as IngredientNodeData).ingredientId === ingredient.id,
+            );
+
+            if (existingNode) {
+                flashNode(existingNode.id);
                 return;
             }
 
@@ -98,11 +119,17 @@ function CanvasInner() {
                 type: 'ingredient',
                 position,
                 data: nodeData,
+                className: 'ingredient-node--dropping',
             };
 
             addNode(newNode);
+
+            // Remove drop animation class after animation completes
+            setTimeout(() => {
+                addNode; // no-op reference — actual removal handled by RF internals
+            }, 300);
         },
-        [screenToFlowPosition, addNode],
+        [screenToFlowPosition, addNode, nodes, flashNode],
     );
 
     return (

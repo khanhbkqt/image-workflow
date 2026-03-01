@@ -161,3 +161,27 @@
 .ingredient-node--dropping {
     animation: ingredient-node-drop-in 0.2s ease-out forwards;
 }
+
+/* ── Flash Animation (duplicate prevention) ──────────────────────────── */
+
+@keyframes ingredient-node-flash {
+    0% {
+        box-shadow: 0 0 0 0 transparent;
+    }
+
+    25% {
+        box-shadow: 0 0 0 4px var(--node-accent, rgba(139, 92, 246, 0.8)), 0 0 20px var(--node-glow, rgba(139, 92, 246, 0.5));
+    }
+
+    75% {
+        box-shadow: 0 0 0 4px var(--node-accent, rgba(139, 92, 246, 0.8)), 0 0 20px var(--node-glow, rgba(139, 92, 246, 0.5));
+    }
+
+    100% {
+        box-shadow: 0 0 0 0 transparent;
+    }
+}
+
+.ingredient-node--flash {
+    animation: ingredient-node-flash 0.7s ease-out forwards;
+}
