@@ -22,24 +22,25 @@ const DEFAULT_VIEWPORT: Viewport = { x: 0, y: 0, zoom: 1 };
 /* ── Demo Nodes (seeded on first open of a project) ────────────────── */
 const DEMO_NODES: AppNode[] = [
     {
-        id: 'prompt-1',
-        type: 'placeholder',
-        position: { x: 100, y: 150 },
-        data: { label: 'Text Prompt', icon: '✏️', description: 'Describe your image' },
+        id: 'compose-demo',
+        type: 'compose',
+        position: { x: 300, y: 200 },
+        data: { label: 'Compose', blendMode: 'multiply', opacity: 80 },
     },
     {
-        id: 'style-1',
-        type: 'placeholder',
-        position: { x: 400, y: 80 },
-        data: { label: 'Style', icon: '🎨', description: 'Watercolor, vibrant' },
+        id: 'preview-demo',
+        type: 'preview',
+        position: { x: 600, y: 100 },
+        data: { label: 'Preview', width: 200, height: 120 },
     },
     {
-        id: 'output-1',
-        type: 'placeholder',
-        position: { x: 700, y: 150 },
-        data: { label: 'Image Output', icon: '🖼️', description: 'Generated result' },
+        id: 'output-demo',
+        type: 'output',
+        position: { x: 600, y: 350 },
+        data: { label: 'Output', format: 'PNG', resolution: '1920 × 1080', filename: 'final' },
     },
 ];
+
 
 /* ── Helpers ─────────────────────────────────────────────────────────── */
 
