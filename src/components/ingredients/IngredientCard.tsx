@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import { INGREDIENT_CATEGORIES, type Ingredient } from '../../types/ingredient';
 import './IngredientCard.css';
 
@@ -25,9 +26,34 @@ interface IngredientCardProps {
 
 export function IngredientCard({ ingredient, onEdit, onDelete, highlightTags }: IngredientCardProps) {
     const meta = INGREDIENT_CATEGORIES[ingredient.type];
+    const [isDragging, setIsDragging] = useState(false);
+
+    const handleDragStart = (e: React.DragEvent<HTMLDivElement>) => {
+        const payload = {
+            id: ingredient.id,
+            name: ingredient.name,
+            type: ingredient.type,
+            tags: ingredient.tags,
+            imageUrl: ingredient.imageUrl,
+            description: ingredient.description,
+            icon: meta.icon,
+        };
+        e.dataTransfer.setData('application/ingredient', JSON.stringify(payload));
+        e.dataTransfer.effectAllowed = 'move';
+        setIsDragging(true);
+    };
+
+    const handleDragEnd = () => setIsDragging(false);
 
     return (
-        <div className="ingredient-card" onClick={() => onEdit(ingredient)}>
+        <div
+            className={`ingredient-card${isDragging ? ' ingredient-card--dragging' : ''}`}
+            draggable
+            onDragStart={handleDragStart}
+            onDragEnd={handleDragEnd}
+            onClick={() => onEdit(ingredient)}
+        >
+            <div className="ingredient-card__drag-grip" title="Drag to canvas">⠿</div>
             <div className="ingredient-card__icon">{meta.icon}</div>
             <div className="ingredient-card__info">
                 <span className="ingredient-card__name">{ingredient.name}</span>

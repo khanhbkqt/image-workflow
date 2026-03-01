@@ -133,3 +133,30 @@
     margin-top: var(--space-1);
     line-height: 1.4;
 }
+
+/* ── Canvas Drop Zone ────────────────────────────────────────────────── */
+.canvas-drop-zone {
+    position: relative;
+    border-radius: 0;
+    transition: box-shadow var(--duration-fast) var(--ease-default);
+}
+
+.canvas-drop-zone--active::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border: 2px dashed var(--accent-muted);
+    border-radius: 0;
+    pointer-events: none;
+    animation: drop-zone-pulse 1s ease-in-out infinite alternate;
+}
+
+@keyframes drop-zone-pulse {
+    from {
+        border-color: var(--accent-muted);
+    }
+
+    to {
+        border-color: var(--accent);
+    }
+}

@@ -117,3 +117,28 @@
     background: var(--error-subtle);
     color: var(--error);
 }
+
+/* ── Drag ─────────────────────────────────────────────────────────── */
+.ingredient-card {
+    cursor: grab;
+}
+
+.ingredient-card__drag-grip {
+    flex-shrink: 0;
+    font-size: 14px;
+    color: var(--text-muted);
+    opacity: 0;
+    transition: opacity var(--duration-fast) var(--ease-default);
+    cursor: grab;
+    user-select: none;
+    line-height: 1;
+}
+
+.ingredient-card:hover .ingredient-card__drag-grip {
+    opacity: 1;
+}
+
+.ingredient-card--dragging {
+    opacity: 0.45;
+    cursor: grabbing;
+}
