@@ -11,6 +11,8 @@ import {
 
 import type { AppNode, AppEdge, CanvasState } from '../types/canvas';
 import { storage } from '../services/storage';
+import { debounce } from '../utils/debounce';
+import { useSaveStatusStore } from './saveStatusStore';
 
 /* ── Constants ───────────────────────────────────────────────────────── */
 const CANVAS_KEY_PREFIX = 'canvas:';
@@ -134,10 +136,21 @@ export const useCanvasStore = create<CanvasState>((set, get) => ({
     },
 }));
 
-/* ── Auto-save helper ────────────────────────────────────────────────── */
+/* ── Debounced auto-save ─────────────────────────────────────────────── */
 
-function _scheduleAutosave(): void {
+const AUTOSAVE_DELAY_MS = 500;
+
+function _doAutosave(): void {
     if (!_activeProjectId) return;
     const { nodes, edges, viewport } = useCanvasStore.getState();
     saveToStorage(_activeProjectId, { nodes, edges, viewport });
+    useSaveStatusStore.getState().markSaved();
+}
+
+const _debouncedSave = debounce(_doAutosave, AUTOSAVE_DELAY_MS);
+
+function _scheduleAutosave(): void {
+    if (!_activeProjectId) return;
+    useSaveStatusStore.getState().markSaving();
+    _debouncedSave();
 }

@@ -52,6 +52,26 @@
     border: 1px solid var(--accent-muted);
 }
 
+.app-header__right {
+    display: flex;
+    align-items: center;
+    gap: var(--space-3);
+}
+
+.app-header__save-status {
+    font-family: var(--font-mono);
+    font-size: var(--text-xs);
+    color: var(--text-success, #4ade80);
+    opacity: 0.8;
+    transition: opacity var(--duration-normal) var(--ease-default),
+        color var(--duration-normal) var(--ease-default);
+}
+
+.app-header__save-status--saving {
+    color: var(--text-muted);
+    opacity: 0.6;
+}
+
 /* ── Body (sidebar + canvas) ─────────────────────────────────────────── */
 .app-body {
     display: flex;

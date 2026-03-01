@@ -4,6 +4,7 @@ import { Canvas } from './components/canvas';
 import { Dashboard } from './components/dashboard';
 import { useCanvasStore } from './stores/canvasStore';
 import { useProjectStore } from './stores/projectStore';
+import { useSaveStatusStore } from './stores/saveStatusStore';
 import type { AppNode } from './types/canvas';
 import './App.css';
 
@@ -59,6 +60,8 @@ function App() {
   const activeProjectId = useProjectStore((s) => s.activeProjectId);
   const activeProject = useProjectStore((s) => s.getActiveProject());
   const setActiveProject = useProjectStore((s) => s.setActiveProject);
+  const isSaving = useSaveStatusStore((s) => s.isSaving);
+  const lastSavedAt = useSaveStatusStore((s) => s.lastSavedAt);
 
   /* Load/clear canvas when the active project changes */
   useEffect(() => {
@@ -108,9 +111,16 @@ function App() {
             </>
           )}
         </div>
-        <span className="app-header__badge">
-          {currentView === 'canvas' ? 'Canvas' : 'Dashboard'}
-        </span>
+        <div className="app-header__right">
+          {currentView === 'canvas' && (
+            <span className={`app-header__save-status${isSaving ? ' app-header__save-status--saving' : ''}`}>
+              {isSaving ? 'Saving…' : lastSavedAt ? '✓ Saved' : ''}
+            </span>
+          )}
+          <span className="app-header__badge">
+            {currentView === 'canvas' ? 'Canvas' : 'Dashboard'}
+          </span>
+        </div>
       </header>
 
       {/* ── View Content ── */}
