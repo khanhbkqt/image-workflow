@@ -29,10 +29,23 @@ export interface IngredientNodeData extends NodeData {
 /** Application node — union of all supported node types. */
 export type AppNode =
     | Node<PlaceholderNodeData, 'placeholder'>
-    | Node<IngredientNodeData, 'ingredient'>;
+    | Node<IngredientNodeData, 'ingredient'>
+    | Node<NodeData, 'compose'>
+    | Node<NodeData, 'preview'>
+    | Node<NodeData, 'output'>
+    | Node<NodeData, 'generate'>
+    | Node<NodeData, 'batch-generator'>
+    | Node<NodeData, 'style-fanout'>
+    | Node<NodeData, 'generate-ingredient'>
+    | Node<NodeData, 'brand-kit'>;
 
 /** Application edge — extends React Flow's Edge. */
-export type AppEdge = Edge;
+export type WorkflowEdge = Edge & {
+    sourceHandle?: string | null;
+    targetHandle?: string | null;
+};
+
+export type AppEdge = WorkflowEdge;
 
 /* ── Canvas Store State ──────────────────────────────────────────────── */
 
