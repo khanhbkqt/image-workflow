@@ -5,7 +5,6 @@ import { Dashboard } from './components/dashboard';
 import { useCanvasStore } from './stores/canvasStore';
 import { useProjectStore } from './stores/projectStore';
 import { useSaveStatusStore } from './stores/saveStatusStore';
-import type { AppNode } from './types/canvas';
 import './App.css';
 
 /* ── Icons ──────────────────────────────────────────────────────────────── */
@@ -28,32 +27,9 @@ const ArrowLeftIcon = () => (
   </svg>
 );
 
-/* ── Initial demo nodes ──────────────────────────────────────────────── */
-const INITIAL_NODES: AppNode[] = [
-  {
-    id: 'prompt-1',
-    type: 'placeholder',
-    position: { x: 100, y: 150 },
-    data: { label: 'Text Prompt', icon: '✏️', description: 'Describe your image' },
-  },
-  {
-    id: 'style-1',
-    type: 'placeholder',
-    position: { x: 400, y: 80 },
-    data: { label: 'Style', icon: '🎨', description: 'Watercolor, vibrant' },
-  },
-  {
-    id: 'output-1',
-    type: 'placeholder',
-    position: { x: 700, y: 150 },
-    data: { label: 'Image Output', icon: '🖼️', description: 'Generated result' },
-  },
-];
 
 /* ── App ───────────────────────────────────────────────────────────────── */
 function App() {
-  const addNode = useCanvasStore((s) => s.addNode);
-  const nodes = useCanvasStore((s) => s.nodes);
   const loadCanvas = useCanvasStore((s) => s.loadCanvas);
   const clearCanvas = useCanvasStore((s) => s.clearCanvas);
   const currentView = useProjectStore((s) => s.currentView);
@@ -71,13 +47,6 @@ function App() {
       clearCanvas();
     }
   }, [activeProjectId, loadCanvas, clearCanvas]);
-
-  /* Seed initial demo nodes for empty canvases (will move to canvasStore in Plan 5.4) */
-  useEffect(() => {
-    if (activeProjectId && nodes.length === 0) {
-      INITIAL_NODES.forEach((n) => addNode(n));
-    }
-  }, [activeProjectId]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const handleBack = () => {
     clearCanvas();

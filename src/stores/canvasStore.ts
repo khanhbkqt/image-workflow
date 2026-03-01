@@ -16,7 +16,30 @@ import { useSaveStatusStore } from './saveStatusStore';
 
 /* ── Constants ───────────────────────────────────────────────────────── */
 const CANVAS_KEY_PREFIX = 'canvas:';
+const CANVAS_DATA_VERSION = 1;
 const DEFAULT_VIEWPORT: Viewport = { x: 0, y: 0, zoom: 1 };
+
+/* ── Demo Nodes (seeded on first open of a project) ────────────────── */
+const DEMO_NODES: AppNode[] = [
+    {
+        id: 'prompt-1',
+        type: 'placeholder',
+        position: { x: 100, y: 150 },
+        data: { label: 'Text Prompt', icon: '✏️', description: 'Describe your image' },
+    },
+    {
+        id: 'style-1',
+        type: 'placeholder',
+        position: { x: 400, y: 80 },
+        data: { label: 'Style', icon: '🎨', description: 'Watercolor, vibrant' },
+    },
+    {
+        id: 'output-1',
+        type: 'placeholder',
+        position: { x: 700, y: 150 },
+        data: { label: 'Image Output', icon: '🖼️', description: 'Generated result' },
+    },
+];
 
 /* ── Helpers ─────────────────────────────────────────────────────────── */
 
@@ -25,6 +48,7 @@ function canvasKey(projectId: string): string {
 }
 
 interface PersistedCanvas {
+    version?: number;
     nodes: AppNode[];
     edges: AppEdge[];
     viewport: Viewport;
@@ -40,8 +64,9 @@ function loadFromStorage(projectId: string): PersistedCanvas | null {
     }
 }
 
-function saveToStorage(projectId: string, data: PersistedCanvas): void {
-    storage.setItem(canvasKey(projectId), JSON.stringify(data));
+function saveToStorage(projectId: string, data: Omit<PersistedCanvas, 'version'>): void {
+    const persisted: PersistedCanvas = { ...data, version: CANVAS_DATA_VERSION };
+    storage.setItem(canvasKey(projectId), JSON.stringify(persisted));
 }
 
 /** Remove canvas data for a specific project. */
@@ -111,8 +136,9 @@ export const useCanvasStore = create<CanvasState>((set, get) => ({
                 viewport: saved.viewport,
             });
         } else {
+            // First open — seed with demo nodes
             set({
-                nodes: [],
+                nodes: [...DEMO_NODES],
                 edges: [],
                 viewport: DEFAULT_VIEWPORT,
             });

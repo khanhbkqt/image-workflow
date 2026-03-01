@@ -115,6 +115,11 @@ export const useProjectStore = create<ProjectState>()(
         }),
         {
             name: 'iw:projects',
+            version: 1,
+            migrate: (persisted, _version) => {
+                // v1: initial schema — no migration needed yet
+                return persisted as Record<string, unknown>;
+            },
             partialize: (state) => ({
                 projects: state.projects,
                 activeProjectId: state.activeProjectId,
