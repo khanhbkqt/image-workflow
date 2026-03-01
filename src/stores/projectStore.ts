@@ -1,4 +1,5 @@
 import { create } from 'zustand';
+import { persist } from 'zustand/middleware';
 import type { ProjectMeta, AppView, ProjectState } from '../types/project';
 
 /* ── Helpers ─────────────────────────────────────────────────────────── */
@@ -48,62 +49,73 @@ const DEMO_PROJECTS: ProjectMeta[] = [
 
 /* ── Project Store ───────────────────────────────────────────────────── */
 
-export const useProjectStore = create<ProjectState>((set, get) => ({
-    /* ── Data ── */
-    projects: DEMO_PROJECTS,
-    activeProjectId: null,
-    currentView: 'dashboard' as AppView,
-    isLoading: false,
+export const useProjectStore = create<ProjectState>()(
+    persist(
+        (set, get) => ({
+            /* ── Data ── */
+            projects: DEMO_PROJECTS,
+            activeProjectId: null,
+            currentView: 'dashboard' as AppView,
+            isLoading: false,
 
-    /* ── CRUD Actions ── */
-    createProject: (name: string, description?: string): ProjectMeta => {
-        const timestamp = now();
-        const project: ProjectMeta = {
-            id: generateId(),
-            name,
-            slug: slugify(name),
-            description,
-            createdAt: timestamp,
-            updatedAt: timestamp,
-        };
-        set((state) => ({ projects: [...state.projects, project] }));
-        return project;
-    },
+            /* ── CRUD Actions ── */
+            createProject: (name: string, description?: string): ProjectMeta => {
+                const timestamp = now();
+                const project: ProjectMeta = {
+                    id: generateId(),
+                    name,
+                    slug: slugify(name),
+                    description,
+                    createdAt: timestamp,
+                    updatedAt: timestamp,
+                };
+                set((state) => ({ projects: [...state.projects, project] }));
+                return project;
+            },
 
-    deleteProject: (id: string) => {
-        set((state) => ({
-            projects: state.projects.filter((p) => p.id !== id),
-            // If we deleted the active project, go back to dashboard
-            ...(state.activeProjectId === id
-                ? { activeProjectId: null, currentView: 'dashboard' as AppView }
-                : {}),
-        }));
-    },
+            deleteProject: (id: string) => {
+                set((state) => ({
+                    projects: state.projects.filter((p) => p.id !== id),
+                    // If we deleted the active project, go back to dashboard
+                    ...(state.activeProjectId === id
+                        ? { activeProjectId: null, currentView: 'dashboard' as AppView }
+                        : {}),
+                }));
+            },
 
-    renameProject: (id: string, name: string) => {
-        set((state) => ({
-            projects: state.projects.map((p) =>
-                p.id === id
-                    ? { ...p, name, slug: slugify(name), updatedAt: now() }
-                    : p
-            ),
-        }));
-    },
+            renameProject: (id: string, name: string) => {
+                set((state) => ({
+                    projects: state.projects.map((p) =>
+                        p.id === id
+                            ? { ...p, name, slug: slugify(name), updatedAt: now() }
+                            : p
+                    ),
+                }));
+            },
 
-    /* ── Navigation ── */
-    setActiveProject: (id: string | null) => {
-        set({
-            activeProjectId: id,
-            currentView: id ? 'canvas' : 'dashboard',
-        });
-    },
+            /* ── Navigation ── */
+            setActiveProject: (id: string | null) => {
+                set({
+                    activeProjectId: id,
+                    currentView: id ? 'canvas' : 'dashboard',
+                });
+            },
 
-    getActiveProject: (): ProjectMeta | undefined => {
-        const { projects, activeProjectId } = get();
-        return projects.find((p) => p.id === activeProjectId);
-    },
+            getActiveProject: (): ProjectMeta | undefined => {
+                const { projects, activeProjectId } = get();
+                return projects.find((p) => p.id === activeProjectId);
+            },
 
-    navigateTo: (view: AppView) => {
-        set({ currentView: view });
-    },
-}));
+            navigateTo: (view: AppView) => {
+                set({ currentView: view });
+            },
+        }),
+        {
+            name: 'iw:projects',
+            partialize: (state) => ({
+                projects: state.projects,
+                activeProjectId: state.activeProjectId,
+            }),
+        }
+    )
+);
