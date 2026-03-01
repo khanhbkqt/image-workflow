@@ -1,4 +1,5 @@
 import type { Node, Edge, Viewport } from '@xyflow/react';
+import type { IngredientType } from './ingredient';
 
 /* ── Base Node Data ──────────────────────────────────────────────────── */
 
@@ -14,10 +15,21 @@ export interface PlaceholderNodeData extends NodeData {
     description?: string;
 }
 
+/** Data shape for an ingredient node dropped from the library. */
+export interface IngredientNodeData extends NodeData {
+    ingredientId: string;
+    ingredientType: IngredientType;
+    icon: string;
+    description?: string;
+    imageUrl?: string;
+}
+
 /* ── App-Level Node & Edge Types ─────────────────────────────────────── */
 
-/** Application node — extends React Flow's Node with typed custom data. */
-export type AppNode = Node<PlaceholderNodeData, 'placeholder'>;
+/** Application node — union of all supported node types. */
+export type AppNode =
+    | Node<PlaceholderNodeData, 'placeholder'>
+    | Node<IngredientNodeData, 'ingredient'>;
 
 /** Application edge — extends React Flow's Edge. */
 export type AppEdge = Edge;

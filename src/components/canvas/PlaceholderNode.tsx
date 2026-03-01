@@ -1,5 +1,6 @@
 import { Handle, Position, type NodeProps } from '@xyflow/react';
 import type { PlaceholderNodeData } from '../../types/canvas';
+import { IngredientNode } from './IngredientNode';
 
 /* ── Placeholder Node Component ──────────────────────────────────────── */
 export function PlaceholderNode({ data }: NodeProps) {
@@ -23,4 +24,6 @@ export function PlaceholderNode({ data }: NodeProps) {
 /* ── nodeTypes map — defined outside component to avoid re-renders ──── */
 export const nodeTypes = {
     placeholder: PlaceholderNode,
+    ingredient: IngredientNode,
 } as const;
+
