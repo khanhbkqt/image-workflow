@@ -6,3 +6,4 @@ export { IngredientList } from './IngredientList';
 export { SearchBar } from './SearchBar';
 export { TagFilter } from './TagFilter';
 export { CategoryFilter } from './CategoryFilter';
+export { IngredientPicker } from './IngredientPicker';

@@ -1,0 +1,162 @@
+/* ═══════════════════════════════════════════════════════════════════════════
+   Ingredient Picker — multi-select component for Brand Kit forms
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+.ingredient-picker {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-1);
+}
+
+/* ── Label ─────────────────────────────────────────────────────────── */
+.ingredient-picker__label {
+    display: flex;
+    align-items: center;
+    gap: var(--space-1);
+    font-size: var(--text-sm);
+    font-weight: 500;
+    color: var(--text-secondary);
+}
+
+.ingredient-picker__label-icon {
+    font-size: 14px;
+    line-height: 1;
+}
+
+.ingredient-picker__count {
+    margin-left: auto;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 18px;
+    height: 18px;
+    padding: 0 5px;
+    border-radius: var(--radius-full);
+    font-size: 11px;
+    font-weight: 600;
+    background: var(--accent-subtle, rgba(99, 102, 241, 0.2));
+    color: var(--accent);
+}
+
+/* ── List ──────────────────────────────────────────────────────────── */
+.ingredient-picker__list {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    max-height: 180px;
+    overflow-y: auto;
+    border: 1px solid var(--border-default);
+    border-radius: var(--radius-md);
+    background: var(--surface-1);
+    padding: var(--space-1);
+
+    /* Custom scrollbar */
+    scrollbar-width: thin;
+    scrollbar-color: var(--border-default) transparent;
+}
+
+.ingredient-picker__list::-webkit-scrollbar {
+    width: 4px;
+}
+
+.ingredient-picker__list::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+.ingredient-picker__list::-webkit-scrollbar-thumb {
+    background: var(--border-default);
+    border-radius: 2px;
+}
+
+/* ── Empty State ───────────────────────────────────────────────────── */
+.ingredient-picker__empty {
+    padding: var(--space-4) var(--space-2);
+    text-align: center;
+    font-size: var(--text-sm);
+    color: var(--text-muted);
+    font-style: italic;
+}
+
+/* ── Item ──────────────────────────────────────────────────────────── */
+.ingredient-picker__item {
+    display: flex;
+    align-items: center;
+    gap: var(--space-2);
+    width: 100%;
+    padding: var(--space-1) var(--space-2);
+    border: none;
+    border-radius: var(--radius-sm);
+    background: transparent;
+    cursor: pointer;
+    text-align: left;
+    transition:
+        background var(--duration-fast) var(--ease-default),
+        color var(--duration-fast) var(--ease-default);
+}
+
+.ingredient-picker__item:hover {
+    background: var(--surface-2);
+}
+
+.ingredient-picker__item--selected {
+    background: var(--accent-subtle, rgba(99, 102, 241, 0.12));
+}
+
+.ingredient-picker__item--selected:hover {
+    background: var(--accent-subtle, rgba(99, 102, 241, 0.2));
+}
+
+/* ── Check Box ─────────────────────────────────────────────────────── */
+.ingredient-picker__item-check {
+    flex-shrink: 0;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 16px;
+    height: 16px;
+    border: 1.5px solid var(--border-default);
+    border-radius: var(--radius-sm);
+    background: transparent;
+    color: var(--accent);
+    transition:
+        border-color var(--duration-fast) var(--ease-default),
+        background var(--duration-fast) var(--ease-default);
+}
+
+.ingredient-picker__item--selected .ingredient-picker__item-check {
+    border-color: var(--accent);
+    background: var(--accent);
+    color: white;
+}
+
+/* ── Item Icon & Name ──────────────────────────────────────────────── */
+.ingredient-picker__item-icon {
+    flex-shrink: 0;
+    font-size: 14px;
+    line-height: 1;
+}
+
+.ingredient-picker__item-name {
+    flex: 1;
+    min-width: 0;
+    font-size: var(--text-sm);
+    color: var(--text-primary);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.ingredient-picker__item--selected .ingredient-picker__item-name {
+    color: var(--accent);
+    font-weight: 500;
+}
+
+/* ── Thumbnail ─────────────────────────────────────────────────────── */
+.ingredient-picker__item-thumb {
+    flex-shrink: 0;
+    width: 22px;
+    height: 22px;
+    border-radius: var(--radius-sm);
+    object-fit: cover;
+    border: 1px solid var(--border-default);
+}
