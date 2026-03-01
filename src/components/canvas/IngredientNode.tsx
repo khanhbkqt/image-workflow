@@ -1,6 +1,7 @@
-import { Handle, Position, type NodeProps } from '@xyflow/react';
+import type { NodeProps } from '@xyflow/react';
 import type { IngredientNodeData } from '../../types/canvas';
 import { useIngredientStore } from '../../stores/ingredientStore';
+import { BaseNode } from './nodes/BaseNode';
 import './IngredientNode.css';
 
 /* ── Ingredient Node Component ───────────────────────────────────────── */
@@ -20,10 +21,11 @@ export function IngredientNode({ data }: NodeProps) {
         return { styles, modifiers };
     })() : null;
 
-    return (
-        <div className={`ingredient-node ingredient-node--${ingredientType}`}>
-            <Handle type="target" position={Position.Left} />
+    // determine correct node type. In a more complete engine, brand-kit might be its own node type
+    const nodeType = ingredientType === 'brand-kit' ? 'brand-kit' : 'ingredient';
 
+    return (
+        <BaseNode nodeType={nodeType} className={`ingredient-node ingredient-node--${ingredientType}`}>
             {imageUrl && (
                 <div className="ingredient-node__thumbnail">
                     <img src={imageUrl} alt={label} />
@@ -60,8 +62,6 @@ export function IngredientNode({ data }: NodeProps) {
                     </div>
                 )}
             </div>
-
-            <Handle type="source" position={Position.Right} />
-        </div>
+        </BaseNode>
     );
 }

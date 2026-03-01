@@ -1,0 +1,127 @@
+.base-node {
+    position: relative;
+    border-radius: var(--radius-md);
+    background-color: var(--color-bg-base);
+    min-width: 160px;
+    display: flex;
+    flex-direction: column;
+}
+
+/* Content holds the custom node rendering, we make sure it stays above things if needed
+   but handle wrappers overlay the left/right edges */
+.base-node__content {
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+}
+
+/* Ports wrapper - stick to left and right using absolute positioning */
+.base-node__inputs {
+    position: absolute;
+    left: 0;
+    top: 50%;
+    transform: translateY(-50%);
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    z-index: 2;
+    pointer-events: none;
+    /* so we don't block node content dragging */
+}
+
+.base-node__outputs {
+    position: absolute;
+    right: 0;
+    top: 50%;
+    transform: translateY(-50%);
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 8px;
+    z-index: 2;
+    pointer-events: none;
+}
+
+/* Individual port container */
+.base-node__port-container {
+    position: relative;
+    display: flex;
+    align-items: center;
+    height: 16px;
+    pointer-events: none;
+    /* Let events fall through unless on the handle */
+}
+
+.base-node__port-container--left {
+    padding-left: 20px;
+    /* space between left edge and label */
+}
+
+.base-node__port-container--right {
+    padding-right: 20px;
+}
+
+/* Explicit handle style overrides via react-flow class */
+.base-node .react-flow__handle.base-node__handle {
+    top: 50%;
+    width: 14px;
+    height: 14px;
+    border: 2px solid var(--color-bg-elevated);
+    background-color: var(--color-text-muted);
+    pointer-events: all;
+    /* allow dragging */
+    z-index: 10;
+    box-sizing: border-box;
+}
+
+.base-node .react-flow__handle.base-node__handle:hover {
+    transform: translateY(-50%) scale(1.2);
+    /* box-shadow: 0 0 0 4px rgba(255,255,255,0.1); */
+}
+
+.base-node .react-flow__handle-left.base-node__handle {
+    left: -7px;
+    transform: translateY(-50%);
+}
+
+.base-node .react-flow__handle-right.base-node__handle {
+    right: -7px;
+    transform: translateY(-50%);
+}
+
+/* Labels */
+.base-node__port-label {
+    font-size: 10px;
+    font-weight: 500;
+    color: var(--color-text-secondary);
+    white-space: nowrap;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    pointer-events: auto;
+    /* enable tooltip hover if needed */
+}
+
+/* Custom Data Type Colors */
+.base-node__handle--ingredient {
+    background-color: var(--color-success) !important;
+}
+
+.base-node__handle--prompt {
+    background-color: var(--color-warning) !important;
+}
+
+.base-node__handle--image {
+    background-color: var(--color-primary) !important;
+}
+
+.base-node__handle--style {
+    background-color: var(--color-danger) !important;
+}
+
+.base-node__handle--batch {
+    background-color: var(--color-info) !important;
+}
+
+.base-node__handle--any {
+    background-color: var(--color-border) !important;
+}
