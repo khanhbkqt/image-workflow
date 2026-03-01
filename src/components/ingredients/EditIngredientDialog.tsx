@@ -1,10 +1,12 @@
 import { useState, useEffect, useCallback, type FormEvent } from 'react';
 import { Dialog, Button, Input } from '../ui';
 import { useIngredientStore } from '../../stores/ingredientStore';
+import { useProjectStore } from '../../stores/projectStore';
 import {
     INGREDIENT_CATEGORIES,
     type Ingredient,
 } from '../../types/ingredient';
+import { IngredientPicker } from './IngredientPicker';
 
 /* ── Props ──────────────────────────────────────────────────────────── */
 interface EditIngredientDialogProps {
@@ -15,6 +17,7 @@ interface EditIngredientDialogProps {
 
 export function EditIngredientDialog({ open, onClose, ingredient }: EditIngredientDialogProps) {
     const updateIngredient = useIngredientStore((s) => s.updateIngredient);
+    const activeProjectId = useProjectStore((s) => s.activeProjectId);
 
     /* ── Form state ── */
     const [name, setName] = useState('');
@@ -28,6 +31,10 @@ export function EditIngredientDialog({ open, onClose, ingredient }: EditIngredie
     const [fontFamily, setFontFamily] = useState('');
     const [fontSize, setFontSize] = useState<number | ''>('');
     const [color, setColor] = useState('#ffffff');
+
+    /* Brand-kit fields */
+    const [styleIds, setStyleIds] = useState<string[]>([]);
+    const [modifierIds, setModifierIds] = useState<string[]>([]);
 
     /* ── Pre-populate on open ── */
     useEffect(() => {
@@ -50,6 +57,19 @@ export function EditIngredientDialog({ open, onClose, ingredient }: EditIngredie
                 setFontSize(typed.fontSize ?? '');
                 setColor(typed.color ?? '#ffffff');
             }
+
+            if (ingredient.type === 'brand-kit') {
+                const typed = ingredient as Ingredient & {
+                    styleIds?: string[];
+                    modifierIds?: string[];
+                };
+                setStyleIds(typed.styleIds ?? []);
+                setModifierIds(typed.modifierIds ?? []);
+            }
+        } else if (!open) {
+            // Reset brand-kit state on close
+            setStyleIds([]);
+            setModifierIds([]);
         }
     }, [open, ingredient]);
 
@@ -104,6 +124,11 @@ export function EditIngredientDialog({ open, onClose, ingredient }: EditIngredie
             updates.color = color;
         }
 
+        if (ingredient.type === 'brand-kit') {
+            updates.styleIds = styleIds;
+            updates.modifierIds = modifierIds;
+        }
+
         if (Object.keys(updates).length > 0) {
             updateIngredient(ingredient.id, updates as Partial<Ingredient>);
         }
@@ -113,7 +138,10 @@ export function EditIngredientDialog({ open, onClose, ingredient }: EditIngredie
     if (!ingredient) return null;
 
     const meta = INGREDIENT_CATEGORIES[ingredient.type];
-    const isValid = name.trim() && (ingredient.type !== 'text-overlay' || text.trim());
+    const isValid =
+        name.trim() &&
+        (ingredient.type !== 'text-overlay' || text.trim()) &&
+        (ingredient.type !== 'brand-kit' || styleIds.length > 0 || modifierIds.length > 0);
 
     return (
         <Dialog
@@ -243,6 +271,27 @@ export function EditIngredientDialog({ open, onClose, ingredient }: EditIngredie
                                 <span className="cid-color-value">{color}</span>
                             </div>
                         </div>
+                    </div>
+                )}
+
+                {/* ── Conditional: brand-kit ── */}
+                {ingredient.type === 'brand-kit' && activeProjectId && (
+                    <div className="cid-conditional">
+                        <div className="cid-conditional__label">Brand Kit References</div>
+                        <IngredientPicker
+                            projectId={activeProjectId}
+                            type="style"
+                            selectedIds={styleIds}
+                            onChange={setStyleIds}
+                            label="Styles"
+                        />
+                        <IngredientPicker
+                            projectId={activeProjectId}
+                            type="modifier"
+                            selectedIds={modifierIds}
+                            onChange={setModifierIds}
+                            label="Modifiers"
+                        />
                     </div>
                 )}
             </form>

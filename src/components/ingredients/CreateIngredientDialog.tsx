@@ -8,6 +8,7 @@ import {
     type IngredientType,
     type CreateIngredientInput,
 } from '../../types/ingredient';
+import { IngredientPicker } from './IngredientPicker';
 import './CreateIngredientDialog.css';
 
 /* ── Type options for Select ───────────────────────────────────────── */
@@ -41,9 +42,9 @@ export function CreateIngredientDialog({ open, onClose }: CreateIngredientDialog
     const [fontSize, setFontSize] = useState<number | ''>('');
     const [color, setColor] = useState('#ffffff');
 
-    /* Brand-kit fields (simplified: comma-separated IDs) */
-    const [styleIds, setStyleIds] = useState('');
-    const [modifierIds, setModifierIds] = useState('');
+    /* Brand-kit fields */
+    const [styleIds, setStyleIds] = useState<string[]>([]);
+    const [modifierIds, setModifierIds] = useState<string[]>([]);
 
     /* ── Reset form ── */
     const resetForm = useCallback(() => {
@@ -57,8 +58,8 @@ export function CreateIngredientDialog({ open, onClose }: CreateIngredientDialog
         setFontFamily('');
         setFontSize('');
         setColor('#ffffff');
-        setStyleIds('');
-        setModifierIds('');
+        setStyleIds([]);
+        setModifierIds([]);
     }, []);
 
     const handleClose = () => {
@@ -117,21 +118,18 @@ export function CreateIngredientDialog({ open, onClose }: CreateIngredientDialog
             input.color = color;
         }
         if (type === 'brand-kit') {
-            input.styleIds = styleIds
-                .split(',')
-                .map((s) => s.trim())
-                .filter(Boolean);
-            input.modifierIds = modifierIds
-                .split(',')
-                .map((s) => s.trim())
-                .filter(Boolean);
+            input.styleIds = styleIds;
+            input.modifierIds = modifierIds;
         }
 
         addIngredient(input as CreateIngredientInput);
         handleClose();
     };
 
-    const isValid = name.trim() && (type !== 'text-overlay' || text.trim());
+    const isValid =
+        name.trim() &&
+        (type !== 'text-overlay' || text.trim()) &&
+        (type !== 'brand-kit' || styleIds.length > 0 || modifierIds.length > 0);
 
     return (
         <Dialog
@@ -270,20 +268,22 @@ export function CreateIngredientDialog({ open, onClose }: CreateIngredientDialog
                 )}
 
                 {/* ── Conditional fields: brand-kit ── */}
-                {type === 'brand-kit' && (
+                {type === 'brand-kit' && activeProjectId && (
                     <div className="cid-conditional">
                         <div className="cid-conditional__label">Brand Kit References</div>
-                        <Input
-                            label="Style IDs (comma-separated)"
-                            placeholder="style_1, style_2"
-                            value={styleIds}
-                            onChange={(e) => setStyleIds(e.target.value)}
+                        <IngredientPicker
+                            projectId={activeProjectId}
+                            type="style"
+                            selectedIds={styleIds}
+                            onChange={setStyleIds}
+                            label="Styles"
                         />
-                        <Input
-                            label="Modifier IDs (comma-separated)"
-                            placeholder="mod_1, mod_2"
-                            value={modifierIds}
-                            onChange={(e) => setModifierIds(e.target.value)}
+                        <IngredientPicker
+                            projectId={activeProjectId}
+                            type="modifier"
+                            selectedIds={modifierIds}
+                            onChange={setModifierIds}
+                            label="Modifiers"
                         />
                     </div>
                 )}

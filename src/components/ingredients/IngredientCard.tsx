@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { INGREDIENT_CATEGORIES, type Ingredient } from '../../types/ingredient';
+import { INGREDIENT_CATEGORIES, type Ingredient, type BrandKitIngredient } from '../../types/ingredient';
 import './IngredientCard.css';
 
 /* ── Icons ──────────────────────────────────────────────────────────── */
@@ -27,6 +27,12 @@ interface IngredientCardProps {
 export function IngredientCard({ ingredient, onEdit, onDelete, highlightTags }: IngredientCardProps) {
     const meta = INGREDIENT_CATEGORIES[ingredient.type];
     const [isDragging, setIsDragging] = useState(false);
+
+    // Brand-kit: derive bundle summary
+    const bundleInfo = ingredient.type === 'brand-kit' ? (() => {
+        const bk = ingredient as BrandKitIngredient;
+        return `${bk.styleIds.length} style${bk.styleIds.length !== 1 ? 's' : ''} · ${bk.modifierIds.length} modifier${bk.modifierIds.length !== 1 ? 's' : ''}`;
+    })() : null;
 
     const handleDragStart = (e: React.DragEvent<HTMLDivElement>) => {
         const payload = {
@@ -57,6 +63,9 @@ export function IngredientCard({ ingredient, onEdit, onDelete, highlightTags }: 
             <div className="ingredient-card__icon">{meta.icon}</div>
             <div className="ingredient-card__info">
                 <span className="ingredient-card__name">{ingredient.name}</span>
+                {bundleInfo && (
+                    <span className="ingredient-card__bundle-info">{bundleInfo}</span>
+                )}
                 {ingredient.tags.length > 0 && (
                     <div className="ingredient-card__tag-pills">
                         {ingredient.tags.map((tag) => (

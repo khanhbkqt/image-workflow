@@ -144,6 +144,40 @@
     -webkit-box-orient: vertical;
 }
 
+/* ── Brand Kit Bundle Display ─────────────────────────────────────── */
+
+.ingredient-node__bundle {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    margin-top: 4px;
+    padding-top: 6px;
+    border-top: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.ingredient-node__bundle-group {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+}
+
+.ingredient-node__bundle-label {
+    font-size: 8px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: rgba(255, 255, 255, 0.35);
+    margin-bottom: 1px;
+}
+
+.ingredient-node__bundle-item {
+    font-size: 10px;
+    color: rgba(255, 255, 255, 0.65);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
 /* ── Drop Animation ──────────────────────────────────────────────────── */
 
 @keyframes ingredient-node-drop-in {
