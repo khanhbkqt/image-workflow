@@ -1,6 +1,7 @@
 import { useEffect } from 'react';
 import { ReactFlowProvider } from '@xyflow/react';
 import { Canvas } from './components/canvas';
+import { IngredientList } from './components/ingredients';
 import { Dashboard } from './components/dashboard';
 import { useCanvasStore } from './stores/canvasStore';
 import { useProjectStore } from './stores/projectStore';
@@ -106,17 +107,8 @@ function App() {
                 <LayersIcon />
                 Ingredients
               </span>
-              <p className="app-sidebar__hint">
-                Drag ingredients onto the canvas to build your image generation workflow.
-              </p>
             </div>
-
-            <div className="app-sidebar__placeholder">
-              <div className="app-sidebar__item">✏️ Text Prompt</div>
-              <div className="app-sidebar__item">🎨 Style</div>
-              <div className="app-sidebar__item">📐 Composition</div>
-              <div className="app-sidebar__item">🖼️ Image Output</div>
-            </div>
+            <IngredientList />
           </aside>
 
           {/* ── Canvas ── */}
