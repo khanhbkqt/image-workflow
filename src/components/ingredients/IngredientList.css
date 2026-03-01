@@ -28,6 +28,24 @@
     flex: 1;
     overflow-y: auto;
     padding: var(--space-2) 0;
+    scroll-behavior: smooth;
+}
+
+.il-groups::-webkit-scrollbar {
+    width: 4px;
+}
+
+.il-groups::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+.il-groups::-webkit-scrollbar-thumb {
+    background: var(--surface-3);
+    border-radius: var(--radius-full);
+}
+
+.il-groups::-webkit-scrollbar-thumb:hover {
+    background: var(--text-muted);
 }
 
 .il-group {
