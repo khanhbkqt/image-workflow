@@ -66,6 +66,7 @@ pm context set "phase-{N}-research" "{key findings}" --category decision
 
 ### Decomposition Steps
 
+0. Fetch the researchs of current phase if any
 1. Identify all deliverables for the phase goal
 2. Break into atomic tasks (2-3 per plan)
 3. Determine dependencies between plans
