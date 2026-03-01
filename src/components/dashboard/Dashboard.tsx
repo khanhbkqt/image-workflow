@@ -1,6 +1,8 @@
+import { useState, useCallback } from 'react';
 import { useProjectStore } from '../../stores/projectStore';
 import { Button } from '../ui';
 import { ProjectCard } from './ProjectCard';
+import { CreateProjectDialog, RenameProjectDialog, DeleteConfirmDialog } from './Dialogs';
 import './Dashboard.css';
 
 /* ── Icons ─────────────────────────────────────────────────────────────── */
@@ -10,18 +12,37 @@ const PlusIcon = () => (
     </svg>
 );
 
-/* ── Component ─────────────────────────────────────────────────────────── */
-interface DashboardProps {
-    onCreateProject?: () => void;
-    onMenuAction?: (id: string, action: 'rename' | 'delete') => void;
-}
+/* ── Dialog State ──────────────────────────────────────────────────────── */
+type DialogState =
+    | { type: 'none' }
+    | { type: 'create' }
+    | { type: 'rename'; projectId: string; currentName: string }
+    | { type: 'delete'; projectId: string; projectName: string };
 
-export function Dashboard({ onCreateProject, onMenuAction }: DashboardProps) {
+/* ── Component ─────────────────────────────────────────────────────────── */
+export function Dashboard() {
     const projects = useProjectStore((s) => s.projects);
     const setActiveProject = useProjectStore((s) => s.setActiveProject);
+    const [dialog, setDialog] = useState<DialogState>({ type: 'none' });
+
+    const closeDialog = useCallback(() => setDialog({ type: 'none' }), []);
 
     const handleOpenProject = (id: string) => {
         setActiveProject(id);
+    };
+
+    const handleRename = (id: string) => {
+        const project = projects.find((p) => p.id === id);
+        if (project) {
+            setDialog({ type: 'rename', projectId: id, currentName: project.name });
+        }
+    };
+
+    const handleDelete = (id: string) => {
+        const project = projects.find((p) => p.id === id);
+        if (project) {
+            setDialog({ type: 'delete', projectId: id, projectName: project.name });
+        }
     };
 
     return (
@@ -37,7 +58,7 @@ export function Dashboard({ onCreateProject, onMenuAction }: DashboardProps) {
                     variant="primary"
                     size="md"
                     icon={<PlusIcon />}
-                    onClick={onCreateProject}
+                    onClick={() => setDialog({ type: 'create' })}
                 >
                     New Project
                 </Button>
@@ -52,7 +73,11 @@ export function Dashboard({ onCreateProject, onMenuAction }: DashboardProps) {
                             Create your first image generation workflow to get started.
                         </p>
                     </div>
-                    <Button variant="primary" icon={<PlusIcon />} onClick={onCreateProject}>
+                    <Button
+                        variant="primary"
+                        icon={<PlusIcon />}
+                        onClick={() => setDialog({ type: 'create' })}
+                    >
                         Create Project
                     </Button>
                 </div>
@@ -63,11 +88,30 @@ export function Dashboard({ onCreateProject, onMenuAction }: DashboardProps) {
                             key={project.id}
                             project={project}
                             onOpen={handleOpenProject}
-                            onMenuAction={onMenuAction}
+                            onRename={handleRename}
+                            onDelete={handleDelete}
                         />
                     ))}
                 </div>
             )}
+
+            {/* ── Dialogs ── */}
+            <CreateProjectDialog
+                open={dialog.type === 'create'}
+                onClose={closeDialog}
+            />
+            <RenameProjectDialog
+                open={dialog.type === 'rename'}
+                projectId={dialog.type === 'rename' ? dialog.projectId : null}
+                currentName={dialog.type === 'rename' ? dialog.currentName : ''}
+                onClose={closeDialog}
+            />
+            <DeleteConfirmDialog
+                open={dialog.type === 'delete'}
+                projectId={dialog.type === 'delete' ? dialog.projectId : null}
+                projectName={dialog.type === 'delete' ? dialog.projectName : ''}
+                onClose={closeDialog}
+            />
         </div>
     );
 }

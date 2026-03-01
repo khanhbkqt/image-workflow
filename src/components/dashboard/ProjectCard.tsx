@@ -1,3 +1,4 @@
+import { useState, useRef, useEffect } from 'react';
 import type { ProjectMeta } from '../../types/project';
 import './ProjectCard.css';
 
@@ -24,6 +25,18 @@ const MoreIcon = () => (
     </svg>
 );
 
+const PencilIcon = () => (
+    <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.5" width="13" height="13">
+        <path d="M11 2l3 3-9 9H2v-3z" />
+    </svg>
+);
+
+const TrashIcon = () => (
+    <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.5" width="13" height="13">
+        <path d="M3 4h10M6 4V2h4v2M5 4v9h6V4" />
+    </svg>
+);
+
 /* ── Helpers ───────────────────────────────────────────────────────────── */
 const formatDate = (iso: string): string => {
     const d = new Date(iso);
@@ -46,10 +59,26 @@ const formatRelative = (iso: string): string => {
 interface ProjectCardProps {
     project: ProjectMeta;
     onOpen: (id: string) => void;
-    onMenuAction?: (id: string, action: 'rename' | 'delete') => void;
+    onRename: (id: string) => void;
+    onDelete: (id: string) => void;
 }
 
-export function ProjectCard({ project, onOpen, onMenuAction }: ProjectCardProps) {
+export function ProjectCard({ project, onOpen, onRename, onDelete }: ProjectCardProps) {
+    const [menuOpen, setMenuOpen] = useState(false);
+    const menuRef = useRef<HTMLDivElement>(null);
+
+    // Close dropdown on outside click
+    useEffect(() => {
+        if (!menuOpen) return;
+        const handler = (e: MouseEvent) => {
+            if (menuRef.current && !menuRef.current.contains(e.target as Node)) {
+                setMenuOpen(false);
+            }
+        };
+        document.addEventListener('mousedown', handler);
+        return () => document.removeEventListener('mousedown', handler);
+    }, [menuOpen]);
+
     return (
         <div
             className="project-card"
@@ -62,17 +91,43 @@ export function ProjectCard({ project, onOpen, onMenuAction }: ProjectCardProps)
                 <span className="project-card__name" title={project.name}>
                     {project.name}
                 </span>
-                <button
-                    className="project-card__menu-btn"
-                    onClick={(e) => {
-                        e.stopPropagation();
-                        onMenuAction?.(project.id, 'rename');
-                    }}
-                    title="More actions"
-                    aria-label="Project actions"
-                >
-                    <MoreIcon />
-                </button>
+                <div ref={menuRef} style={{ position: 'relative' }}>
+                    <button
+                        className="project-card__menu-btn"
+                        onClick={(e) => {
+                            e.stopPropagation();
+                            setMenuOpen((v) => !v);
+                        }}
+                        title="More actions"
+                        aria-label="Project actions"
+                    >
+                        <MoreIcon />
+                    </button>
+                    {menuOpen && (
+                        <div className="dropdown-menu">
+                            <button
+                                className="dropdown-menu__item"
+                                onClick={(e) => {
+                                    e.stopPropagation();
+                                    setMenuOpen(false);
+                                    onRename(project.id);
+                                }}
+                            >
+                                <PencilIcon /> Rename
+                            </button>
+                            <button
+                                className="dropdown-menu__item dropdown-menu__item--danger"
+                                onClick={(e) => {
+                                    e.stopPropagation();
+                                    setMenuOpen(false);
+                                    onDelete(project.id);
+                                }}
+                            >
+                                <TrashIcon /> Delete
+                            </button>
+                        </div>
+                    )}
+                </div>
             </div>
 
             <span className="project-card__slug">/{project.slug}</span>

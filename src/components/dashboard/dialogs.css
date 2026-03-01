@@ -1,0 +1,216 @@
+/* ═══════════════════════════════════════════════════════════════════════════
+   Dialog / Modal Styles
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+/* ── Overlay ─────────────────────────────────────────────────────────── */
+.dialog-overlay {
+    position: fixed;
+    inset: 0;
+    z-index: var(--z-modal);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: hsla(240, 15%, 4%, 0.75);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    animation: overlay-in var(--duration-normal) var(--ease-default);
+}
+
+@keyframes overlay-in {
+    from {
+        opacity: 0;
+    }
+
+    to {
+        opacity: 1;
+    }
+}
+
+/* ── Card ────────────────────────────────────────────────────────────── */
+.dialog-card {
+    width: 100%;
+    max-width: 440px;
+    background: var(--surface-2);
+    border: 1px solid var(--border-default);
+    border-radius: var(--radius-xl);
+    box-shadow: var(--shadow-lg);
+    padding: var(--space-6);
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-5);
+    animation: dialog-in var(--duration-slow) var(--ease-bounce);
+    position: relative;
+    overflow: hidden;
+}
+
+.dialog-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 2px;
+    background: linear-gradient(90deg, var(--accent), transparent);
+}
+
+@keyframes dialog-in {
+    from {
+        opacity: 0;
+        transform: scale(0.95) translateY(8px);
+    }
+
+    to {
+        opacity: 1;
+        transform: scale(1) translateY(0);
+    }
+}
+
+/* ── Header ──────────────────────────────────────────────────────────── */
+.dialog-card__title {
+    font-family: var(--font-display);
+    font-size: var(--text-xl);
+    font-weight: 600;
+    color: var(--text-primary);
+}
+
+.dialog-card__description {
+    font-size: var(--text-sm);
+    color: var(--text-secondary);
+    line-height: 1.5;
+    margin-top: calc(-1 * var(--space-2));
+}
+
+/* ── Form ────────────────────────────────────────────────────────────── */
+.dialog-form {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-4);
+}
+
+.dialog-form__field {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-2);
+}
+
+.dialog-form__label {
+    font-size: var(--text-sm);
+    font-weight: 500;
+    color: var(--text-secondary);
+}
+
+.dialog-form__input {
+    width: 100%;
+    padding: var(--space-3) var(--space-4);
+    background: var(--surface-1);
+    border: 1px solid var(--border-default);
+    border-radius: var(--radius-md);
+    color: var(--text-primary);
+    font-family: var(--font-body);
+    font-size: var(--text-base);
+    outline: none;
+    transition:
+        border-color var(--duration-fast) var(--ease-default),
+        box-shadow var(--duration-fast) var(--ease-default);
+}
+
+.dialog-form__input:focus {
+    border-color: var(--accent);
+    box-shadow: 0 0 0 3px hsla(174, 85%, 48%, 0.15);
+}
+
+.dialog-form__input::placeholder {
+    color: var(--text-muted);
+}
+
+.dialog-form__textarea {
+    resize: vertical;
+    min-height: 80px;
+    max-height: 160px;
+}
+
+/* ── Actions ─────────────────────────────────────────────────────────── */
+.dialog-actions {
+    display: flex;
+    gap: var(--space-3);
+    justify-content: flex-end;
+}
+
+/* ── Delete dialog warning ───────────────────────────────────────────── */
+.dialog-card--danger .dialog-card__title {
+    color: var(--error);
+}
+
+.dialog-card--danger::before {
+    background: linear-gradient(90deg, var(--error), transparent);
+}
+
+.dialog-warning {
+    font-size: var(--text-sm);
+    color: var(--text-secondary);
+    line-height: 1.6;
+    padding: var(--space-3) var(--space-4);
+    background: var(--error-subtle);
+    border: 1px solid hsla(0, 72%, 58%, 0.2);
+    border-radius: var(--radius-md);
+}
+
+.dialog-warning strong {
+    color: var(--text-primary);
+}
+
+/* ── Dropdown Menu ───────────────────────────────────────────────────── */
+.dropdown-menu {
+    position: absolute;
+    top: 100%;
+    right: 0;
+    margin-top: var(--space-1);
+    min-width: 160px;
+    background: var(--surface-3);
+    border: 1px solid var(--border-default);
+    border-radius: var(--radius-md);
+    box-shadow: var(--shadow-md);
+    z-index: var(--z-dropdown);
+    overflow: hidden;
+    animation: menu-in var(--duration-fast) var(--ease-default);
+}
+
+@keyframes menu-in {
+    from {
+        opacity: 0;
+        transform: translateY(-4px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.dropdown-menu__item {
+    display: flex;
+    align-items: center;
+    gap: var(--space-2);
+    width: 100%;
+    padding: var(--space-2) var(--space-3);
+    border: none;
+    background: transparent;
+    color: var(--text-secondary);
+    font-family: var(--font-body);
+    font-size: var(--text-sm);
+    cursor: pointer;
+    transition:
+        background var(--duration-fast) var(--ease-default),
+        color var(--duration-fast) var(--ease-default);
+    text-align: left;
+}
+
+.dropdown-menu__item:hover {
+    background: var(--surface-4);
+    color: var(--text-primary);
+}
+
+.dropdown-menu__item--danger:hover {
+    background: var(--error-subtle);
+    color: var(--error);
+}
