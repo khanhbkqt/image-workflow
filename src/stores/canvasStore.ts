@@ -10,11 +10,47 @@ import {
 } from '@xyflow/react';
 
 import type { AppNode, AppEdge, CanvasState } from '../types/canvas';
+import { storage } from '../services/storage';
 
-/* ── Initial viewport ────────────────────────────────────────────────── */
+/* ── Constants ───────────────────────────────────────────────────────── */
+const CANVAS_KEY_PREFIX = 'canvas:';
 const DEFAULT_VIEWPORT: Viewport = { x: 0, y: 0, zoom: 1 };
 
+/* ── Helpers ─────────────────────────────────────────────────────────── */
+
+function canvasKey(projectId: string): string {
+    return `${CANVAS_KEY_PREFIX}${projectId}`;
+}
+
+interface PersistedCanvas {
+    nodes: AppNode[];
+    edges: AppEdge[];
+    viewport: Viewport;
+}
+
+function loadFromStorage(projectId: string): PersistedCanvas | null {
+    const raw = storage.getItem(canvasKey(projectId));
+    if (!raw) return null;
+    try {
+        return JSON.parse(raw) as PersistedCanvas;
+    } catch {
+        return null;
+    }
+}
+
+function saveToStorage(projectId: string, data: PersistedCanvas): void {
+    storage.setItem(canvasKey(projectId), JSON.stringify(data));
+}
+
+/** Remove canvas data for a specific project. */
+export function removeCanvasData(projectId: string): void {
+    storage.removeItem(canvasKey(projectId));
+}
+
 /* ── Canvas Store ────────────────────────────────────────────────────── */
+
+let _activeProjectId: string | null = null;
+
 export const useCanvasStore = create<CanvasState>((set, get) => ({
     /* ── Data ── */
     nodes: [],
@@ -24,19 +60,23 @@ export const useCanvasStore = create<CanvasState>((set, get) => ({
     /* ── React Flow change handlers ── */
     onNodesChange: (changes: NodeChange<AppNode>[]) => {
         set({ nodes: applyNodeChanges(changes, get().nodes) });
+        _scheduleAutosave();
     },
 
     onEdgesChange: (changes: EdgeChange<AppEdge>[]) => {
         set({ edges: applyEdgeChanges(changes, get().edges) });
+        _scheduleAutosave();
     },
 
     onConnect: (connection: Connection) => {
         set({ edges: addEdge(connection, get().edges) });
+        _scheduleAutosave();
     },
 
     /* ── Custom actions ── */
     addNode: (node: AppNode) => {
         set({ nodes: [...get().nodes, node] });
+        _scheduleAutosave();
     },
 
     removeNode: (nodeId: string) => {
@@ -44,9 +84,60 @@ export const useCanvasStore = create<CanvasState>((set, get) => ({
             nodes: get().nodes.filter((n) => n.id !== nodeId),
             edges: get().edges.filter((e) => e.source !== nodeId && e.target !== nodeId),
         });
+        _scheduleAutosave();
     },
 
     setViewport: (viewport: Viewport) => {
         set({ viewport });
+        _scheduleAutosave();
+    },
+
+    /* ── Persistence actions ── */
+    loadCanvas: (projectId: string) => {
+        // Save current project's canvas before switching
+        if (_activeProjectId) {
+            const { nodes, edges, viewport } = get();
+            saveToStorage(_activeProjectId, { nodes, edges, viewport });
+        }
+
+        _activeProjectId = projectId;
+        const saved = loadFromStorage(projectId);
+        if (saved) {
+            set({
+                nodes: saved.nodes,
+                edges: saved.edges,
+                viewport: saved.viewport,
+            });
+        } else {
+            set({
+                nodes: [],
+                edges: [],
+                viewport: DEFAULT_VIEWPORT,
+            });
+        }
+    },
+
+    clearCanvas: () => {
+        if (_activeProjectId) {
+            saveToStorage(_activeProjectId, {
+                nodes: get().nodes,
+                edges: get().edges,
+                viewport: get().viewport,
+            });
+        }
+        _activeProjectId = null;
+        set({
+            nodes: [],
+            edges: [],
+            viewport: DEFAULT_VIEWPORT,
+        });
     },
 }));
+
+/* ── Auto-save helper ────────────────────────────────────────────────── */
+
+function _scheduleAutosave(): void {
+    if (!_activeProjectId) return;
+    const { nodes, edges, viewport } = useCanvasStore.getState();
+    saveToStorage(_activeProjectId, { nodes, edges, viewport });
+}

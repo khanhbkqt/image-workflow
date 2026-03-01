@@ -53,16 +53,33 @@ const INITIAL_NODES: AppNode[] = [
 function App() {
   const addNode = useCanvasStore((s) => s.addNode);
   const nodes = useCanvasStore((s) => s.nodes);
+  const loadCanvas = useCanvasStore((s) => s.loadCanvas);
+  const clearCanvas = useCanvasStore((s) => s.clearCanvas);
   const currentView = useProjectStore((s) => s.currentView);
+  const activeProjectId = useProjectStore((s) => s.activeProjectId);
   const activeProject = useProjectStore((s) => s.getActiveProject());
   const setActiveProject = useProjectStore((s) => s.setActiveProject);
 
-  /* Seed initial demo nodes once on mount */
+  /* Load/clear canvas when the active project changes */
   useEffect(() => {
-    if (nodes.length === 0) {
+    if (activeProjectId) {
+      loadCanvas(activeProjectId);
+    } else {
+      clearCanvas();
+    }
+  }, [activeProjectId, loadCanvas, clearCanvas]);
+
+  /* Seed initial demo nodes for empty canvases (will move to canvasStore in Plan 5.4) */
+  useEffect(() => {
+    if (activeProjectId && nodes.length === 0) {
       INITIAL_NODES.forEach((n) => addNode(n));
     }
-  }, []); // eslint-disable-line react-hooks/exhaustive-deps
+  }, [activeProjectId]); // eslint-disable-line react-hooks/exhaustive-deps
+
+  const handleBack = () => {
+    clearCanvas();
+    setActiveProject(null);
+  };
 
   return (
     <div className="app-shell">
@@ -73,7 +90,7 @@ function App() {
             <>
               <button
                 className="app-header__back-btn"
-                onClick={() => setActiveProject(null)}
+                onClick={handleBack}
                 title="Back to projects"
                 aria-label="Back to projects"
               >

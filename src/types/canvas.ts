@@ -39,4 +39,8 @@ export interface CanvasState {
     addNode: (node: AppNode) => void;
     removeNode: (nodeId: string) => void;
     setViewport: (viewport: Viewport) => void;
+
+    /* ── Persistence actions ── */
+    loadCanvas: (projectId: string) => void;
+    clearCanvas: () => void;
 }
