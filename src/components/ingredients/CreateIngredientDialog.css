@@ -1,0 +1,225 @@
+/* ═══════════════════════════════════════════════════════════════════════════
+   Create Ingredient Dialog Styles
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+.create-ingredient-form {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-4);
+}
+
+/* ── Field ───────────────────────────────────────────────────────────── */
+.cid-field {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-1);
+}
+
+.cid-label {
+    font-family: var(--font-body);
+    font-size: var(--text-sm);
+    font-weight: 500;
+    color: var(--text-secondary);
+}
+
+/* ── Textarea ────────────────────────────────────────────────────────── */
+.cid-textarea {
+    width: 100%;
+    padding: var(--space-2) var(--space-3);
+    background: var(--surface-0);
+    border: 1px solid var(--border-default);
+    border-radius: var(--radius-md);
+    color: var(--text-primary);
+    font-family: var(--font-body);
+    font-size: var(--text-sm);
+    outline: none;
+    resize: vertical;
+    min-height: 60px;
+    max-height: 120px;
+    transition:
+        border-color var(--duration-normal) var(--ease-default),
+        box-shadow var(--duration-normal) var(--ease-default);
+}
+
+.cid-textarea:focus {
+    border-color: var(--accent);
+    box-shadow: 0 0 0 3px var(--accent-subtle);
+}
+
+.cid-textarea::placeholder {
+    color: var(--text-muted);
+}
+
+/* ── Tags ────────────────────────────────────────────────────────────── */
+.cid-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-1);
+    margin-top: var(--space-1);
+}
+
+.cid-tag {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-1);
+    padding: 2px var(--space-2);
+    background: var(--surface-3);
+    border: 1px solid var(--border-default);
+    border-radius: var(--radius-full);
+    font-size: var(--text-xs);
+    color: var(--text-secondary);
+    animation: tagIn var(--duration-fast) var(--ease-default);
+}
+
+@keyframes tagIn {
+    from {
+        opacity: 0;
+        transform: scale(0.85);
+    }
+
+    to {
+        opacity: 1;
+        transform: scale(1);
+    }
+}
+
+.cid-tag__remove {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 14px;
+    height: 14px;
+    padding: 0;
+    margin: 0;
+    border: none;
+    background: transparent;
+    color: var(--text-muted);
+    font-size: 12px;
+    line-height: 1;
+    cursor: pointer;
+    border-radius: 50%;
+    transition: all var(--duration-fast) var(--ease-default);
+}
+
+.cid-tag__remove:hover {
+    background: var(--error-subtle);
+    color: var(--error);
+}
+
+/* ── Image Dropzone ──────────────────────────────────────────────────── */
+.cid-dropzone {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 80px;
+    padding: var(--space-3);
+    border: 2px dashed var(--border-default);
+    border-radius: var(--radius-md);
+    cursor: pointer;
+    transition:
+        border-color var(--duration-fast) var(--ease-default),
+        background var(--duration-fast) var(--ease-default);
+}
+
+.cid-dropzone:hover {
+    border-color: var(--accent);
+    background: hsla(174, 85%, 48%, 0.04);
+}
+
+.cid-dropzone__input {
+    display: none;
+}
+
+.cid-dropzone__text {
+    font-size: var(--text-sm);
+    color: var(--text-muted);
+}
+
+.cid-preview {
+    max-width: 100%;
+    max-height: 120px;
+    border-radius: var(--radius-sm);
+    object-fit: contain;
+}
+
+/* ── Conditional Fields ──────────────────────────────────────────────── */
+.cid-conditional {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-3);
+    padding: var(--space-4);
+    background: var(--surface-1);
+    border: 1px solid var(--border-default);
+    border-radius: var(--radius-md);
+    animation: condIn var(--duration-normal) var(--ease-default);
+}
+
+@keyframes condIn {
+    from {
+        opacity: 0;
+        max-height: 0;
+    }
+
+    to {
+        opacity: 1;
+        max-height: 400px;
+    }
+}
+
+.cid-conditional__label {
+    font-size: var(--text-xs);
+    font-weight: 600;
+    color: var(--accent);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+
+/* ── Row (side-by-side fields) ───────────────────────────────────────── */
+.cid-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: var(--space-3);
+}
+
+/* ── Color Picker ────────────────────────────────────────────────────── */
+.cid-color-picker {
+    display: flex;
+    align-items: center;
+    gap: var(--space-2);
+}
+
+.cid-color-input {
+    width: 36px;
+    height: 36px;
+    padding: 0;
+    border: 2px solid var(--border-default);
+    border-radius: var(--radius-sm);
+    cursor: pointer;
+    background: transparent;
+}
+
+.cid-color-input::-webkit-color-swatch-wrapper {
+    padding: 2px;
+}
+
+.cid-color-input::-webkit-color-swatch {
+    border: none;
+    border-radius: 2px;
+}
+
+.cid-color-value {
+    font-family: var(--font-mono);
+    font-size: var(--text-sm);
+    color: var(--text-secondary);
+}
+
+/* ── Read-only Type Display ──────────────────────────────────────────── */
+.cid-type-display {
+    padding: var(--space-2) var(--space-3);
+    background: var(--surface-1);
+    border: 1px solid var(--border-default);
+    border-radius: var(--radius-md);
+    font-size: var(--text-sm);
+    color: var(--text-muted);
+    cursor: not-allowed;
+}
