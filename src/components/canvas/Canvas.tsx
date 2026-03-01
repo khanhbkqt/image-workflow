@@ -12,6 +12,7 @@ import { nodeTypes } from './PlaceholderNode';
 import { ZoomControls } from './ZoomControls';
 import type { AppNode, AppEdge, IngredientNodeData } from '../../types/canvas';
 import type { IngredientType } from '../../types/ingredient';
+import { isValidConnection } from '../../utils/connectionValidator';
 import '../../styles/canvas.css';
 
 /* ── Drag payload shape (matches IngredientCard encoder) ─────────────── */
@@ -132,6 +133,19 @@ function CanvasInner() {
         [screenToFlowPosition, addNode, nodes, flashNode],
     );
 
+    const isValidConnectionFn = useCallback(
+        (edgeOrConnection: import('@xyflow/react').Edge | import('@xyflow/react').Connection) => {
+            const connection: import('@xyflow/react').Connection = {
+                source: edgeOrConnection.source,
+                target: edgeOrConnection.target,
+                sourceHandle: edgeOrConnection.sourceHandle ?? null,
+                targetHandle: edgeOrConnection.targetHandle ?? null,
+            };
+            return isValidConnection(connection, nodes, edges);
+        },
+        [nodes, edges]
+    );
+
     return (
         <div
             className={`canvas-drop-zone${isDragOver ? ' canvas-drop-zone--active' : ''}`}
@@ -147,6 +161,7 @@ function CanvasInner() {
                 onNodesChange={onNodesChange}
                 onEdgesChange={onEdgesChange}
                 onConnect={onConnect}
+                isValidConnection={isValidConnectionFn}
                 onInit={onInit}
                 nodeTypes={nodeTypes}
                 colorMode="dark"

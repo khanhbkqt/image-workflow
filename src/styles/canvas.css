@@ -80,6 +80,29 @@
     stroke: var(--accent);
 }
 
+/* Valid/Invalid Connection States */
+.react-flow .react-flow__edge.valid .react-flow__edge-path {
+    stroke: var(--color-success);
+}
+
+.react-flow .react-flow__edge.invalid .react-flow__edge-path {
+    stroke: var(--color-danger);
+    opacity: 0.5;
+}
+
+.react-flow__connection-path {
+    stroke: var(--text-muted);
+    stroke-width: 2;
+    stroke-dasharray: 5, 5;
+    animation: flow-dash 1s linear infinite;
+}
+
+@keyframes flow-dash {
+    to {
+        stroke-dashoffset: -10;
+    }
+}
+
 /* ── Attribution (hide default) ──────────────────────────────────────── */
 .react-flow__attribution {
     display: none;
