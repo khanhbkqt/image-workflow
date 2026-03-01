@@ -1,0 +1,87 @@
+/* ═══════════════════════════════════════════════════════════════════════════
+   Search Bar Styles
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+.search-bar {
+    position: relative;
+    padding: var(--space-2) var(--space-3);
+}
+
+.search-bar__wrapper {
+    position: relative;
+    display: flex;
+    align-items: center;
+}
+
+.search-bar__icon {
+    position: absolute;
+    left: var(--space-2);
+    color: var(--text-muted);
+    pointer-events: none;
+    transition: color var(--duration-fast) var(--ease-default);
+}
+
+.search-bar__input {
+    width: 100%;
+    padding: var(--space-2) var(--space-3);
+    padding-left: 30px;
+    padding-right: 30px;
+    border: 1px solid var(--border-subtle);
+    border-radius: var(--radius-md);
+    background: var(--surface-1);
+    color: var(--text-primary);
+    font-family: var(--font-body);
+    font-size: var(--text-sm);
+    outline: none;
+    transition:
+        border-color var(--duration-fast) var(--ease-default),
+        background var(--duration-fast) var(--ease-default),
+        box-shadow var(--duration-fast) var(--ease-default);
+}
+
+.search-bar__input::placeholder {
+    color: var(--text-muted);
+}
+
+.search-bar__input:focus {
+    border-color: var(--accent);
+    background: var(--surface-0);
+    box-shadow: 0 0 0 2px rgba(99, 102, 241, 0.15);
+}
+
+.search-bar__input:focus~.search-bar__icon {
+    color: var(--accent);
+}
+
+/* ── Clear Button ────────────────────────────────────────────────────── */
+.search-bar__clear {
+    position: absolute;
+    right: var(--space-1);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 22px;
+    height: 22px;
+    padding: 0;
+    border: none;
+    background: transparent;
+    color: var(--text-muted);
+    border-radius: var(--radius-sm);
+    cursor: pointer;
+    transition:
+        background var(--duration-fast) var(--ease-default),
+        color var(--duration-fast) var(--ease-default);
+}
+
+.search-bar__clear:hover {
+    background: var(--surface-2);
+    color: var(--text-primary);
+}
+
+/* ── Result Count ────────────────────────────────────────────────────── */
+.search-bar__result-count {
+    font-size: 10px;
+    color: var(--text-muted);
+    padding: 2px var(--space-3);
+    letter-spacing: 0.02em;
+}

@@ -1,4 +1,4 @@
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useCallback, useEffect } from 'react';
 import { useIngredientStore } from '../../stores/ingredientStore';
 import { useProjectStore } from '../../stores/projectStore';
 import {
@@ -9,6 +9,9 @@ import {
 } from '../../types/ingredient';
 import { Button } from '../ui';
 import { IngredientCard } from './IngredientCard';
+import { SearchBar } from './SearchBar';
+import { TagFilter } from './TagFilter';
+import { CategoryFilter } from './CategoryFilter';
 import { CreateIngredientDialog } from './CreateIngredientDialog';
 import { EditIngredientDialog } from './EditIngredientDialog';
 import { DeleteIngredientDialog } from './DeleteIngredientDialog';
@@ -45,23 +48,66 @@ export function IngredientList() {
     const [deleteIngredient, setDeleteIngredient] = useState<Ingredient | null>(null);
     const [collapsed, setCollapsed] = useState<Set<IngredientType>>(new Set());
 
-    const ingredients = useMemo(
+    /* ── Filter state ── */
+    const [searchQuery, setSearchQuery] = useState('');
+    const [selectedTags, setSelectedTags] = useState<Set<string>>(new Set());
+    const [selectedTypes, setSelectedTypes] = useState<Set<IngredientType>>(new Set());
+
+    /* ── Reset filters on project switch ── */
+    useEffect(() => {
+        setSearchQuery('');
+        setSelectedTags(new Set());
+        setSelectedTypes(new Set());
+        setCollapsed(new Set());
+    }, [activeProjectId]);
+
+    const allIngredients = useMemo(
         () => (activeProjectId ? getIngredientsByProject(activeProjectId) : []),
         [activeProjectId, getIngredientsByProject]
     );
 
-    /* ── Group by type ── */
+    /* ── Apply all filters ── */
+    const filteredIngredients = useMemo(() => {
+        let result = allIngredients;
+
+        // Search filter (name + description)
+        if (searchQuery.trim()) {
+            const q = searchQuery.toLowerCase().trim();
+            result = result.filter(
+                (ing) =>
+                    ing.name.toLowerCase().includes(q) ||
+                    (ing.description && ing.description.toLowerCase().includes(q))
+            );
+        }
+
+        // Tag filter (AND logic)
+        if (selectedTags.size > 0) {
+            result = result.filter((ing) =>
+                Array.from(selectedTags).every((tag) => ing.tags.includes(tag))
+            );
+        }
+
+        // Type filter
+        if (selectedTypes.size > 0) {
+            result = result.filter((ing) => selectedTypes.has(ing.type));
+        }
+
+        return result;
+    }, [allIngredients, searchQuery, selectedTags, selectedTypes]);
+
+    /* ── Group filtered ingredients by type ── */
     const groups = useMemo(() => {
         const map = new Map<IngredientType, Ingredient[]>();
         for (const type of INGREDIENT_TYPES) {
-            const items = ingredients.filter((i) => i.type === type);
+            const items = filteredIngredients.filter((i) => i.type === type);
             if (items.length > 0) {
                 map.set(type, items);
             }
         }
         return map;
-    }, [ingredients]);
+    }, [filteredIngredients]);
 
+    /* ── Callbacks ── */
     const toggleSection = (type: IngredientType) => {
         setCollapsed((prev) => {
             const next = new Set(prev);
@@ -71,12 +117,39 @@ export function IngredientList() {
         });
     };
 
+    const toggleTag = useCallback((tag: string) => {
+        setSelectedTags((prev) => {
+            const next = new Set(prev);
+            if (next.has(tag)) next.delete(tag);
+            else next.add(tag);
+            return next;
+        });
+    }, []);
+
+    const toggleType = useCallback((type: IngredientType) => {
+        setSelectedTypes((prev) => {
+            const next = new Set(prev);
+            if (next.has(type)) next.delete(type);
+            else next.add(type);
+            return next;
+        });
+    }, []);
+
+    const clearAllFilters = useCallback(() => {
+        setSearchQuery('');
+        setSelectedTags(new Set());
+        setSelectedTypes(new Set());
+    }, []);
+
+    const hasActiveFilters = searchQuery.length > 0 || selectedTags.size > 0 || selectedTypes.size > 0;
+    const activeFilterCount = (searchQuery.length > 0 ? 1 : 0) + selectedTags.size + selectedTypes.size;
+
     return (
         <div className="ingredient-list">
             {/* Header */}
             <div className="il-header">
                 <span className="il-header__count">
-                    {ingredients.length} ingredient{ingredients.length !== 1 ? 's' : ''}
+                    {allIngredients.length} ingredient{allIngredients.length !== 1 ? 's' : ''}
                 </span>
                 <Button
                     variant="primary"
@@ -88,13 +161,59 @@ export function IngredientList() {
                 </Button>
             </div>
 
+            {/* Search */}
+            <SearchBar
+                value={searchQuery}
+                onChange={setSearchQuery}
+                resultCount={filteredIngredients.length}
+                totalCount={allIngredients.length}
+            />
+
+            {/* Filters */}
+            <CategoryFilter
+                ingredients={allIngredients}
+                selectedTypes={selectedTypes}
+                onToggleType={toggleType}
+                onClearTypes={() => setSelectedTypes(new Set())}
+            />
+
+            <TagFilter
+                ingredients={allIngredients}
+                selectedTags={selectedTags}
+                onToggleTag={toggleTag}
+                onClearTags={() => setSelectedTags(new Set())}
+            />
+
+            {/* Active filter indicator */}
+            {hasActiveFilters && (
+                <div className="il-filter-bar">
+                    <span className="il-filter-bar__count">
+                        {activeFilterCount} filter{activeFilterCount !== 1 ? 's' : ''} active
+                    </span>
+                    <button className="il-filter-bar__clear" onClick={clearAllFilters}>
+                        Clear all
+                    </button>
+                </div>
+            )}
+
+            {/* Divider */}
+            <div className="il-filter-divider" />
+
             {/* List */}
-            {groups.size === 0 ? (
+            {allIngredients.length === 0 ? (
                 <div className="il-empty">
                     <div className="il-empty__icon">🧪</div>
                     <p className="il-empty__text">No ingredients yet</p>
                     <Button variant="primary" size="sm" onClick={() => setCreateOpen(true)}>
                         Create First Ingredient
+                    </Button>
+                </div>
+            ) : groups.size === 0 ? (
+                <div className="il-empty">
+                    <div className="il-empty__icon">🔍</div>
+                    <p className="il-empty__text">No matching ingredients</p>
+                    <Button variant="ghost" size="sm" onClick={clearAllFilters}>
+                        Clear Filters
                     </Button>
                 </div>
             ) : (
@@ -121,6 +240,7 @@ export function IngredientList() {
                                                 ingredient={ing}
                                                 onEdit={setEditIngredient}
                                                 onDelete={setDeleteIngredient}
+                                                highlightTags={selectedTags.size > 0 ? selectedTags : undefined}
                                             />
                                         ))}
                                     </div>

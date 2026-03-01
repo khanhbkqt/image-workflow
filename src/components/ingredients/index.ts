@@ -3,3 +3,6 @@ export { EditIngredientDialog } from './EditIngredientDialog';
 export { DeleteIngredientDialog } from './DeleteIngredientDialog';
 export { IngredientCard } from './IngredientCard';
 export { IngredientList } from './IngredientList';
+export { SearchBar } from './SearchBar';
+export { TagFilter } from './TagFilter';
+export { CategoryFilter } from './CategoryFilter';

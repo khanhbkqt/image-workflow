@@ -20,9 +20,10 @@ interface IngredientCardProps {
     ingredient: Ingredient;
     onEdit: (ingredient: Ingredient) => void;
     onDelete: (ingredient: Ingredient) => void;
+    highlightTags?: Set<string>;
 }
 
-export function IngredientCard({ ingredient, onEdit, onDelete }: IngredientCardProps) {
+export function IngredientCard({ ingredient, onEdit, onDelete, highlightTags }: IngredientCardProps) {
     const meta = INGREDIENT_CATEGORIES[ingredient.type];
 
     return (
@@ -31,9 +32,17 @@ export function IngredientCard({ ingredient, onEdit, onDelete }: IngredientCardP
             <div className="ingredient-card__info">
                 <span className="ingredient-card__name">{ingredient.name}</span>
                 {ingredient.tags.length > 0 && (
-                    <span className="ingredient-card__tags">
-                        {ingredient.tags.length} tag{ingredient.tags.length !== 1 ? 's' : ''}
-                    </span>
+                    <div className="ingredient-card__tag-pills">
+                        {ingredient.tags.map((tag) => (
+                            <span
+                                key={tag}
+                                className={`ingredient-card__tag-pill${highlightTags?.has(tag) ? ' ingredient-card__tag-pill--match' : ''
+                                    }`}
+                            >
+                                {tag}
+                            </span>
+                        ))}
+                    </div>
                 )}
             </div>
             {ingredient.imageUrl && (

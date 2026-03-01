@@ -1,0 +1,71 @@
+/* ═══════════════════════════════════════════════════════════════════════════
+   Category Filter Styles
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+.category-filter {
+    padding: 0 var(--space-3) var(--space-2);
+}
+
+.category-filter__label {
+    font-size: 10px;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: var(--text-muted);
+    margin-bottom: var(--space-1);
+    padding-left: var(--space-1);
+}
+
+.category-filter__chips {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-1);
+}
+
+/* ── Chip ─────────────────────────────────────────────────────────── */
+.cat-chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    padding: 2px var(--space-2);
+    border: 1px solid var(--border-subtle);
+    border-radius: var(--radius-full);
+    background: transparent;
+    color: var(--text-secondary);
+    font-family: var(--font-body);
+    font-size: 11px;
+    cursor: pointer;
+    white-space: nowrap;
+    transition:
+        background var(--duration-fast) var(--ease-default),
+        border-color var(--duration-fast) var(--ease-default),
+        color var(--duration-fast) var(--ease-default),
+        box-shadow var(--duration-fast) var(--ease-default);
+}
+
+.cat-chip:hover {
+    border-color: var(--border-default);
+    background: var(--surface-1);
+}
+
+.cat-chip--selected {
+    background: var(--accent-subtle, rgba(99, 102, 241, 0.12));
+    border-color: var(--accent);
+    color: var(--accent);
+    box-shadow: 0 0 0 1px rgba(99, 102, 241, 0.1);
+}
+
+.cat-chip--selected:hover {
+    background: var(--accent-subtle, rgba(99, 102, 241, 0.18));
+}
+
+.cat-chip__icon {
+    font-size: 12px;
+    line-height: 1;
+}
+
+.cat-chip__count {
+    font-size: 10px;
+    opacity: 0.65;
+    min-width: 12px;
+    text-align: center;
+}

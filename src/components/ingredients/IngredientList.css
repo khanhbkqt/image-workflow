@@ -129,3 +129,43 @@
     color: var(--text-muted);
     margin: 0;
 }
+
+/* ── Filter Bar ──────────────────────────────────────────────────────── */
+.il-filter-bar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: var(--space-1) var(--space-3);
+    font-size: 11px;
+}
+
+.il-filter-bar__count {
+    color: var(--accent);
+    font-weight: 500;
+}
+
+.il-filter-bar__clear {
+    padding: 2px var(--space-2);
+    border: none;
+    background: transparent;
+    color: var(--text-muted);
+    font-family: var(--font-body);
+    font-size: 11px;
+    cursor: pointer;
+    border-radius: var(--radius-sm);
+    transition:
+        background var(--duration-fast) var(--ease-default),
+        color var(--duration-fast) var(--ease-default);
+}
+
+.il-filter-bar__clear:hover {
+    background: var(--surface-2);
+    color: var(--text-primary);
+}
+
+/* ── Filter Divider ──────────────────────────────────────────────────── */
+.il-filter-divider {
+    height: 1px;
+    margin: 0 var(--space-3);
+    background: var(--border-subtle);
+}
