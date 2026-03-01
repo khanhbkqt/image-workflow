@@ -63,6 +63,7 @@ export interface CanvasState {
     /* ── Custom actions ── */
     addNode: (node: AppNode) => void;
     removeNode: (nodeId: string) => void;
+    updateNodeData: (nodeId: string, dataPatch: any) => void;
     setViewport: (viewport: Viewport) => void;
 
     /* ── Persistence actions ── */

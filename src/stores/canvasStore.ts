@@ -114,6 +114,15 @@ export const useCanvasStore = create<CanvasState>((set, get) => ({
         _scheduleAutosave();
     },
 
+    updateNodeData: (nodeId: string, dataPatch: any) => {
+        set({
+            nodes: get().nodes.map((n) =>
+                n.id === nodeId ? { ...n, data: { ...n.data, ...dataPatch } } : n
+            ),
+        });
+        _scheduleAutosave();
+    },
+
     setViewport: (viewport: Viewport) => {
         set({ viewport });
         _scheduleAutosave();

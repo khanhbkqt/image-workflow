@@ -8,7 +8,7 @@ import {
 } from '@xyflow/react';
 import { useCallback, useState } from 'react';
 import { useCanvasStore } from '../../stores/canvasStore';
-import { nodeTypes } from './PlaceholderNode';
+import { nodeTypes } from './nodes/nodeRegistry';
 import { ZoomControls } from './ZoomControls';
 import type { AppNode, AppEdge, IngredientNodeData } from '../../types/canvas';
 import type { IngredientType } from '../../types/ingredient';
