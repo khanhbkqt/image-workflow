@@ -1,0 +1,65 @@
+/* ═══════════════════════════════════════════════════════════════════════════
+   ZoomControls — Floating panel styles
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+.zoom-controls {
+    position: absolute;
+    bottom: var(--space-4);
+    right: var(--space-4);
+    display: flex;
+    align-items: center;
+    gap: var(--space-1);
+    background: var(--surface-2);
+    border: 1px solid var(--border-subtle);
+    border-radius: var(--radius-lg);
+    padding: var(--space-1);
+    box-shadow: var(--shadow-md);
+    z-index: var(--z-dropdown);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+}
+
+.zoom-controls__btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 32px;
+    height: 32px;
+    border: none;
+    border-radius: var(--radius-md);
+    background: transparent;
+    color: var(--text-secondary);
+    cursor: pointer;
+    transition: background var(--duration-fast) var(--ease-default),
+        color var(--duration-fast) var(--ease-default);
+}
+
+.zoom-controls__btn:hover {
+    background: var(--surface-3);
+    color: var(--text-primary);
+}
+
+.zoom-controls__btn:active {
+    background: var(--surface-4);
+}
+
+.zoom-controls__btn svg {
+    width: 14px;
+    height: 14px;
+}
+
+.zoom-controls__level {
+    font-family: var(--font-mono);
+    font-size: var(--text-xs);
+    color: var(--text-muted);
+    min-width: 42px;
+    text-align: center;
+    user-select: none;
+}
+
+.zoom-controls__divider {
+    width: 1px;
+    height: 20px;
+    background: var(--border-subtle);
+    margin: 0 var(--space-1);
+}
