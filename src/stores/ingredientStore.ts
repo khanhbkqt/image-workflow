@@ -29,6 +29,7 @@ export interface IngredientState {
     getIngredientsByProject: (projectId: string) => Ingredient[];
     getIngredientsByType: (projectId: string, type: IngredientType) => Ingredient[];
     getIngredientById: (id: string) => Ingredient | undefined;
+    getIngredientsByIds: (ids: string[]) => Ingredient[];
 }
 
 /* ── Ingredient Store ────────────────────────────────────────────────── */
@@ -66,9 +67,27 @@ export const useIngredientStore = create<IngredientState>()(
             },
 
             deleteIngredient: (id: string) => {
-                set((state) => ({
-                    ingredients: state.ingredients.filter((ing) => ing.id !== id),
-                }));
+                set((state) => {
+                    // Remove the ingredient itself
+                    const remaining = state.ingredients.filter((ing) => ing.id !== id);
+
+                    // Cascade: remove this id from any brand-kit's styleIds/modifierIds
+                    const updated = remaining.map((ing) => {
+                        if (ing.type !== 'brand-kit') return ing;
+                        const bk = ing as typeof ing & { styleIds?: string[]; modifierIds?: string[] };
+                        const newStyleIds = (bk.styleIds ?? []).filter((sid) => sid !== id);
+                        const newModifierIds = (bk.modifierIds ?? []).filter((mid) => mid !== id);
+                        if (
+                            newStyleIds.length === (bk.styleIds ?? []).length &&
+                            newModifierIds.length === (bk.modifierIds ?? []).length
+                        ) {
+                            return ing; // no change
+                        }
+                        return { ...ing, styleIds: newStyleIds, modifierIds: newModifierIds };
+                    });
+
+                    return { ingredients: updated };
+                });
             },
 
             /* ── Queries ── */
@@ -84,6 +103,13 @@ export const useIngredientStore = create<IngredientState>()(
 
             getIngredientById: (id: string): Ingredient | undefined => {
                 return get().ingredients.find((ing) => ing.id === id);
+            },
+
+            getIngredientsByIds: (ids: string[]): Ingredient[] => {
+                const all = get().ingredients;
+                return ids
+                    .map((id) => all.find((ing) => ing.id === id))
+                    .filter((ing): ing is Ingredient => ing !== undefined);
             },
         }),
         {
