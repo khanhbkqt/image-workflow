@@ -1,0 +1,120 @@
+/* ═══════════════════════════════════════════════════════════════════════════
+   Dashboard Layout
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+.dashboard {
+    display: flex;
+    flex-direction: column;
+    min-height: 100%;
+    padding: var(--space-8) var(--space-10);
+    max-width: 1200px;
+    margin: 0 auto;
+    width: 100%;
+}
+
+/* ── Page Header ─────────────────────────────────────────────────────── */
+.dashboard__header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: var(--space-8);
+}
+
+.dashboard__header-left {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-1);
+}
+
+.dashboard__title {
+    font-family: var(--font-display);
+    font-size: var(--text-3xl);
+    font-weight: 700;
+    color: var(--text-primary);
+    letter-spacing: -0.02em;
+}
+
+.dashboard__subtitle {
+    font-size: var(--text-sm);
+    color: var(--text-muted);
+}
+
+/* ── Card Grid ───────────────────────────────────────────────────────── */
+.dashboard__grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: var(--space-5);
+}
+
+/* ── Empty State ─────────────────────────────────────────────────────── */
+.dashboard__empty {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: var(--space-5);
+    padding: var(--space-10) var(--space-5);
+    text-align: center;
+}
+
+.dashboard__empty-icon {
+    width: 80px;
+    height: 80px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: var(--radius-xl);
+    background: var(--surface-2);
+    border: 1px solid var(--border-subtle);
+    color: var(--text-muted);
+    font-size: var(--text-4xl);
+    animation: empty-pulse 3s ease-in-out infinite;
+}
+
+@keyframes empty-pulse {
+
+    0%,
+    100% {
+        transform: scale(1);
+        opacity: 0.7;
+    }
+
+    50% {
+        transform: scale(1.05);
+        opacity: 1;
+    }
+}
+
+.dashboard__empty-text {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-2);
+}
+
+.dashboard__empty-title {
+    font-family: var(--font-display);
+    font-size: var(--text-xl);
+    font-weight: 600;
+    color: var(--text-primary);
+}
+
+.dashboard__empty-description {
+    font-size: var(--text-sm);
+    color: var(--text-muted);
+    max-width: 320px;
+}
+
+/* ── Responsive ──────────────────────────────────────────────────────── */
+@media (max-width: 640px) {
+    .dashboard {
+        padding: var(--space-5) var(--space-4);
+    }
+
+    .dashboard__grid {
+        grid-template-columns: 1fr;
+    }
+
+    .dashboard__title {
+        font-size: var(--text-2xl);
+    }
+}
