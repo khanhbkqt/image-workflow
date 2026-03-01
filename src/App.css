@@ -1,170 +1,142 @@
 /* ═══════════════════════════════════════════════════════════════════════════
-   Design System Showcase Layout
+   App Shell Layout
    ═══════════════════════════════════════════════════════════════════════════ */
 
-.showcase {
-    max-width: 960px;
-    margin: 0 auto;
-    padding: var(--space-8) var(--space-5);
+/* ── Shell ────────────────────────────────────────────────────────────── */
+.app-shell {
     display: flex;
     flex-direction: column;
-    gap: var(--space-6);
+    height: 100vh;
+    overflow: hidden;
+    background: var(--surface-0);
 }
 
-.showcase__header {
-    text-align: center;
-    margin-bottom: var(--space-4);
-}
-
-.showcase__accent {
-    background: linear-gradient(135deg, var(--accent), var(--accent-hover));
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
-}
-
-.showcase__section {
+/* ── Header ───────────────────────────────────────────────────────────── */
+.app-header {
     display: flex;
-    flex-direction: column;
-    gap: var(--space-3);
+    align-items: center;
+    justify-content: space-between;
+    height: 48px;
+    padding: 0 var(--space-4);
+    background: var(--surface-1);
+    border-bottom: 1px solid var(--border-subtle);
+    flex-shrink: 0;
+    z-index: var(--z-dropdown);
 }
 
-.showcase__section+.showcase__section {
-    margin-top: var(--space-5);
-}
-
-.showcase__divider {
-    border: none;
-    border-top: 1px solid var(--border-subtle);
-    margin: var(--space-2) 0;
-}
-
-/* ── Swatches ─────────────────────────────────────────────────────────── */
-.swatch-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
-    gap: var(--space-3);
-}
-
-.swatch {
+.app-header__brand {
     display: flex;
-    flex-direction: column;
-    gap: var(--space-1);
-}
-
-.swatch__color {
-    width: 100%;
-    height: 52px;
-    border-radius: var(--radius-md);
-    border: 1px solid var(--border-subtle);
-    transition: transform var(--duration-normal) var(--ease-default);
-}
-
-.swatch__color:hover {
-    transform: scale(1.05);
-}
-
-.swatch__name {
-    font-size: var(--text-sm);
-    font-weight: 500;
+    align-items: center;
+    gap: var(--space-2);
     color: var(--text-primary);
 }
 
-.swatch__var {
+.app-header__brand svg {
+    color: var(--accent);
+}
+
+.app-header__title {
+    font-family: var(--font-display);
+    font-weight: 600;
+    font-size: var(--text-md);
+    letter-spacing: -0.01em;
+}
+
+.app-header__badge {
+    font-family: var(--font-mono);
+    font-size: var(--text-xs);
+    color: var(--accent);
+    background: var(--accent-subtle);
+    padding: 2px var(--space-2);
+    border-radius: var(--radius-full);
+    border: 1px solid var(--accent-muted);
+}
+
+/* ── Body (sidebar + canvas) ─────────────────────────────────────────── */
+.app-body {
+    display: flex;
+    flex: 1;
+    overflow: hidden;
+}
+
+/* ── Sidebar ──────────────────────────────────────────────────────────── */
+.app-sidebar {
+    width: 240px;
+    flex-shrink: 0;
+    background: var(--surface-1);
+    border-right: 1px solid var(--border-subtle);
+    display: flex;
+    flex-direction: column;
+    padding: var(--space-4);
+    gap: var(--space-4);
+    overflow-y: auto;
+}
+
+.app-sidebar__section {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-2);
+}
+
+.app-sidebar__heading {
+    display: flex;
+    align-items: center;
+    gap: var(--space-2);
+    font-family: var(--font-body);
+    font-weight: 600;
+    font-size: var(--text-sm);
+    color: var(--text-primary);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+
+.app-sidebar__heading svg {
+    color: var(--accent);
+}
+
+.app-sidebar__hint {
     font-size: var(--text-xs);
     color: var(--text-muted);
+    line-height: 1.5;
 }
 
-/* ── Typography Demo ──────────────────────────────────────────────────── */
-.typography-demo {
-    display: flex;
-    flex-direction: column;
-    gap: var(--space-3);
-}
-
-.type-row {
-    display: flex;
-    align-items: baseline;
-    gap: var(--space-4);
-}
-
-.type-row>.label {
-    min-width: 72px;
-    text-align: right;
-    flex-shrink: 0;
-}
-
-/* ── Button Rows ──────────────────────────────────────────────────────── */
-.button-row {
-    display: flex;
-    align-items: center;
-    flex-wrap: wrap;
-    gap: var(--space-3);
-}
-
-/* ── Panel Demos ──────────────────────────────────────────────────────── */
-.panel-demos {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-    gap: var(--space-4);
-}
-
-/* ── Input Demos ──────────────────────────────────────────────────────── */
-.input-demos {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-    gap: var(--space-4);
-}
-
-/* ── Spacing Demo ─────────────────────────────────────────────────────── */
-.spacing-demo {
+.app-sidebar__placeholder {
     display: flex;
     flex-direction: column;
     gap: var(--space-2);
 }
 
-.space-block {
+.app-sidebar__item {
     display: flex;
-    align-items: center;
-    gap: var(--space-3);
-}
-
-.space-block__bar {
-    height: 12px;
-    background: linear-gradient(90deg, var(--accent), var(--accent-hover));
-    border-radius: var(--radius-sm);
-    min-width: 4px;
-    transition: width var(--duration-slow) var(--ease-bounce);
-}
-
-.space-block__label {
-    flex-shrink: 0;
-}
-
-/* ── Radii Demo ───────────────────────────────────────────────────────── */
-.radii-demo {
-    display: flex;
-    flex-wrap: wrap;
-    gap: var(--space-4);
-    align-items: center;
-}
-
-.radius-block {
-    display: flex;
-    flex-direction: column;
     align-items: center;
     gap: var(--space-2);
+    padding: var(--space-2) var(--space-3);
+    background: var(--surface-2);
+    border: 1px solid var(--border-subtle);
+    border-radius: var(--radius-md);
+    font-size: var(--text-sm);
+    color: var(--text-secondary);
+    cursor: grab;
+    transition: border-color var(--duration-fast) var(--ease-default),
+        background var(--duration-fast) var(--ease-default),
+        color var(--duration-fast) var(--ease-default);
+    user-select: none;
 }
 
-.radius-block__shape {
-    width: 56px;
-    height: 56px;
-    background: var(--accent-subtle);
-    border: 2px solid var(--accent-muted);
-    transition: transform var(--duration-normal) var(--ease-default);
+.app-sidebar__item:hover {
+    background: var(--surface-3);
+    border-color: var(--border-default);
+    color: var(--text-primary);
 }
 
-.radius-block__shape:hover {
-    transform: scale(1.1);
-    border-color: var(--accent);
+/* ── Canvas Area ─────────────────────────────────────────────────────── */
+.app-canvas {
+    flex: 1;
+    position: relative;
+    overflow: hidden;
+}
+
+.app-canvas .react-flow {
+    width: 100%;
+    height: 100%;
 }
