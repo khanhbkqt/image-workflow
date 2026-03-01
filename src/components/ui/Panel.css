@@ -1,0 +1,61 @@
+/* ═══════════════════════════════════════════════════════════════════════════
+   Panel Component Styles
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+.panel {
+    border-radius: var(--radius-lg);
+    overflow: hidden;
+    transition: box-shadow var(--duration-normal) var(--ease-default);
+}
+
+/* ── Variants ─────────────────────────────────────────────────────────── */
+.panel--default {
+    background: var(--surface-1);
+}
+
+.panel--elevated {
+    background: var(--surface-2);
+    box-shadow: var(--shadow-md);
+}
+
+.panel--glass {
+    background: hsla(240, 10%, 9%, 0.65);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+}
+
+/* ── Border ───────────────────────────────────────────────────────────── */
+.panel--border {
+    border: 1px solid var(--border-subtle);
+}
+
+/* ── Padding ──────────────────────────────────────────────────────────── */
+.panel--pad-none .panel__body {
+    padding: 0;
+}
+
+.panel--pad-sm .panel__body {
+    padding: var(--space-3);
+}
+
+.panel--pad-md .panel__body {
+    padding: var(--space-4);
+}
+
+.panel--pad-lg .panel__body {
+    padding: var(--space-6);
+}
+
+/* ── Header ───────────────────────────────────────────────────────────── */
+.panel__header {
+    padding: var(--space-3) var(--space-4);
+    border-bottom: 1px solid var(--border-subtle);
+}
+
+.panel__title {
+    font-family: var(--font-display);
+    font-size: var(--text-sm);
+    font-weight: 600;
+    color: var(--text-secondary);
+    letter-spacing: 0.02em;
+}

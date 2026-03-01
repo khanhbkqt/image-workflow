@@ -1,0 +1,196 @@
+/* ═══════════════════════════════════════════════════════════════════════════
+   Button Component Styles
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+/* ── Base ─────────────────────────────────────────────────────────────── */
+.btn {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: var(--space-2);
+    border: 1px solid transparent;
+    border-radius: var(--radius-md);
+    font-family: var(--font-body);
+    font-weight: 500;
+    cursor: pointer;
+    user-select: none;
+    white-space: nowrap;
+    transition:
+        background var(--duration-normal) var(--ease-default),
+        border-color var(--duration-normal) var(--ease-default),
+        color var(--duration-normal) var(--ease-default),
+        box-shadow var(--duration-normal) var(--ease-default),
+        transform var(--duration-fast) var(--ease-default);
+}
+
+/* ── Sizes ────────────────────────────────────────────────────────────── */
+.btn--sm {
+    min-height: 28px;
+    padding: var(--space-1) var(--space-3);
+    font-size: var(--text-xs);
+}
+
+.btn--md {
+    min-height: 36px;
+    padding: var(--space-2) var(--space-4);
+    font-size: var(--text-sm);
+}
+
+.btn--lg {
+    min-height: 44px;
+    padding: var(--space-3) var(--space-5);
+    font-size: var(--text-base);
+}
+
+/* ── Icon-only buttons ────────────────────────────────────────────────── */
+.btn--icon-only.btn--sm {
+    padding: var(--space-1);
+    min-width: 28px;
+}
+
+.btn--icon-only.btn--md {
+    padding: var(--space-2);
+    min-width: 36px;
+}
+
+.btn--icon-only.btn--lg {
+    padding: var(--space-3);
+    min-width: 44px;
+}
+
+/* ── Variants ─────────────────────────────────────────────────────────── */
+
+/* Primary */
+.btn--primary {
+    background: var(--accent);
+    color: var(--text-inverse);
+}
+
+.btn--primary:hover:not(:disabled) {
+    background: var(--accent-hover);
+    box-shadow: var(--shadow-glow);
+    transform: translateY(-1px);
+}
+
+.btn--primary:active:not(:disabled) {
+    transform: scale(0.97) translateY(0);
+    box-shadow: none;
+}
+
+/* Secondary */
+.btn--secondary {
+    background: var(--surface-3);
+    color: var(--text-primary);
+    border-color: var(--border-default);
+}
+
+.btn--secondary:hover:not(:disabled) {
+    background: var(--surface-4);
+    border-color: var(--border-strong);
+    transform: translateY(-1px);
+}
+
+.btn--secondary:active:not(:disabled) {
+    transform: scale(0.97) translateY(0);
+}
+
+/* Ghost */
+.btn--ghost {
+    background: transparent;
+    color: var(--text-secondary);
+}
+
+.btn--ghost:hover:not(:disabled) {
+    background: var(--surface-2);
+    color: var(--text-primary);
+    transform: translateY(-1px);
+}
+
+.btn--ghost:active:not(:disabled) {
+    background: var(--surface-3);
+    transform: scale(0.97) translateY(0);
+}
+
+/* Danger */
+.btn--danger {
+    background: var(--error);
+    color: white;
+}
+
+.btn--danger:hover:not(:disabled) {
+    background: hsl(0, 72%, 63%);
+    box-shadow: 0 0 20px hsla(0, 72%, 58%, 0.3);
+    transform: translateY(-1px);
+}
+
+.btn--danger:active:not(:disabled) {
+    transform: scale(0.97) translateY(0);
+    box-shadow: none;
+}
+
+/* ── States ───────────────────────────────────────────────────────────── */
+.btn:focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: 2px;
+    box-shadow: var(--shadow-glow);
+}
+
+.btn:disabled {
+    opacity: 0.45;
+    cursor: not-allowed;
+    pointer-events: none;
+}
+
+.btn--full {
+    width: 100%;
+}
+
+/* ── Content ──────────────────────────────────────────────────────────── */
+.btn__content {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-2);
+    transition: opacity var(--duration-fast) var(--ease-default);
+}
+
+.btn__content--hidden {
+    opacity: 0;
+}
+
+.btn__icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+}
+
+.btn__icon svg {
+    width: 1em;
+    height: 1em;
+}
+
+/* ── Loading Spinner ──────────────────────────────────────────────────── */
+.btn__spinner {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.btn__spinner::after {
+    content: '';
+    width: 16px;
+    height: 16px;
+    border: 2px solid currentColor;
+    border-right-color: transparent;
+    border-radius: var(--radius-full);
+    animation: btn-spin 0.6s linear infinite;
+}
+
+@keyframes btn-spin {
+    to {
+        transform: rotate(360deg);
+    }
+}
