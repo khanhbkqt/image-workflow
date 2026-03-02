@@ -13,6 +13,7 @@ import { ZoomControls } from './ZoomControls';
 import type { AppNode, AppEdge, IngredientNodeData } from '../../types/canvas';
 import type { IngredientType } from '../../types/ingredient';
 import { isValidConnection } from '../../utils/connectionValidator';
+import '@xyflow/react/dist/style.css';
 import '../../styles/canvas.css';
 
 /* ── Drag payload shape (matches IngredientCard encoder) ─────────────── */
@@ -120,15 +121,9 @@ function CanvasInner() {
                 type: 'ingredient',
                 position,
                 data: nodeData,
-                className: 'ingredient-node--dropping',
             };
 
             addNode(newNode);
-
-            // Remove drop animation class after animation completes
-            setTimeout(() => {
-                addNode; // no-op reference — actual removal handled by RF internals
-            }, 300);
         },
         [screenToFlowPosition, addNode, nodes, flashNode],
     );

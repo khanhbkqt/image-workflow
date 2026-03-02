@@ -2,7 +2,6 @@
    React Flow — Dark Theme CSS Overrides
    Maps React Flow's CSS variables to the app's design system tokens.
    ═══════════════════════════════════════════════════════════════════════════ */
-@import '@xyflow/react/dist/style.css';
 
 /* ── React Flow CSS Variable Overrides ───────────────────────────────── */
 .react-flow {

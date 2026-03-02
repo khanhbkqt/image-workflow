@@ -29,7 +29,8 @@
     position: relative;
     overflow: hidden;
     background: var(--color-bg-elevated);
-    margin: 0;
+    margin: 8px 12px 8px 60px;
+    /* push canvas right to avoid IMAGE port label */
 }
 
 .preview-node__image {

@@ -68,7 +68,7 @@
     height: 14px;
     border: 2px solid var(--color-bg-elevated);
     background-color: var(--color-text-muted);
-    pointer-events: all;
+    pointer-events: auto;
     /* allow dragging */
     z-index: 10;
     box-sizing: border-box;

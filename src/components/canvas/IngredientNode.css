@@ -16,6 +16,7 @@
         border-color 0.25s ease;
     overflow: hidden;
     cursor: default;
+    animation: ingredient-node-drop-in 0.2s ease-out;
 }
 
 .ingredient-node:hover {

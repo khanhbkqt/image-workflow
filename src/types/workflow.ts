@@ -81,7 +81,7 @@ export type ConnectionRule = Record<PortDataType, PortDataType[]>;
 
 // Which outputs can connect to which inputs
 export const CONNECTION_COMPATIBILITY: ConnectionRule = {
-    'ingredient': ['ingredient', 'prompt', 'any'], // ingredient can maybe be used as prompt text or ingredient
+    'ingredient': ['ingredient', 'prompt', 'image', 'any'], // ingredients can be used as prompt text, base images, or raw ingredients
     'prompt': ['prompt', 'any'],
     'image': ['image', 'any'],
     'style': ['style', 'any'],

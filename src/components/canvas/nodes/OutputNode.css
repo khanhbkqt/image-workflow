@@ -1,6 +1,6 @@
 /* ── Output Node ───────────────────────────────────────────────────────── */
 .output-node {
-    min-width: 180px;
+    min-width: 220px;
     border: 1px solid var(--color-success);
     border-top: 3px solid var(--color-success);
 }
@@ -39,7 +39,7 @@
 }
 
 .output-node__body {
-    padding: 8px 12px;
+    padding: 12px 12px 12px 60px;
     display: flex;
     flex-direction: column;
     gap: 4px;
