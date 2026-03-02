@@ -1,0 +1,1 @@
+Objective: Simplify connection compatibility rules for the new 2-node system. Context: src/utils/connectionValidator.ts and src/types/workflow.ts (CONNECTION_COMPATIBILITY). Tasks: Simplify rules so Ingredient -> Prompt image param and Prompt image output -> Prompt image param work. Success criteria: Unnecessary rules removed, simplified chaining logic is complete.

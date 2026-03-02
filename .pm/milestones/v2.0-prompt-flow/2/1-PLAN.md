@@ -1,0 +1,1 @@
+Objective: Build the core Prompt Node. Context: src/components/canvas/nodes/PromptNode.tsx and .css. Tasks: Scaffold PromptNode containing text input, optional parameter image inputs, and image output. Implement styling. Add to registry. Success criteria: Prompt node is available in the canvas context menu and renders correctly.

@@ -1,0 +1,1 @@
+Objective: Remove deleted nodes from central configurations. Context: nodeRegistry.ts, workflow.ts, CanvasContextMenu.tsx. Task: Remove imports of deleted components. Update NodeType and NODE_PORT_REGISTRY to only contain 'ingredient' and 'prompt'. Clean ADDABLE_NODES in CanvasContextMenu. Success criteria: Typescript compiles cleanly.

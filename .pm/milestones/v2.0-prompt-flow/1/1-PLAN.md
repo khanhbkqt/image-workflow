@@ -1,0 +1,1 @@
+Objective: Delete discontinued node components and CSS. Context: ComposeNode, PreviewNode, OutputNode, BatchGeneratorNode, StyleFanOutNode, GenericNode, PlaceholderNode inside src/components/canvas/nodes and src/components/canvas. Task: Remove the .tsx and .css files for these nodes. Success criteria: The files no longer exist.

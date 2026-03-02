@@ -1,0 +1,1 @@
+Objective: Verify the workflow engine. Context: Complete application running in browser. Tasks: Execute browser test — Add Ingredient, add 2 Prompts, connect Ingredient to Prompt 1, connect Prompt 1 to Prompt 2. Success Criteria: Browser subagent confirms the visual chaining successfully renders edges.
