@@ -81,8 +81,6 @@
 
 /* ── Sidebar ──────────────────────────────────────────────────────────── */
 .app-sidebar {
-    width: 240px;
-    flex-shrink: 0;
     background: var(--surface-1);
     border-right: 1px solid var(--border-subtle);
     display: flex;

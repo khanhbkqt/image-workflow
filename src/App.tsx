@@ -4,7 +4,7 @@ import { Canvas } from './components/canvas';
 import { IngredientList } from './components/ingredients';
 import { Dashboard } from './components/dashboard';
 import { RecipeBrowser } from './components/recipes';
-import { Dialog, Button } from './components/ui';
+import { Dialog, Button, ResizablePanel } from './components/ui';
 import { useCanvasStore } from './stores/canvasStore';
 import { useProjectStore } from './stores/projectStore';
 import { useRecipeStore } from './stores/recipeStore';
@@ -145,7 +145,7 @@ function App() {
       ) : (
         <div className="app-body">
           {/* ── Sidebar ── */}
-          <aside className="app-sidebar">
+          <ResizablePanel className="app-sidebar">
             <div className="app-sidebar__section">
               <span className="app-sidebar__heading">
                 <LayersIcon />
@@ -161,7 +161,7 @@ function App() {
               onDeleteRecipe={(recipe) => openRecipeDialog('delete', recipe)}
               onCloneRecipe={(recipe) => openRecipeDialog('clone', recipe)}
             />
-          </aside>
+          </ResizablePanel>
 
           {/* ── Canvas ── */}
           <main className="app-canvas">

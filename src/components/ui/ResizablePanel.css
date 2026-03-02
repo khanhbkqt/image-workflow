@@ -1,0 +1,62 @@
+/* ═══════════════════════════════════════════════════════════════════════════
+   Resizable Panel Styles
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+.resizable-panel {
+    position: relative;
+    display: flex;
+    flex-shrink: 0;
+}
+
+.resizable-panel__content {
+    flex: 1;
+    min-width: 0;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+}
+
+/* ── Resize Handle ───────────────────────────────────────────────────── */
+.resizable-panel__handle {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    width: 6px;
+    cursor: col-resize;
+    z-index: 10;
+    transition: background var(--duration-fast) var(--ease-default);
+}
+
+.resizable-panel__handle--right {
+    right: -3px;
+}
+
+.resizable-panel__handle--left {
+    left: -3px;
+}
+
+/* Visible line indicator */
+.resizable-panel__handle::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    width: 2px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: transparent;
+    border-radius: 1px;
+    transition:
+        background var(--duration-fast) var(--ease-default),
+        width var(--duration-fast) var(--ease-default);
+}
+
+.resizable-panel__handle:hover::after {
+    background: var(--accent);
+    width: 3px;
+}
+
+.resizable-panel__handle--dragging::after {
+    background: var(--accent);
+    width: 3px;
+}
