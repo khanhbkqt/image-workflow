@@ -1,0 +1,131 @@
+/* ═══════════════════════════════════════════════════════════════════════════
+   Recipe Card Styles
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+.recipe-card {
+    display: flex;
+    align-items: center;
+    gap: var(--space-3);
+    padding: var(--space-3);
+    background: var(--surface-2);
+    border: 1px solid var(--border-subtle);
+    border-radius: var(--radius-md);
+    cursor: pointer;
+    transition:
+        border-color var(--duration-fast) var(--ease-default),
+        background var(--duration-fast) var(--ease-default),
+        box-shadow var(--duration-normal) var(--ease-default);
+    position: relative;
+}
+
+.recipe-card:hover {
+    border-color: var(--accent-muted);
+    background: var(--surface-3);
+    box-shadow: 0 0 12px hsla(174, 85%, 48%, 0.08);
+}
+
+/* ── Info Section ────────────────────────────────────────────────────── */
+.recipe-card__info {
+    flex: 1;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+}
+
+.recipe-card__name {
+    font-size: var(--text-sm);
+    font-weight: 600;
+    color: var(--text-primary);
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.recipe-card__meta {
+    display: flex;
+    align-items: center;
+    gap: var(--space-2);
+    font-size: var(--text-xs);
+    color: var(--text-muted);
+}
+
+.recipe-card__meta-sep {
+    opacity: 0.4;
+}
+
+/* ── Menu Button ─────────────────────────────────────────────────────── */
+.recipe-card__menu-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 24px;
+    height: 24px;
+    border: none;
+    background: transparent;
+    color: var(--text-muted);
+    border-radius: var(--radius-sm);
+    cursor: pointer;
+    flex-shrink: 0;
+    opacity: 0;
+    transition:
+        opacity var(--duration-fast) var(--ease-default),
+        background var(--duration-fast) var(--ease-default),
+        color var(--duration-fast) var(--ease-default);
+}
+
+.recipe-card:hover .recipe-card__menu-btn {
+    opacity: 1;
+}
+
+.recipe-card__menu-btn:hover {
+    background: var(--surface-4);
+    color: var(--text-primary);
+}
+
+/* ── Dropdown ────────────────────────────────────────────────────────── */
+.recipe-card__dropdown {
+    position: absolute;
+    top: 100%;
+    right: 0;
+    z-index: var(--z-dropdown);
+    min-width: 140px;
+    padding: var(--space-1);
+    background: var(--surface-3);
+    border: 1px solid var(--border-default);
+    border-radius: var(--radius-md);
+    box-shadow: var(--shadow-lg);
+    margin-top: var(--space-1);
+}
+
+.recipe-card__dropdown-item {
+    display: flex;
+    align-items: center;
+    gap: var(--space-2);
+    width: 100%;
+    padding: var(--space-2) var(--space-3);
+    border: none;
+    background: transparent;
+    color: var(--text-secondary);
+    font-size: var(--text-sm);
+    border-radius: var(--radius-sm);
+    cursor: pointer;
+    transition:
+        background var(--duration-fast) var(--ease-default),
+        color var(--duration-fast) var(--ease-default);
+    text-align: left;
+}
+
+.recipe-card__dropdown-item:hover {
+    background: var(--surface-4);
+    color: var(--text-primary);
+}
+
+.recipe-card__dropdown-item--danger {
+    color: var(--text-error, #f87171);
+}
+
+.recipe-card__dropdown-item--danger:hover {
+    background: hsla(0, 80%, 60%, 0.1);
+    color: var(--text-error, #f87171);
+}
