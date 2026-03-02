@@ -11,6 +11,7 @@ import { useCanvasStore } from '../../stores/canvasStore';
 import { nodeTypes } from './nodes/nodeRegistry';
 import { ZoomControls } from './ZoomControls';
 import { CanvasContextMenu } from './CanvasContextMenu';
+import { NodeContextMenu } from './NodeContextMenu';
 import type { AppNode, AppEdge, IngredientNodeData } from '../../types/canvas';
 import type { IngredientType } from '../../types/ingredient';
 import { isValidConnection } from '../../utils/connectionValidator';
@@ -41,13 +42,22 @@ function CanvasInner() {
     const { screenToFlowPosition, updateNode } = useReactFlow<AppNode, AppEdge>();
     const [isDragOver, setIsDragOver] = useState(false);
 
-    // Context menu state: screen position (for CSS) and flow position (for node creation)
+    // Canvas context menu state (for adding nodes)
     const [contextMenu, setContextMenu] = useState<{
         screenX: number;
         screenY: number;
         flowX: number;
         flowY: number;
     } | null>(null);
+
+    // Node context menu state (for delete/duplicate)
+    const [nodeContextMenu, setNodeContextMenu] = useState<{
+        node: AppNode;
+        screenX: number;
+        screenY: number;
+    } | null>(null);
+
+    const closeNodeContextMenu = useCallback(() => setNodeContextMenu(null), []);
 
     const onInit = useCallback(
         (instance: ReactFlowInstance<AppNode, AppEdge>) => {
@@ -74,7 +84,25 @@ function CanvasInner() {
         [screenToFlowPosition],
     );
 
-    const closeContextMenu = useCallback(() => setContextMenu(null), []);
+    const closeContextMenu = useCallback(() => {
+        setContextMenu(null);
+        closeNodeContextMenu();
+    }, [closeNodeContextMenu]);
+
+    /* ── Node Context Menu handler ── */
+    const onNodeContextMenu = useCallback(
+        (event: React.MouseEvent, node: AppNode) => {
+            event.preventDefault();
+            event.stopPropagation();
+            setContextMenu(null); // close canvas menu if open
+            setNodeContextMenu({
+                node,
+                screenX: event.clientX,
+                screenY: event.clientY,
+            });
+        },
+        [],
+    );
 
     /* ── Drop handlers ── */
     const onDragOver = useCallback((e: React.DragEvent) => {
@@ -196,6 +224,7 @@ function CanvasInner() {
                 proOptions={{ hideAttribution: true }}
                 onPaneContextMenu={onPaneContextMenu}
                 onPaneClick={closeContextMenu}
+                onNodeContextMenu={onNodeContextMenu}
             >
                 <Background variant={BackgroundVariant.Dots} gap={20} size={1} />
                 <MiniMap pannable zoomable position="bottom-left" />
@@ -208,6 +237,14 @@ function CanvasInner() {
                     flowX={contextMenu.flowX}
                     flowY={contextMenu.flowY}
                     onClose={closeContextMenu}
+                />
+            )}
+            {nodeContextMenu && (
+                <NodeContextMenu
+                    node={nodeContextMenu.node}
+                    x={nodeContextMenu.screenX}
+                    y={nodeContextMenu.screenY}
+                    onClose={closeNodeContextMenu}
                 />
             )}
         </div>
