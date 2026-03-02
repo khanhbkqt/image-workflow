@@ -57,7 +57,7 @@ A macOS desktop app for visual, composable AI image generation. Build workflows 
 
 ---
 
-### 🔵 v2.0 — Prompt Flow Engine `active` ← CURRENT
+### ✅ v2.0 — Prompt Flow Engine `completed`
 
 > Radically simplify to 2 node types: Ingredient (source image) and Prompt (text + image params → generated image shown inline, chainable). Remove ALL other nodes.
 
@@ -67,21 +67,21 @@ A macOS desktop app for visual, composable AI image generation. Build workflows 
 | 2 | Prompt Node | ✅ completed |
 | 3 | Flow Validation | ✅ completed |
 
-**All phases completed — milestone ready for completion.**
+**Completed:** 2026-03-02
 
 ---
 
-### 📋 v1.3 — AI Generation Engine `planned`
+### 🔵 v1.3 — AI Generation Engine `active` ← CURRENT
 
 > Integrate Google Labs APIs (ImageFX, Whisk, Flow) for text-to-image and image-based generation with queue management.
 
-| # | Phase | Status |
-|---|-------|--------|
-| 1 | API Integration | ⬚ not_started |
-| 2 | Generate Node | ⬚ not_started |
-| 3 | Image-Based Generation | ⬚ not_started |
-| 4 | Generation Queue | ⬚ not_started |
-| 5 | Generate Ingredient Node | ⬚ not_started |
+| # | Phase | Plans | Status |
+|---|-------|-------|--------|
+| 1 | API Integration | 3 plans (2 waves) | 📝 planning |
+| 2 | Generate Node | — | ⬚ not_started |
+| 3 | Image-Based Generation | — | ⬚ not_started |
+| 4 | Generation Queue | — | ⬚ not_started |
+| 5 | Generate Ingredient Node | — | ⬚ not_started |
 
 ---
 
@@ -105,6 +105,6 @@ A macOS desktop app for visual, composable AI image generation. Build workflows 
 | v1.0 Canvas & App Shell | ✅ archived | 5/5 |
 | v1.1 Ingredient System | ✅ archived | 5/5 |
 | v1.2 Node-Based Workflows | ✅ completed | 8/8 |
-| v2.0 Prompt Flow Engine | 🔵 active | 3/3 |
-| v1.3 AI Generation Engine | 📋 planned | 0/5 |
+| v2.0 Prompt Flow Engine | ✅ completed | 3/3 |
+| v1.3 AI Generation Engine | 🔵 active | 0/5 |
 | v1.4 Export & MCP Server | 📋 planned | 0/4 |

@@ -1,48 +1,56 @@
 # Image Workflow — Current State
 
-**Last updated:** 2026-03-02T20:26:00+07:00
+**Last updated:** 2026-03-02T20:30:00+07:00
 
 ---
 
 ## Active Milestone
 
-**v2.0 — Prompt Flow Engine** (`active`)
+**v1.3 — AI Generation Engine** (`active`)
 
-Radically simplify to 2 node types: Ingredient (source image) and Prompt (text + image params → generated image shown inline, chainable). Remove ALL other nodes.
+Integrate Google Labs APIs (ImageFX, Whisk, Flow) for text-to-image and image-based generation with queue management.
 
 ### Phase Status
 
 | # | Phase | Status |
 |---|-------|--------|
-| 1 | Node Cleanup | ✅ completed |
-| 2 | Prompt Node | ✅ completed |
-| 3 | Flow Validation | ✅ completed |
+| 1 | API Integration | 📝 planning (3 plans, 2 waves) |
+| 2 | Generate Node | ⬚ not_started |
+| 3 | Image-Based Generation | ⬚ not_started |
+| 4 | Generation Queue | ⬚ not_started |
+| 5 | Generate Ingredient Node | ⬚ not_started |
 
 ### Current Position
 
-All 3 phases of v2.0 are **completed**. The milestone is ready to be closed/completed.
+Phase 1 (API Integration) has been decomposed into 3 plans:
+- **Plan 1.1** (wave 1): Generation Types & Dependencies — install `@rohitaryal/imagefx-api` + `@rohitaryal/whisk-api`, create `src/types/generation.ts`
+- **Plan 1.2** (wave 2): Electron IPC Bridge — main-process handlers + typed preload API
+- **Plan 1.3** (wave 2): API Service & Auth Settings — renderer service, auth store, settings UI
 
 ---
 
 ## What Was Done (Last Session)
 
-- Completed v2.0 Prompt Flow Engine milestone:
-  - **Phase 1 — Node Cleanup:** Removed specialized nodes (BatchGenerator, StyleFanOut, GenericNode, Compose, Preview, Output). Simplified to Ingredient + Prompt nodes only.
-  - **Phase 2 — Prompt Node:** Implemented the Prompt node with text input, image parameter support, and inline preview capability.
-  - **Phase 3 — Flow Validation:** Validated node connections between Ingredient → Prompt, ensured edge rendering and handle interactivity.
-- Fixed node connection logic (handle IDs, port types, CONNECTION_COMPATIBILITY rules).
-- Fixed edge stroke color visibility on the canvas.
-- Cleared stale canvas state from localStorage.
+- Completed v2.0 Prompt Flow Engine milestone (all 3 phases).
+- Activated v1.3 AI Generation Engine milestone.
+- Researched Google Labs APIs (ImageFX, Whisk) — documented endpoints, auth flow, npm packages.
+- Decomposed Phase 1 (API Integration) into 3 executable plans across 2 waves.
+
+---
+
+## Key Research Decisions
+
+- **API packages:** Using unofficial `@rohitaryal/imagefx-api` and `@rohitaryal/whisk-api` npm packages (cookie-based auth)
+- **Architecture:** API calls go through Electron main process (Node.js) via IPC bridge, not direct from renderer
+- **Auth flow:** Google cookie → session token from `https://labs.google/fx/api/auth/session`
+- **ImageFX endpoint:** `https://aisandbox-pa.googleapis.com/v1:runImageFx` (POST, returns base64 images)
 
 ---
 
 ## Next Steps
 
-1. **Complete v2.0 milestone** — Run `pm milestone update v2.0-prompt-flow --status completed`
-2. **Decide next milestone** — Options:
-   - **v1.3 AI Generation Engine** — Wire up actual AI generation (Google Labs APIs)
-   - **v1.4 Export & MCP Server** — Add export and AI agent integration
-3. **Activate and plan next milestone** — Create phases and plans for the chosen milestone
+1. **Execute Phase 1 plans** — Start with Plan 1.1 (wave 1), then Plans 1.2 + 1.3 (wave 2)
+2. **Plan Phase 2** (Generate Node) after Phase 1 is complete
 
 ---
 
@@ -55,7 +63,7 @@ All 3 phases of v2.0 are **completed**. The milestone is ready to be closed/comp
 | Canvas | React Flow |
 | State | Zustand |
 | Persistence | Local filesystem (JSON + localStorage) |
-| AI Backend | Google Labs APIs (planned) |
+| AI Backend | Google Labs APIs (ImageFX, Whisk) via unofficial npm packages |
 
 ## Source Structure
 
