@@ -24,7 +24,6 @@
     flex-direction: column;
     gap: 8px;
     z-index: 2;
-    pointer-events: none;
 }
 
 .base-node__outputs {
@@ -37,7 +36,6 @@
     align-items: flex-end;
     gap: 8px;
     z-index: 2;
-    pointer-events: none;
 }
 
 /* Individual port container */
@@ -46,7 +44,6 @@
     display: flex;
     align-items: center;
     height: 16px;
-    pointer-events: none;
 }
 
 /* Labels float outside the node body, hidden by default, revealed on node hover */
