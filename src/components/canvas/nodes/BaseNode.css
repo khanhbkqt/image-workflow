@@ -1,14 +1,13 @@
 .base-node {
     position: relative;
     border-radius: var(--radius-md);
-    background-color: var(--color-bg-base);
+    background-color: var(--surface-1);
     min-width: 160px;
     display: flex;
     flex-direction: column;
 }
 
-/* Content holds the custom node rendering, we make sure it stays above things if needed
-   but handle wrappers overlay the left/right edges */
+/* Content holds the custom node rendering */
 .base-node__content {
     display: flex;
     flex-direction: column;
@@ -26,7 +25,6 @@
     gap: 8px;
     z-index: 2;
     pointer-events: none;
-    /* so we don't block node content dragging */
 }
 
 .base-node__outputs {
@@ -49,79 +47,90 @@
     align-items: center;
     height: 16px;
     pointer-events: none;
-    /* Let events fall through unless on the handle */
 }
 
-.base-node__port-container--left {
-    padding-left: 20px;
-    /* space between left edge and label */
+/* Labels float outside the node body, hidden by default, revealed on node hover */
+.base-node__port-label {
+    position: absolute;
+    font-size: 9px;
+    font-weight: 600;
+    color: var(--text-muted);
+    white-space: nowrap;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    pointer-events: none;
+    opacity: 0;
+    transition: opacity 0.15s ease;
+    background: var(--surface-0, #0f1117);
+    padding: 1px 4px;
+    border-radius: 3px;
 }
 
-.base-node__port-container--right {
-    padding-right: 20px;
+/* Left port labels float left of the handle */
+.base-node__port-container--left .base-node__port-label {
+    right: calc(100% + 4px);
+    /* float to the left of the container (outside node) */
+}
+
+/* Right port labels float right of the handle */
+.base-node__port-container--right .base-node__port-label {
+    left: calc(100% + 4px);
+}
+
+/* Reveal labels on node hover */
+.base-node:hover .base-node__port-label {
+    opacity: 1;
 }
 
 /* Explicit handle style overrides via react-flow class */
 .base-node .react-flow__handle.base-node__handle {
     top: 50%;
-    width: 14px;
-    height: 14px;
-    border: 2px solid var(--color-bg-elevated);
-    background-color: var(--color-text-muted);
+    width: 12px;
+    height: 12px;
+    border: 2px solid var(--surface-0, #0f1117);
+    background-color: var(--text-muted);
     pointer-events: auto;
-    /* allow dragging */
     z-index: 10;
     box-sizing: border-box;
+    transition: transform 0.15s ease, box-shadow 0.15s ease;
 }
 
 .base-node .react-flow__handle.base-node__handle:hover {
-    transform: translateY(-50%) scale(1.2);
-    /* box-shadow: 0 0 0 4px rgba(255,255,255,0.1); */
+    transform: translateY(-50%) scale(1.3);
+    box-shadow: 0 0 0 3px rgba(255, 255, 255, 0.15);
 }
 
 .base-node .react-flow__handle-left.base-node__handle {
-    left: -7px;
+    left: -6px;
     transform: translateY(-50%);
 }
 
 .base-node .react-flow__handle-right.base-node__handle {
-    right: -7px;
+    right: -6px;
     transform: translateY(-50%);
-}
-
-/* Labels */
-.base-node__port-label {
-    font-size: 10px;
-    font-weight: 500;
-    color: var(--color-text-secondary);
-    white-space: nowrap;
-    text-transform: uppercase;
-    letter-spacing: 0.05em;
-    pointer-events: auto;
-    /* enable tooltip hover if needed */
 }
 
 /* Custom Data Type Colors */
 .base-node__handle--ingredient {
-    background-color: var(--color-success) !important;
+    background-color: var(--success) !important;
 }
 
 .base-node__handle--prompt {
-    background-color: var(--color-warning) !important;
+    background-color: var(--warning) !important;
 }
 
 .base-node__handle--image {
-    background-color: var(--color-primary) !important;
+    background-color: var(--accent) !important;
 }
 
 .base-node__handle--style {
-    background-color: var(--color-danger) !important;
+    background-color: var(--error) !important;
 }
 
 .base-node__handle--batch {
-    background-color: var(--color-info) !important;
+    background-color: var(--info) !important;
 }
 
 .base-node__handle--any {
-    background-color: var(--color-border) !important;
+    background-color: var(--border-default) !important;
 }

@@ -10,6 +10,7 @@ import { useCallback, useState } from 'react';
 import { useCanvasStore } from '../../stores/canvasStore';
 import { nodeTypes } from './nodes/nodeRegistry';
 import { ZoomControls } from './ZoomControls';
+import { CanvasContextMenu } from './CanvasContextMenu';
 import type { AppNode, AppEdge, IngredientNodeData } from '../../types/canvas';
 import type { IngredientType } from '../../types/ingredient';
 import { isValidConnection } from '../../utils/connectionValidator';
@@ -40,6 +41,14 @@ function CanvasInner() {
     const { screenToFlowPosition, updateNode } = useReactFlow<AppNode, AppEdge>();
     const [isDragOver, setIsDragOver] = useState(false);
 
+    // Context menu state: screen position (for CSS) and flow position (for node creation)
+    const [contextMenu, setContextMenu] = useState<{
+        screenX: number;
+        screenY: number;
+        flowX: number;
+        flowY: number;
+    } | null>(null);
+
     const onInit = useCallback(
         (instance: ReactFlowInstance<AppNode, AppEdge>) => {
             const vp = instance.getViewport();
@@ -47,6 +56,25 @@ function CanvasInner() {
         },
         [setViewport],
     );
+
+    /* ── Context Menu handler ── */
+    const onPaneContextMenu = useCallback(
+        (event: React.MouseEvent | MouseEvent) => {
+            event.preventDefault();
+            const clientX = 'clientX' in event ? event.clientX : 0;
+            const clientY = 'clientY' in event ? event.clientY : 0;
+            const flowPos = screenToFlowPosition({ x: clientX, y: clientY });
+            setContextMenu({
+                screenX: clientX,
+                screenY: clientY,
+                flowX: flowPos.x,
+                flowY: flowPos.y,
+            });
+        },
+        [screenToFlowPosition],
+    );
+
+    const closeContextMenu = useCallback(() => setContextMenu(null), []);
 
     /* ── Drop handlers ── */
     const onDragOver = useCallback((e: React.DragEvent) => {
@@ -166,11 +194,22 @@ function CanvasInner() {
                 maxZoom={4}
                 defaultEdgeOptions={{ type: 'smoothstep', animated: true }}
                 proOptions={{ hideAttribution: true }}
+                onPaneContextMenu={onPaneContextMenu}
+                onPaneClick={closeContextMenu}
             >
                 <Background variant={BackgroundVariant.Dots} gap={20} size={1} />
                 <MiniMap pannable zoomable position="bottom-left" />
                 <ZoomControls />
             </ReactFlow>
+            {contextMenu && (
+                <CanvasContextMenu
+                    x={contextMenu.screenX}
+                    y={contextMenu.screenY}
+                    flowX={contextMenu.flowX}
+                    flowY={contextMenu.flowY}
+                    onClose={closeContextMenu}
+                />
+            )}
         </div>
     );
 }

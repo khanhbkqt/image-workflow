@@ -126,7 +126,8 @@ export const useProjectStore = create<ProjectState>()(
             },
             partialize: (state) => ({
                 projects: state.projects,
-                activeProjectId: state.activeProjectId,
+                // activeProjectId intentionally NOT persisted:
+                // on reload the app always returns to the dashboard
             }),
         }
     )

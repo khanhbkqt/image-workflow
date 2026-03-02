@@ -1,0 +1,79 @@
+.canvas-context-menu {
+    position: fixed;
+    z-index: 1000;
+    background: var(--surface-2);
+    border: 1px solid var(--border-default);
+    border-radius: var(--radius-md);
+    padding: 4px;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4), 0 2px 8px rgba(0, 0, 0, 0.3);
+    min-width: 200px;
+    animation: ctx-menu-in 0.12s ease;
+}
+
+@keyframes ctx-menu-in {
+    from {
+        opacity: 0;
+        transform: scale(0.95) translateY(-4px);
+    }
+
+    to {
+        opacity: 1;
+        transform: scale(1) translateY(0);
+    }
+}
+
+.canvas-context-menu__section-label {
+    font-size: 10px;
+    font-weight: 700;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    padding: 4px 10px 2px;
+    pointer-events: none;
+}
+
+.canvas-context-menu__item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 7px 10px;
+    border-radius: var(--radius-sm);
+    cursor: pointer;
+    border: none;
+    background: none;
+    width: 100%;
+    text-align: left;
+    color: var(--text-primary);
+    font-size: 13px;
+    font-family: inherit;
+    transition: background 0.1s ease, color 0.1s ease;
+}
+
+.canvas-context-menu__item:hover {
+    background: var(--surface-3, rgba(255, 255, 255, 0.06));
+    color: var(--text-primary);
+}
+
+.canvas-context-menu__item-icon {
+    font-size: 16px;
+    width: 20px;
+    text-align: center;
+    flex-shrink: 0;
+}
+
+.canvas-context-menu__item-info {
+    display: flex;
+    flex-direction: column;
+    gap: 1px;
+}
+
+.canvas-context-menu__item-name {
+    font-weight: 500;
+    line-height: 1.2;
+}
+
+.canvas-context-menu__item-desc {
+    font-size: 11px;
+    color: var(--text-muted);
+    line-height: 1.2;
+}
