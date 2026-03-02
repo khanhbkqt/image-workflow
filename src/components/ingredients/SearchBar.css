@@ -1,10 +1,10 @@
 /* ═══════════════════════════════════════════════════════════════════════════
-   Search Bar Styles
+   Search Bar Styles — Compact layout
    ═══════════════════════════════════════════════════════════════════════════ */
 
 .search-bar {
     position: relative;
-    padding: var(--space-2) var(--space-3);
+    padding: var(--space-1) var(--space-3);
 }
 
 .search-bar__wrapper {
@@ -23,15 +23,15 @@
 
 .search-bar__input {
     width: 100%;
-    padding: var(--space-2) var(--space-3);
-    padding-left: 30px;
-    padding-right: 30px;
+    padding: 5px var(--space-3);
+    padding-left: 28px;
+    padding-right: 60px;
     border: 1px solid var(--border-subtle);
     border-radius: var(--radius-md);
     background: var(--surface-1);
     color: var(--text-primary);
     font-family: var(--font-body);
-    font-size: var(--text-sm);
+    font-size: var(--text-xs);
     outline: none;
     transition:
         border-color var(--duration-fast) var(--ease-default),
@@ -60,8 +60,8 @@
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    width: 22px;
-    height: 22px;
+    width: 20px;
+    height: 20px;
     padding: 0;
     border: none;
     background: transparent;
@@ -78,10 +78,13 @@
     color: var(--text-primary);
 }
 
-/* ── Result Count ────────────────────────────────────────────────────── */
-.search-bar__result-count {
+/* ── Inline Result Count Badge ───────────────────────────────────────── */
+.search-bar__result-badge {
+    position: absolute;
+    right: 26px;
     font-size: 10px;
     color: var(--text-muted);
-    padding: 2px var(--space-3);
     letter-spacing: 0.02em;
+    pointer-events: none;
+    white-space: nowrap;
 }

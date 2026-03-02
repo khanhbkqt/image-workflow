@@ -18,12 +18,6 @@ import { DeleteIngredientDialog } from './DeleteIngredientDialog';
 import './IngredientList.css';
 
 /* ── Icons ──────────────────────────────────────────────────────────── */
-const PlusIcon = () => (
-    <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="2" width="14" height="14">
-        <path d="M8 3v10M3 8h10" />
-    </svg>
-);
-
 const ChevronIcon = ({ open }: { open: boolean }) => (
     <svg
         viewBox="0 0 16 16"
@@ -35,6 +29,18 @@ const ChevronIcon = ({ open }: { open: boolean }) => (
         className={`il-chevron${open ? ' il-chevron--open' : ''}`}
     >
         <path d="M5 3l5 5-5 5" />
+    </svg>
+);
+
+const PlusIcon = () => (
+    <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="2" width="12" height="12">
+        <path d="M8 3v10M3 8h10" />
+    </svg>
+);
+
+const FilterIcon = () => (
+    <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.5" width="12" height="12">
+        <path d="M2 3h12M4 7h8M6 11h4" />
     </svg>
 );
 
@@ -52,6 +58,7 @@ export function IngredientList() {
     const [searchQuery, setSearchQuery] = useState('');
     const [selectedTags, setSelectedTags] = useState<Set<string>>(new Set());
     const [selectedTypes, setSelectedTypes] = useState<Set<IngredientType>>(new Set());
+    const [filtersExpanded, setFiltersExpanded] = useState(false);
 
     /* ── Reset filters on project switch ── */
     useEffect(() => {
@@ -59,6 +66,7 @@ export function IngredientList() {
         setSelectedTags(new Set());
         setSelectedTypes(new Set());
         setCollapsed(new Set());
+        setFiltersExpanded(false);
     }, [activeProjectId]);
 
     const allIngredients = useMemo(
@@ -141,58 +149,68 @@ export function IngredientList() {
         setSelectedTypes(new Set());
     }, []);
 
-    const hasActiveFilters = searchQuery.length > 0 || selectedTags.size > 0 || selectedTypes.size > 0;
-    const activeFilterCount = (searchQuery.length > 0 ? 1 : 0) + selectedTags.size + selectedTypes.size;
+    const activeFilterCount = selectedTags.size + selectedTypes.size;
+    const hasActiveFilters = searchQuery.length > 0 || activeFilterCount > 0;
 
     return (
         <div className="ingredient-list">
-            {/* Header */}
-            <div className="il-header">
-                <span className="il-header__count">
-                    {allIngredients.length} ingredient{allIngredients.length !== 1 ? 's' : ''}
-                </span>
-                <Button
-                    variant="primary"
-                    size="sm"
-                    icon={<PlusIcon />}
-                    onClick={() => setCreateOpen(true)}
+            {/* Search + Filter toggle + Add button row */}
+            <div className="il-search-row">
+                <SearchBar
+                    value={searchQuery}
+                    onChange={setSearchQuery}
+                    resultCount={filteredIngredients.length}
+                    totalCount={allIngredients.length}
+                    placeholder={`Search ${allIngredients.length} ingredient${allIngredients.length !== 1 ? 's' : ''}…`}
+                />
+                <button
+                    className={`il-filter-toggle${filtersExpanded ? ' il-filter-toggle--active' : ''}${activeFilterCount > 0 ? ' il-filter-toggle--has-filters' : ''}`}
+                    onClick={() => setFiltersExpanded((v) => !v)}
+                    aria-label="Toggle filters"
+                    title={filtersExpanded ? 'Hide filters' : 'Show filters'}
                 >
-                    Add
-                </Button>
+                    <FilterIcon />
+                    {activeFilterCount > 0 && (
+                        <span className="il-filter-toggle__badge">{activeFilterCount}</span>
+                    )}
+                </button>
+                <button
+                    className="il-add-btn"
+                    onClick={() => setCreateOpen(true)}
+                    aria-label="Add ingredient"
+                    title="Add ingredient"
+                >
+                    <PlusIcon />
+                </button>
             </div>
 
-            {/* Search */}
-            <SearchBar
-                value={searchQuery}
-                onChange={setSearchQuery}
-                resultCount={filteredIngredients.length}
-                totalCount={allIngredients.length}
-            />
+            {/* Collapsible Filters */}
+            {filtersExpanded && (
+                <div className="il-filters-panel">
+                    <CategoryFilter
+                        ingredients={allIngredients}
+                        selectedTypes={selectedTypes}
+                        onToggleType={toggleType}
+                        onClearTypes={() => setSelectedTypes(new Set())}
+                    />
 
-            {/* Filters */}
-            <CategoryFilter
-                ingredients={allIngredients}
-                selectedTypes={selectedTypes}
-                onToggleType={toggleType}
-                onClearTypes={() => setSelectedTypes(new Set())}
-            />
+                    <TagFilter
+                        ingredients={allIngredients}
+                        selectedTags={selectedTags}
+                        onToggleTag={toggleTag}
+                        onClearTags={() => setSelectedTags(new Set())}
+                    />
 
-            <TagFilter
-                ingredients={allIngredients}
-                selectedTags={selectedTags}
-                onToggleTag={toggleTag}
-                onClearTags={() => setSelectedTags(new Set())}
-            />
-
-            {/* Active filter indicator */}
-            {hasActiveFilters && (
-                <div className="il-filter-bar">
-                    <span className="il-filter-bar__count">
-                        {activeFilterCount} filter{activeFilterCount !== 1 ? 's' : ''} active
-                    </span>
-                    <button className="il-filter-bar__clear" onClick={clearAllFilters}>
-                        Clear all
-                    </button>
+                    {hasActiveFilters && (
+                        <div className="il-filter-bar">
+                            <span className="il-filter-bar__count">
+                                {activeFilterCount + (searchQuery.length > 0 ? 1 : 0)} filter{(activeFilterCount + (searchQuery.length > 0 ? 1 : 0)) !== 1 ? 's' : ''} active
+                            </span>
+                            <button className="il-filter-bar__clear" onClick={clearAllFilters}>
+                                Clear all
+                            </button>
+                        </div>
+                    )}
                 </div>
             )}
 
