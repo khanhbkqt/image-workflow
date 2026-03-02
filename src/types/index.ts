@@ -9,3 +9,4 @@ export type {
     CreateIngredientInput,
 } from './ingredient';
 export { INGREDIENT_CATEGORIES, INGREDIENT_TYPES } from './ingredient';
+export type { RecipeMeta, RecipeData, Recipe, RecipeState } from './recipe';

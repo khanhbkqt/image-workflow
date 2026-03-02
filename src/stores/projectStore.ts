@@ -3,6 +3,7 @@ import { persist } from 'zustand/middleware';
 import type { ProjectMeta, AppView, ProjectState } from '../types/project';
 import { removeCanvasData } from './canvasStore';
 import { removeIngredientData } from './ingredientStore';
+import { removeRecipeData } from './recipeStore';
 
 /* ── Helpers ─────────────────────────────────────────────────────────── */
 
@@ -79,6 +80,7 @@ export const useProjectStore = create<ProjectState>()(
                 // Clean up associated data from localStorage
                 removeCanvasData(id);
                 removeIngredientData(id);
+                removeRecipeData(id);
                 set((state) => ({
                     projects: state.projects.filter((p) => p.id !== id),
                     // If we deleted the active project, go back to dashboard
