@@ -9,12 +9,6 @@ export interface NodeData {
     [key: string]: unknown;
 }
 
-/** Data shape for a placeholder/demo node. */
-export interface PlaceholderNodeData extends NodeData {
-    icon?: string;
-    description?: string;
-}
-
 /** Data shape for an ingredient node dropped from the library. */
 export interface IngredientNodeData extends NodeData {
     ingredientId: string;
@@ -24,20 +18,17 @@ export interface IngredientNodeData extends NodeData {
     imageUrl?: string;
 }
 
+/** Data shape for a prompt node. */
+export interface PromptNodeData extends NodeData {
+    prompt?: string;
+}
+
 /* ── App-Level Node & Edge Types ─────────────────────────────────────── */
 
 /** Application node — union of all supported node types. */
 export type AppNode =
-    | Node<PlaceholderNodeData, 'placeholder'>
     | Node<IngredientNodeData, 'ingredient'>
-    | Node<NodeData, 'compose'>
-    | Node<NodeData, 'preview'>
-    | Node<NodeData, 'output'>
-    | Node<NodeData, 'generate'>
-    | Node<NodeData, 'batch-generator'>
-    | Node<NodeData, 'style-fanout'>
-    | Node<NodeData, 'generate-ingredient'>
-    | Node<NodeData, 'brand-kit'>;
+    | Node<PromptNodeData, 'prompt'>;
 
 /** Application edge — extends React Flow's Edge. */
 export type WorkflowEdge = Edge & {

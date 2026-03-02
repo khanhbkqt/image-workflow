@@ -20,58 +20,14 @@ interface NodeMenuItem {
 
 const ADDABLE_NODES: NodeMenuItem[] = [
     {
-        icon: '🔀',
-        label: 'Compose',
-        desc: 'Blend two images',
+        icon: '✏️',
+        label: 'Prompt',
+        desc: 'Generate an image from text',
         createNode: (id, position) => ({
             id,
-            type: 'compose' as const,
+            type: 'prompt' as const,
             position,
-            data: { label: 'Compose', blendMode: 'multiply', opacity: 80 },
-        }),
-    },
-    {
-        icon: '🖼️',
-        label: 'Preview',
-        desc: 'Preview an image',
-        createNode: (id, position) => ({
-            id,
-            type: 'preview' as const,
-            position,
-            data: { label: 'Preview', width: 200, height: 120 },
-        }),
-    },
-    {
-        icon: '📤',
-        label: 'Output',
-        desc: 'Export final render',
-        createNode: (id, position) => ({
-            id,
-            type: 'output' as const,
-            position,
-            data: { label: 'Output', format: 'PNG', resolution: '1920 × 1080', filename: 'output' },
-        }),
-    },
-    {
-        icon: '⚡',
-        label: 'Batch Generator',
-        desc: 'Generate image variants',
-        createNode: (id, position) => ({
-            id,
-            type: 'batch-generator' as const,
-            position,
-            data: { label: 'Batch Generator', batchSize: 4, model: 'dall-e-3', quality: 'standard' },
-        }),
-    },
-    {
-        icon: '🎨',
-        label: 'Style Fan-Out',
-        desc: 'Apply multiple styles',
-        createNode: (id, position) => ({
-            id,
-            type: 'style-fanout' as const,
-            position,
-            data: { label: 'Style Fan-Out', styles: [] },
+            data: { label: 'Prompt', prompt: '' },
         }),
     },
 ];

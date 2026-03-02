@@ -22,22 +22,10 @@ const DEFAULT_VIEWPORT: Viewport = { x: 0, y: 0, zoom: 1 };
 /* ── Demo Nodes (seeded on first open of a project) ────────────────── */
 const DEMO_NODES: AppNode[] = [
     {
-        id: 'compose-demo',
-        type: 'compose',
+        id: 'prompt-demo',
+        type: 'prompt',
         position: { x: 300, y: 200 },
-        data: { label: 'Compose', blendMode: 'multiply', opacity: 80 },
-    },
-    {
-        id: 'preview-demo',
-        type: 'preview',
-        position: { x: 600, y: 100 },
-        data: { label: 'Preview', width: 200, height: 120 },
-    },
-    {
-        id: 'output-demo',
-        type: 'output',
-        position: { x: 600, y: 350 },
-        data: { label: 'Output', format: 'PNG', resolution: '1920 × 1080', filename: 'final' },
+        data: { label: 'Prompt', prompt: '' },
     },
 ];
 

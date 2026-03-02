@@ -21,8 +21,8 @@ export function IngredientNode({ data }: NodeProps) {
         return { styles, modifiers };
     })() : null;
 
-    // determine correct node type. In a more complete engine, brand-kit might be its own node type
-    const nodeType = ingredientType === 'brand-kit' ? 'brand-kit' : 'ingredient';
+    // All ingredient types map to the 'ingredient' canvas node type.
+    const nodeType = 'ingredient' as const;
 
     return (
         <BaseNode nodeType={nodeType} className={`ingredient-node ingredient-node--${ingredientType}`}>
