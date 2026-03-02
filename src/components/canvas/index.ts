@@ -1,3 +1,3 @@
 export { Canvas } from './Canvas';
-export { PlaceholderNode, nodeTypes } from './PlaceholderNode';
+export { nodeTypes } from './nodes/nodeRegistry';
 export { ZoomControls } from './ZoomControls';

@@ -131,6 +131,8 @@ export function CreateIngredientDialog({ open, onClose }: CreateIngredientDialog
         (type !== 'text-overlay' || text.trim()) &&
         (type !== 'brand-kit' || styleIds.length > 0 || modifierIds.length > 0);
 
+    const FORM_ID = 'create-ingredient-form';
+
     return (
         <Dialog
             open={open}
@@ -142,13 +144,13 @@ export function CreateIngredientDialog({ open, onClose }: CreateIngredientDialog
                     <Button variant="ghost" type="button" onClick={handleClose}>
                         Cancel
                     </Button>
-                    <Button variant="primary" type="submit" disabled={!isValid} onClick={handleSubmit}>
+                    <Button variant="primary" type="submit" form={FORM_ID} disabled={!isValid}>
                         Create
                     </Button>
                 </>
             }
         >
-            <form className="create-ingredient-form" onSubmit={handleSubmit}>
+            <form id={FORM_ID} className="create-ingredient-form" onSubmit={handleSubmit}>
                 {/* Type selector */}
                 <Select
                     label="Type"
