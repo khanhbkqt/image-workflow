@@ -77,7 +77,7 @@ A macOS desktop app for visual, composable AI image generation. Build workflows 
 
 | # | Phase | Plans | Status |
 |---|-------|-------|--------|
-| 1 | API Integration | 3 plans (2 waves) | 📝 planning |
+| 1 | API Integration | 3 plans (2 waves) | ✅ completed |
 | 2 | Generate Node | — | ⬚ not_started |
 | 3 | Image-Based Generation | — | ⬚ not_started |
 | 4 | Generation Queue | — | ⬚ not_started |
@@ -106,5 +106,5 @@ A macOS desktop app for visual, composable AI image generation. Build workflows 
 | v1.1 Ingredient System | ✅ archived | 5/5 |
 | v1.2 Node-Based Workflows | ✅ completed | 8/8 |
 | v2.0 Prompt Flow Engine | ✅ completed | 3/3 |
-| v1.3 AI Generation Engine | 🔵 active | 0/5 |
+| v1.3 AI Generation Engine | 🔵 active | 1/5 |
 | v1.4 Export & MCP Server | 📋 planned | 0/4 |
