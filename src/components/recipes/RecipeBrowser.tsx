@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { useRecipeStore } from '../../stores/recipeStore';
 import { useProjectStore } from '../../stores/projectStore';
 import { RecipeCard } from './RecipeCard';
@@ -39,11 +39,11 @@ export function RecipeBrowser({ onLoadRecipe, onRenameRecipe, onDeleteRecipe, on
 
     const activeProjectId = useProjectStore((s) => s.activeProjectId);
     const loadRecipes = useRecipeStore((s) => s.loadRecipes);
-    const recipes = useRecipeStore(
-        useCallback(
-            (s) => (activeProjectId ? s.getRecipesByProject(activeProjectId) : []),
-            [activeProjectId],
-        ),
+    /* Select the stable recipes array, then derive the filtered list via useMemo */
+    const allRecipes = useRecipeStore((s) => s.recipes);
+    const recipes = useMemo(
+        () => (activeProjectId ? allRecipes.filter((r) => r.projectId === activeProjectId) : []),
+        [allRecipes, activeProjectId],
     );
 
     /* Load recipes for the current project on mount / project change */
