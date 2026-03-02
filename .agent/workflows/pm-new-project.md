@@ -96,6 +96,8 @@ pm milestone create <slug> "<name>" --goal "<goal from SPEC>"
 pm milestone update <slug> --status active
 ```
 
+This stores brief metadata in the database and auto-generates `.pm/milestones/<slug>/MILESTONE.md` from `.pm/templates/milestone.md`.
+
 ---
 
 ## Step 7: Add Initial Phases
@@ -107,6 +109,8 @@ pm phase add "Foundation & Setup" --number 1 --description "Project setup and sc
 pm phase add "Core Feature A" --number 2 --description "Implement Feature A"
 pm phase add "Core Feature B" --number 3 --description "Implement Feature B"
 ```
+
+Each call stores brief metadata in the database and auto-generates `.pm/milestones/<slug>/<N>/PHASE.md` from `.pm/templates/phase-summary.md`.
 
 **Phase creation rules:**
 - 3-5 phases per milestone

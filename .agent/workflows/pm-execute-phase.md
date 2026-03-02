@@ -15,6 +15,26 @@ After plans have been created for a phase (via the Plan Phase workflow) and you'
 - Phase has plans (`pm plan list --phase <phase-id> --json`)
 - Plans are in `pending` status
 
+## Rules
+
+- Never execute a plan without reading the full plan from the filesystem
+- Never execute a plan without verifying the plan
+- Delegate the plan to a sub-agent to implement what the plan describes, keep the context small and focused
+
+---
+
+## Step 0: Quick Trace (Context Recovery)
+
+Before executing any plans, quickly understand the current state:
+
+1. **Read `.pm/ROADMAP.md`**
+   - Identify the active milestone and its must-haves
+   - Identify the current phase and its objective
+2. **Read `.pm/STATE.md`**
+   - Check where the last session left off
+
+_This ensures you don't execute plans blindly without understanding the wider phase goal._
+
 ---
 
 ## Step 1: Review Plans and Wave Order
@@ -48,7 +68,13 @@ pm plan update <plan-id> --status in_progress
 
 ### 2b. Do the Work
 
-Implement what the plan describes. Follow task blocks in order:
+Read the full plan from the filesystem (the DB only stores a brief):
+
+```bash
+cat .pm/milestones/<milestone-id>/<phase-number>/<plan-number>-PLAN.md
+```
+
+Delegate the plan to a developer agent to implement what the plan describes. Follow task blocks in order:
 1. Load plan context
 2. Execute tasks
 3. Verify each task with empirical evidence (never "it should work")
@@ -117,6 +143,13 @@ npm test
 git add -A
 git commit -m "docs(phase-{N}): complete {phase-name}"
 ```
+
+### Update Project Files
+
+After committing, update the project state files:
+
+1. **`.pm/ROADMAP.md`** — update phase status, plan completion counts
+2. **`.pm/STATE.md`** — update current position, last action, next steps
 
 ---
 

@@ -16,6 +16,20 @@ At any point during project work when you need to understand overall progress, i
 
 ---
 
+## Step 0: Quick Trace (Context Recovery)
+
+When checking progress, always start with the persistent state files:
+
+1. **Read `.pm/ROADMAP.md`**
+   - Identify the active milestone and its must-haves
+   - See the high-level phase breakdown
+2. **Read `.pm/STATE.md`**
+   - Check the exact position where the last session left off
+
+_This gives you the project's true intent before looking at CLI output._
+
+---
+
 ## Step 1: Check Overall Progress
 
 ```bash

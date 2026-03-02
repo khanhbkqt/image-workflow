@@ -32,6 +32,10 @@ Note the current phase numbers to determine where the new phase should sit in th
 pm phase add "<name>" --number <n> --description "<description>"
 ```
 
+This does **two things**:
+1. **Database** — stores brief metadata (number, name, description, status)
+2. **Filesystem** — auto-generates `.pm/milestones/<milestone>/<N>/PHASE.md` from `.pm/templates/phase-summary.md`
+
 **Example:**
 
 ```bash

@@ -33,6 +33,10 @@ Before creating a milestone, define what you're building:
 pm milestone create <slug> "<name>" --goal "<goal description from SPEC>"
 ```
 
+This does **two things**:
+1. **Database** — stores brief metadata (id, name, goal, status)
+2. **Filesystem** — auto-generates `.pm/milestones/<slug>/MILESTONE.md` from `.pm/templates/milestone.md`
+
 **Example:**
 ```bash
 pm milestone create v2.0-auth "Authentication System" --goal "Add user authentication per Spec"
@@ -60,6 +64,10 @@ pm phase add "API Endpoints" --number 2 --description "Login, register, token re
 pm phase add "Integration Tests" --number 3 --description "End-to-end auth flow tests"
 ```
 
+Each `pm phase add` does **two things**:
+1. **Database** — stores brief metadata (number, name, description, status)
+2. **Filesystem** — auto-generates `.pm/milestones/<slug>/<N>/PHASE.md` from `.pm/templates/phase-summary.md`
+
 **Phase rules:**
 - 3-5 phases per milestone
 - Each phase has a clear deliverable
@@ -75,6 +83,11 @@ pm progress
 ```
 
 Confirm the milestone is active and phases match your SPEC.
+
+### Update Project Files
+
+1. **`.pm/ROADMAP.md`** — add the new milestone and its phases
+2. **`.pm/STATE.md`** — set current position to the new milestone
 
 ```bash
 git add -A

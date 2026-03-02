@@ -67,7 +67,15 @@ pm plan update <plan-id> --status pending
 
 ---
 
-## Step 4: Commit State
+## Step 4: Update STATE.md
+
+Update **`.pm/STATE.md`** with:
+- Current position (milestone, phase, plan)
+- Last action completed
+- Next steps for the next session
+- Any blockers or concerns
+
+## Step 5: Commit State
 
 ```bash
 git add -A

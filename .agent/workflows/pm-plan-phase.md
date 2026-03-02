@@ -17,6 +17,20 @@ After a milestone and phases exist, and you're ready to break a phase into concr
 
 ---
 
+## Step 0: Quick Trace (Context Recovery)
+
+Before planning, you must understand the wider context:
+
+1. **Read `.pm/ROADMAP.md`**
+   - Identify the active milestone's goal and must-haves
+   - Read the current phase's objective and dependencies
+2. **Read `.pm/STATE.md`**
+   - Check where the last session left off
+
+_This ensures your plans align with the overall project direction._
+
+---
+
 ## Step 1: Validate Phase
 
 ```bash
@@ -76,25 +90,51 @@ pm context set "phase-{N}-research" "{key findings}" --category decision
 
 ## Step 4: Create Plans
 
-For each plan:
+Each `pm plan create` does **two things**:
+
+1. **Database** — stores a brief metadata record (name, phase, wave, status)
+2. **Filesystem** — auto-generates a comprehensive Markdown file from `.pm/templates/PLAN.md`
+
+The file is written to: `.pm/milestones/<milestone-id>/<phase-number>/<plan-number>-PLAN.md`
 
 ```bash
 pm plan create "<plan-name>" \
   --phase <phase-id> \
   --number <N> \
-  --wave <wave-number> \
-  --content "<objective, tasks, verification, success criteria>"
+  --wave <wave-number>
+```
+
+After creation, edit the auto-generated file directly to flesh out the plan details:
+
+```bash
+# Edit the auto-generated plan file
+$EDITOR .pm/milestones/<milestone-id>/<phase-number>/<N>-PLAN.md
 ```
 
 ### Plan Content Structure
 
-Each plan's `--content` should include:
+Each auto-generated plan file (`.pm/milestones/.../<N>-PLAN.md`) is pre-populated with:
 - **Objective** — What and why
 - **Context** — File references needed
 - **Tasks** — Specific implementation steps with verification
 - **Success criteria** — Measurable outcomes
 
----
+To view a plan's full content:
+```bash
+pm plan show <plan-id>
+# or read directly:
+cat .pm/milestones/<milestone-id>/<phase-number>/<plan-number>-PLAN.md
+```
+
+### Updating Plan Content
+
+To update a plan's file content after creation:
+```bash
+pm plan update <plan-id> --content "<updated content>"
+pm plan update <plan-id> --status in_progress
+```
+
+
 
 ## Step 5: Verify Plans (Checker Logic)
 
@@ -123,6 +163,10 @@ pm phase update <phase-id> --status planning
 git add -A
 git commit -m "docs(phase-{N}): create execution plans"
 ```
+
+### Update Project Files
+
+Update **`.pm/ROADMAP.md`** with plan counts per phase.
 
 ---
 

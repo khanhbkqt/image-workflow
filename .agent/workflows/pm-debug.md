@@ -12,6 +12,20 @@ When you encounter a bug or unexpected behavior that needs systematic investigat
 
 ---
 
+## Step 0: Quick Trace (Context Recovery)
+
+When starting a debug session, first understand what was supposed to happen:
+
+1. **Read `.pm/ROADMAP.md`**
+   - Identify the active milestone and the current phase's objective
+2. **Read `.pm/STATE.md`**
+   - Check what was being worked on when the bug occurred
+   - Note any recent completed plans
+
+_This provides the necessary context to understand why the bug matters and what the intended behavior is._
+
+---
+
 ## Step 1: Record the Bug
 
 Log the issue as context for tracking:

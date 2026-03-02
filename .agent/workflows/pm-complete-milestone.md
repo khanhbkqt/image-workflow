@@ -73,6 +73,11 @@ Confirm status is `completed` or `archived`.
 
 ## Step 5: Commit Milestone Completion
 
+### Update Project Files
+
+1. **`.pm/ROADMAP.md`** — mark milestone as completed, update summary
+2. **`.pm/STATE.md`** — update current position, note milestone completion
+
 ```bash
 git add -A
 git commit -m "docs: complete milestone <slug>"

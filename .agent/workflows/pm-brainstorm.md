@@ -43,7 +43,7 @@ Store detailed research, mapped user journeys, use cases, alternative options co
 
 Create or update files such as:
 
-- `.gsd/IDEATION.md` or `.gsd/RESEARCH.md` (for raw notes, personas, and use cases)
+- `.pm/IDEATION.md` or `.pm/RESEARCH.md` (for raw notes, personas, and use cases)
 - `docs/decisions/0001-chosen-tech-stack.md` (for specific, finalized architectural records)
 
 ---
@@ -60,7 +60,7 @@ Once a decision is finalized, use `pm-cli` to store the high-level decision and 
 
 ```bash
 # Store a pointer to the ideation document
-pm context set "ref:ideation-flows" "file:.gsd/IDEATION.md" --category note --agent architect
+pm context set "ref:ideation-flows" "file:.pm/IDEATION.md" --category note --agent architect
 
 # Store the final high-level decision
 pm context set "decision:target-platform" "Web Application" --category decision --agent architect
@@ -73,7 +73,7 @@ pm context set "ref:adr-auth" "file:docs/decisions/0001-auth-strategy.md" --cate
 
 ## Step 4: Draft the SPEC.md
 
-Using the clarified requirements and recorded decisions, generate the first draft of the `.gsd/SPEC.md`. **Do not write any implementation code.**
+Using the clarified requirements and recorded decisions, generate the first draft of the `.pm/SPEC.md`. **Do not write any implementation code.**
 
 Ensure the draft adheres to GSD principles:
 
@@ -104,9 +104,9 @@ Tell the user to manually change the status to `FINALIZED` when they are satisfi
 ## Success Criteria
 
 - [ ] Interactive interview completed without overwhelming the user (one question at a time).
-- [ ] Brainstorming, user flows, and use cases stored in Markdown files (e.g., `.gsd/IDEATION.md`).
+- [ ] Brainstorming, user flows, and use cases stored in Markdown files (e.g., `.pm/IDEATION.md`).
 - [ ] Final decisions and file references saved to the database via `pm context set`.
-- [ ] `.gsd/SPEC.md` drafted.
+- [ ] `.pm/SPEC.md` drafted.
 - [ ] **Zero implementation code written.**
 - [ ] User instructed to review and change status to `FINALIZED`.
 

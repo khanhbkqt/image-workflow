@@ -17,6 +17,20 @@ When you believe a milestone is ready to complete, but want to do a thorough che
 
 ---
 
+## Step 0: Quick Trace (Context Recovery)
+
+Before auditing, restore context to understand the entire milestone scope:
+
+1. **Read `.pm/ROADMAP.md`**
+   - Identify the active milestone and its must-haves
+   - Review all phases and their objectives
+2. **Read `.pm/STATE.md`**
+   - Check where the last session left off
+
+_This ensures you evaluate the milestone against its original goals, not just its current state._
+
+---
+
 ## Step 1: Check Overall Progress
 
 ```bash

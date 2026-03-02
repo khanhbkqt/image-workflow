@@ -26,6 +26,20 @@ Default: Level 2 unless specified.
 
 ---
 
+## Step 0: Quick Trace (Context Recovery)
+
+When starting research, first understand the wider goal to keep research focused:
+
+1. **Read `.pm/ROADMAP.md`**
+   - Identify the active milestone and its must-haves
+   - Check the phase objective that prompted this research
+2. **Read `.pm/STATE.md`**
+   - Note context from any previous work
+
+_This ensures your research is relevant and doesn't stray out of scope._
+
+---
+
 ## Step 1: Load Phase Context
 
 ```bash

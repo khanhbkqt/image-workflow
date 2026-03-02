@@ -16,6 +16,20 @@ Before planning a phase that has unclear scope, open questions, or multiple poss
 
 ---
 
+## Step 0: Quick Trace (Context Recovery)
+
+Before discussing scope, restore context:
+
+1. **Read `.pm/ROADMAP.md`**
+   - Identify the active milestone and its must-haves
+   - Read the current phase's objective
+2. **Read `.pm/STATE.md`**
+   - Check where the last session left off
+
+_This ensures your discussion is grounded in the project's actual goals._
+
+---
+
 ## Step 1: Review Phase Details
 
 ```bash
