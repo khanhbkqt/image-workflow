@@ -1,8 +1,9 @@
 /* ── Preview Node ──────────────────────────────────────────────────────── */
 .preview-node {
     min-width: 180px;
-    border: 1px solid var(--color-info, #06b6d4);
-    border-top: 3px solid var(--color-info, #06b6d4);
+    background: var(--surface-1);
+    border: 1px solid var(--info);
+    border-top: 3px solid var(--info);
 }
 
 .preview-node__header {
@@ -10,7 +11,7 @@
     align-items: center;
     gap: 8px;
     padding: 8px 12px;
-    border-bottom: 1px solid var(--color-border);
+    border-bottom: 1px solid var(--border-default);
 }
 
 .preview-node__icon {
@@ -21,14 +22,14 @@
 .preview-node__title {
     font-size: 12px;
     font-weight: 600;
-    color: var(--color-text-primary);
+    color: var(--text-primary);
     flex: 1;
 }
 
 .preview-node__canvas {
     position: relative;
     overflow: hidden;
-    background: var(--color-bg-elevated);
+    background: var(--surface-2);
     margin: 8px 12px 8px 60px;
     /* push canvas right to avoid IMAGE port label */
 }
@@ -49,10 +50,10 @@
     justify-content: center;
     gap: 6px;
     background: repeating-linear-gradient(45deg,
-            var(--color-bg-elevated),
-            var(--color-bg-elevated) 6px,
-            var(--color-bg-base) 6px,
-            var(--color-bg-base) 12px);
+            var(--surface-2),
+            var(--surface-2) 6px,
+            var(--surface-1) 6px,
+            var(--surface-1) 12px);
 }
 
 .preview-node__placeholder-icon {
@@ -62,7 +63,7 @@
 
 .preview-node__placeholder-text {
     font-size: 10px;
-    color: var(--color-text-muted);
+    color: var(--text-muted);
     text-align: center;
     padding: 0 12px;
 }
@@ -75,6 +76,6 @@
 
 .preview-node__size {
     font-size: 10px;
-    color: var(--color-text-muted);
+    color: var(--text-muted);
     font-variant-numeric: tabular-nums;
 }
