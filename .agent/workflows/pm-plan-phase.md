@@ -32,7 +32,7 @@ _This ensures your plans align with the overall project direction._
 ---
 
 ## Step 1: Validate Phase
-
+Retrive target phase of current milestone and get the `<phase-id>`
 ```bash
 pm phase show <phase-id> --json
 ```
@@ -92,46 +92,26 @@ pm context set "phase-{N}-research" "{key findings}" --category decision
 
 Each `pm plan create` does **two things**:
 
-1. **Database** — stores a brief metadata record (name, phase, wave, status)
-2. **Filesystem** — auto-generates a comprehensive Markdown file from `.pm/templates/PLAN.md`
-
-The file is written to: `.pm/milestones/<milestone-id>/<phase-number>/<plan-number>-PLAN.md`
+1. **Database** — stores the `--content` as a short brief for dashboard/CLI quick view
+2. **Filesystem** — generates a comprehensive doc from `.pm/templates/PLAN.md` and writes it to `.pm/milestones/<milestone-id>/<phase-number>/<N>-PLAN.md`
 
 ```bash
 pm plan create "<plan-name>" \
   --phase <phase-id> \
   --number <N> \
-  --wave <wave-number>
+  --wave <wave-number> \
+  --content "<short brief describing the plan's purpose>"
 ```
 
-After creation, edit the auto-generated file directly to flesh out the plan details:
+The generated file is ready to use during execution — no editing needed.
 
+To view a plan:
 ```bash
-# Edit the auto-generated plan file
-$EDITOR .pm/milestones/<milestone-id>/<phase-number>/<N>-PLAN.md
-```
-
-### Plan Content Structure
-
-Each auto-generated plan file (`.pm/milestones/.../<N>-PLAN.md`) is pre-populated with:
-- **Objective** — What and why
-- **Context** — File references needed
-- **Tasks** — Specific implementation steps with verification
-- **Success criteria** — Measurable outcomes
-
-To view a plan's full content:
-```bash
+# Quick view (brief from DB):
 pm plan show <plan-id>
-# or read directly:
+
+# Full content (comprehensive doc from file):
 cat .pm/milestones/<milestone-id>/<phase-number>/<plan-number>-PLAN.md
-```
-
-### Updating Plan Content
-
-To update a plan's file content after creation:
-```bash
-pm plan update <plan-id> --content "<updated content>"
-pm plan update <plan-id> --status in_progress
 ```
 
 
