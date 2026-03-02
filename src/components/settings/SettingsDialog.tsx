@@ -1,0 +1,118 @@
+/* ── Settings Dialog ─────────────────────────────────────────────────── */
+
+import { useState } from 'react';
+import { useAuthStore } from '../../stores/authStore';
+import './SettingsDialog.css';
+
+export function SettingsDialog() {
+    const authState = useAuthStore((s) => s.authState);
+    const isOpen = useAuthStore((s) => s.isSettingsOpen);
+    const closeSettings = useAuthStore((s) => s.closeSettings);
+    const validateCookie = useAuthStore((s) => s.validateCookie);
+    const clearAuth = useAuthStore((s) => s.clearAuth);
+
+    const [cookie, setCookie] = useState('');
+
+    if (!isOpen) return null;
+
+    const handleValidate = async () => {
+        if (!cookie.trim()) return;
+        await validateCookie(cookie.trim());
+    };
+
+    const handleClear = () => {
+        setCookie('');
+        clearAuth();
+    };
+
+    const handleKeyDown = (e: React.KeyboardEvent) => {
+        if (e.key === 'Escape') closeSettings();
+    };
+
+    const statusIcon =
+        authState.status === 'valid' ? '✅' :
+            authState.status === 'validating' ? '⏳' :
+                authState.status === 'invalid' || authState.status === 'expired' ? '❌' :
+                    '⚪';
+
+    const statusLabel =
+        authState.status === 'valid' ? 'Connected' :
+            authState.status === 'validating' ? 'Validating…' :
+                authState.status === 'invalid' ? 'Invalid' :
+                    authState.status === 'expired' ? 'Expired' :
+                        'Not configured';
+
+    return (
+        <div className="settings-overlay" onClick={closeSettings} onKeyDown={handleKeyDown}>
+            <div className="settings-dialog" onClick={(e) => e.stopPropagation()}>
+                {/* Header */}
+                <div className="settings-dialog__header">
+                    <h2 className="settings-dialog__title">
+                        <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.5" width="18" height="18">
+                            <circle cx="8" cy="8" r="3" />
+                            <path d="M8 1v2M8 13v2M1 8h2M13 8h2M3.05 3.05l1.41 1.41M11.54 11.54l1.41 1.41M3.05 12.95l1.41-1.41M11.54 4.46l1.41-1.41" />
+                        </svg>
+                        API Settings
+                    </h2>
+                    <button className="settings-dialog__close" onClick={closeSettings} aria-label="Close">
+                        ✕
+                    </button>
+                </div>
+
+                {/* Status Badge */}
+                <div className={`settings-dialog__status settings-dialog__status--${authState.status}`}>
+                    <span className="settings-dialog__status-icon">{statusIcon}</span>
+                    <span className="settings-dialog__status-label">{statusLabel}</span>
+                    {authState.status === 'valid' && authState.user && (
+                        <span className="settings-dialog__user-info">
+                            {authState.user.name} ({authState.user.email})
+                        </span>
+                    )}
+                </div>
+
+                {/* Cookie Input */}
+                <div className="settings-dialog__field">
+                    <label className="settings-dialog__label">Google Cookie</label>
+                    <textarea
+                        className="settings-dialog__textarea"
+                        value={cookie}
+                        onChange={(e) => setCookie(e.target.value)}
+                        placeholder="Paste your Google Labs cookie here…"
+                        rows={4}
+                        spellCheck={false}
+                        autoComplete="off"
+                    />
+                    <p className="settings-dialog__hint">
+                        Go to <strong>labs.google</strong> → DevTools → Application → Cookies → Copy all cookie values
+                    </p>
+                </div>
+
+                {/* Error Message */}
+                {authState.error && (
+                    <div className="settings-dialog__error">
+                        {authState.error}
+                    </div>
+                )}
+
+                {/* Actions */}
+                <div className="settings-dialog__actions">
+                    <button
+                        className="settings-dialog__btn settings-dialog__btn--validate"
+                        onClick={handleValidate}
+                        disabled={!cookie.trim() || authState.status === 'validating'}
+                    >
+                        {authState.status === 'validating' ? 'Validating…' : 'Validate & Save'}
+                    </button>
+                    {authState.status === 'valid' && (
+                        <button
+                            className="settings-dialog__btn settings-dialog__btn--clear"
+                            onClick={handleClear}
+                        >
+                            Clear Auth
+                        </button>
+                    )}
+                </div>
+            </div>
+        </div>
+    );
+}

@@ -1,0 +1,230 @@
+/* ── Settings Dialog Styles ─────────────────────────────────────────── */
+
+.settings-overlay {
+    position: fixed;
+    inset: 0;
+    z-index: 1000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(0, 0, 0, 0.6);
+    backdrop-filter: blur(6px);
+    animation: settings-fade-in 0.15s ease-out;
+}
+
+@keyframes settings-fade-in {
+    from {
+        opacity: 0;
+    }
+
+    to {
+        opacity: 1;
+    }
+}
+
+.settings-dialog {
+    width: min(480px, 90vw);
+    background: var(--color-surface-2, #1e1e2e);
+    border: 1px solid var(--color-border, rgba(255, 255, 255, 0.08));
+    border-radius: var(--radius-lg, 12px);
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+    padding: 0;
+    overflow: hidden;
+    animation: settings-slide-up 0.2s ease-out;
+}
+
+@keyframes settings-slide-up {
+    from {
+        opacity: 0;
+        transform: translateY(12px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* ── Header ── */
+.settings-dialog__header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 16px 20px;
+    border-bottom: 1px solid var(--color-border, rgba(255, 255, 255, 0.06));
+}
+
+.settings-dialog__title {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin: 0;
+    font-size: 15px;
+    font-weight: 600;
+    color: var(--color-text-primary, #e0e0e6);
+    letter-spacing: -0.01em;
+}
+
+.settings-dialog__close {
+    background: none;
+    border: none;
+    color: var(--color-text-muted, #888);
+    cursor: pointer;
+    font-size: 14px;
+    padding: 4px 8px;
+    border-radius: var(--radius-sm, 6px);
+    transition: color 0.15s, background 0.15s;
+}
+
+.settings-dialog__close:hover {
+    color: var(--color-text-primary, #e0e0e6);
+    background: var(--color-surface-3, rgba(255, 255, 255, 0.06));
+}
+
+/* ── Status Badge ── */
+.settings-dialog__status {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 20px;
+    font-size: 13px;
+    border-bottom: 1px solid var(--color-border, rgba(255, 255, 255, 0.06));
+}
+
+.settings-dialog__status--valid {
+    background: rgba(34, 197, 94, 0.08);
+}
+
+.settings-dialog__status--invalid,
+.settings-dialog__status--expired {
+    background: rgba(239, 68, 68, 0.08);
+}
+
+.settings-dialog__status--validating {
+    background: rgba(234, 179, 8, 0.08);
+}
+
+.settings-dialog__status-icon {
+    font-size: 14px;
+}
+
+.settings-dialog__status-label {
+    font-weight: 500;
+    color: var(--color-text-primary, #e0e0e6);
+}
+
+.settings-dialog__user-info {
+    color: var(--color-text-secondary, #aaa);
+    font-size: 12px;
+    margin-left: auto;
+}
+
+/* ── Cookie Field ── */
+.settings-dialog__field {
+    padding: 16px 20px;
+}
+
+.settings-dialog__label {
+    display: block;
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--color-text-secondary, #aaa);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    margin-bottom: 8px;
+}
+
+.settings-dialog__textarea {
+    width: 100%;
+    padding: 10px 12px;
+    background: var(--color-surface-1, #161622);
+    border: 1px solid var(--color-border, rgba(255, 255, 255, 0.1));
+    border-radius: var(--radius-md, 8px);
+    color: var(--color-text-primary, #e0e0e6);
+    font-family: 'SF Mono', 'Fira Code', monospace;
+    font-size: 12px;
+    line-height: 1.5;
+    resize: vertical;
+    box-sizing: border-box;
+    transition: border-color 0.15s;
+    /* Mask the cookie value */
+    -webkit-text-security: disc;
+}
+
+.settings-dialog__textarea:focus {
+    outline: none;
+    border-color: var(--color-accent, #7c6ef0);
+}
+
+.settings-dialog__textarea::placeholder {
+    color: var(--color-text-muted, #666);
+    -webkit-text-security: none;
+}
+
+.settings-dialog__hint {
+    margin: 8px 0 0;
+    font-size: 11px;
+    color: var(--color-text-muted, #666);
+    line-height: 1.4;
+}
+
+.settings-dialog__hint strong {
+    color: var(--color-text-secondary, #aaa);
+}
+
+/* ── Error ── */
+.settings-dialog__error {
+    margin: 0 20px 12px;
+    padding: 8px 12px;
+    background: rgba(239, 68, 68, 0.1);
+    border: 1px solid rgba(239, 68, 68, 0.2);
+    border-radius: var(--radius-sm, 6px);
+    color: #ef4444;
+    font-size: 12px;
+    line-height: 1.4;
+}
+
+/* ── Actions ── */
+.settings-dialog__actions {
+    display: flex;
+    gap: 8px;
+    padding: 12px 20px 16px;
+    justify-content: flex-end;
+}
+
+.settings-dialog__btn {
+    padding: 8px 16px;
+    border-radius: var(--radius-md, 8px);
+    font-size: 13px;
+    font-weight: 500;
+    cursor: pointer;
+    border: 1px solid transparent;
+    transition: all 0.15s ease;
+}
+
+.settings-dialog__btn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+.settings-dialog__btn--validate {
+    background: var(--color-accent, #7c6ef0);
+    color: white;
+    border-color: var(--color-accent, #7c6ef0);
+}
+
+.settings-dialog__btn--validate:hover:not(:disabled) {
+    filter: brightness(1.1);
+}
+
+.settings-dialog__btn--clear {
+    background: transparent;
+    color: var(--color-text-secondary, #aaa);
+    border-color: var(--color-border, rgba(255, 255, 255, 0.1));
+}
+
+.settings-dialog__btn--clear:hover {
+    background: rgba(239, 68, 68, 0.1);
+    color: #ef4444;
+    border-color: rgba(239, 68, 68, 0.3);
+}

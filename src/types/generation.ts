@@ -11,7 +11,8 @@ export type AspectRatio =
     | 'IMAGE_ASPECT_RATIO_SQUARE'
     | 'IMAGE_ASPECT_RATIO_PORTRAIT'
     | 'IMAGE_ASPECT_RATIO_LANDSCAPE'
-    | 'IMAGE_ASPECT_RATIO_LANDSCAPE_4_3';
+    | 'IMAGE_ASPECT_RATIO_LANDSCAPE_FOUR_THREE'
+    | 'IMAGE_ASPECT_RATIO_UNSPECIFIED';
 
 /* ── Request / Response ─────────────────────────────────────────────── */
 

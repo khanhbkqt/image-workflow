@@ -212,3 +212,53 @@
     color: var(--surface-0);
     border-color: var(--accent);
 }
+
+/* ── Settings Button ─────────────────────────────────────────────────── */
+.app-header__settings-btn {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 28px;
+    height: 28px;
+    border: none;
+    background: var(--surface-3);
+    color: var(--text-secondary);
+    border-radius: var(--radius-sm);
+    cursor: pointer;
+    transition:
+        background var(--duration-fast) var(--ease-default),
+        color var(--duration-fast) var(--ease-default);
+}
+
+.app-header__settings-btn:hover {
+    background: var(--surface-4);
+    color: var(--text-primary);
+}
+
+.app-header__auth-dot {
+    position: absolute;
+    top: 2px;
+    right: 2px;
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    border: 1px solid var(--surface-1);
+}
+
+.app-header__auth-dot--unconfigured {
+    background: var(--text-muted);
+}
+
+.app-header__auth-dot--valid {
+    background: #4ade80;
+}
+
+.app-header__auth-dot--validating {
+    background: #eab308;
+}
+
+.app-header__auth-dot--invalid,
+.app-header__auth-dot--expired {
+    background: #ef4444;
+}

@@ -10,6 +10,8 @@ import { useProjectStore } from './stores/projectStore';
 import { useRecipeStore } from './stores/recipeStore';
 import { useSaveStatusStore } from './stores/saveStatusStore';
 import { useRecipeActions } from './hooks/useRecipeActions';
+import { SettingsDialog } from './components/settings/SettingsDialog';
+import { useAuthStore } from './stores/authStore';
 import type { RecipeMeta } from './types/recipe';
 import './App.css';
 
@@ -39,6 +41,13 @@ const SaveIcon = () => (
   </svg>
 );
 
+const GearIcon = () => (
+  <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.5" width="14" height="14">
+    <circle cx="8" cy="8" r="2.5" />
+    <path d="M8 1v2M8 13v2M1 8h2M13 8h2M3.05 3.05l1.41 1.41M11.54 11.54l1.41 1.41M3.05 12.95l1.41-1.41M11.54 4.46l1.41-1.41" />
+  </svg>
+);
+
 /* ── Recipe Dialog State ───────────────────────────────────────────────── */
 type RecipeDialogType = 'save' | 'load' | 'rename' | 'delete' | 'clone' | null;
 
@@ -52,6 +61,8 @@ function App() {
   const setActiveProject = useProjectStore((s) => s.setActiveProject);
   const isSaving = useSaveStatusStore((s) => s.isSaving);
   const lastSavedAt = useSaveStatusStore((s) => s.lastSavedAt);
+  const openSettings = useAuthStore((s) => s.openSettings);
+  const authStatus = useAuthStore((s) => s.authState.status);
 
   /* Recipe state */
   const { saveCurrentAsRecipe, loadRecipe } = useRecipeActions();
@@ -131,6 +142,15 @@ function App() {
               </span>
             </>
           )}
+          <button
+            className="app-header__settings-btn"
+            onClick={openSettings}
+            title="API Settings"
+            aria-label="API Settings"
+          >
+            <GearIcon />
+            <span className={`app-header__auth-dot app-header__auth-dot--${authStatus}`} />
+          </button>
           <span className="app-header__badge">
             {currentView === 'canvas' ? 'Canvas' : 'Dashboard'}
           </span>
@@ -204,6 +224,8 @@ function App() {
           onClose={closeRecipeDialog}
         />
       )}
+      {/* ── Settings Dialog ── */}
+      <SettingsDialog />
     </div>
   );
 }
