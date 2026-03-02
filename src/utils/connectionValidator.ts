@@ -22,13 +22,15 @@ export function isValidConnection(
         return false;
     }
 
-    // 2. Prevent duplicate edges
+    // 2. Prevent duplicate edges (normalize null/undefined handles to avoid false positives)
+    const normSrcHandle = sourceHandle ?? null;
+    const normTgtHandle = targetHandle ?? null;
     const isDuplicate = edges.some(
         e =>
             e.source === source &&
             e.target === target &&
-            e.sourceHandle === sourceHandle &&
-            e.targetHandle === targetHandle
+            (e.sourceHandle ?? null) === normSrcHandle &&
+            (e.targetHandle ?? null) === normTgtHandle
     );
     if (isDuplicate) {
         return false;
@@ -38,7 +40,6 @@ export function isValidConnection(
     const targetConfig = portRegistry[targetNode.type as NodeType];
 
     if (!sourceConfig || !targetConfig) {
-        // Unknown source or target node type, err on safe side
         return false;
     }
 
@@ -46,8 +47,7 @@ export function isValidConnection(
     const targetPort = targetConfig.inputs.find(p => p.id === targetHandle);
 
     if (!sourcePort || !targetPort) {
-        // Missing handle definition
-        // For backwards compatibility with nodes that don't have well-defined handles yet
+        // Missing handle definition — allow as fallback
         return true;
     }
 
@@ -60,7 +60,7 @@ export function isValidConnection(
     // 4. Check max connections per port on target
     if (targetPort.maxConnections !== undefined) {
         const existingConnectionsToTargetPort = edges.filter(
-            e => e.target === target && e.targetHandle === targetHandle
+            e => e.target === target && (e.targetHandle ?? null) === normTgtHandle
         );
         if (existingConnectionsToTargetPort.length >= targetPort.maxConnections) {
             return false;
@@ -70,7 +70,7 @@ export function isValidConnection(
     // 5. Check max connections per port on source (if defined)
     if (sourcePort.maxConnections !== undefined) {
         const existingConnectionsFromSourcePort = edges.filter(
-            e => e.source === source && e.sourceHandle === sourceHandle
+            e => e.source === source && (e.sourceHandle ?? null) === normSrcHandle
         );
         if (existingConnectionsFromSourcePort.length >= sourcePort.maxConnections) {
             return false;

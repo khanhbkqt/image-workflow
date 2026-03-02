@@ -11,7 +11,7 @@
     --xy-node-background-color: var(--surface-2);
     --xy-node-boxshadow-hover: 0 0 0 1px var(--accent), var(--shadow-glow);
     --xy-node-boxshadow-selected: 0 0 0 2px var(--accent), var(--shadow-glow);
-    --xy-edge-stroke: var(--border-strong);
+    --xy-edge-stroke: var(--accent);
     --xy-edge-stroke-selected: var(--accent);
     --xy-edge-stroke-width: 2;
     --xy-handle-background-color: var(--accent);
@@ -69,14 +69,28 @@
 }
 
 /* ── Edges ────────────────────────────────────────────────────────────── */
+
+/* Ensure the edge SVG layer renders above node backgrounds */
+.react-flow__edges {
+    z-index: 1000 !important;
+}
+
 .react-flow__edge-path {
-    stroke: var(--border-strong);
-    stroke-width: 2;
+    stroke: var(--accent) !important;
+    stroke-width: 2.5px !important;
+    fill: none !important;
+}
+
+/* Animated edge: override dashed with solid for the base path */
+.react-flow__edge.animated .react-flow__edge-path {
+    stroke-dasharray: 5;
+    animation: react-flow__dashdraw 0.5s linear infinite;
 }
 
 .react-flow__edge.selected .react-flow__edge-path,
 .react-flow__edge:hover .react-flow__edge-path {
-    stroke: var(--accent);
+    stroke: var(--accent) !important;
+    filter: drop-shadow(0 0 3px var(--accent));
 }
 
 /* Valid/Invalid Connection States */

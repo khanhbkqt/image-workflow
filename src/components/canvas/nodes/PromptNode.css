@@ -14,7 +14,7 @@
     transition:
         box-shadow 0.25s ease,
         border-color 0.25s ease;
-    overflow: hidden;
+    overflow: visible;
     cursor: default;
     animation: prompt-node-drop-in 0.2s ease-out;
 
@@ -38,6 +38,7 @@
     background: var(--prompt-accent);
     border-radius: 12px 0 0 12px;
     z-index: 1;
+    pointer-events: none;
 }
 
 /* ── Header ──────────────────────────────────────────────────────────── */

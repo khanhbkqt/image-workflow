@@ -34,6 +34,8 @@ const ADDABLE_NODES: NodeMenuItem[] = [
 
 export function CanvasContextMenu({ x, y, flowX, flowY, onClose }: CanvasContextMenuProps) {
     const addNode = useCanvasStore((s) => s.addNode);
+    const clearEdges = useCanvasStore((s) => s.clearEdges);
+    const edges = useCanvasStore((s) => s.edges);
     const menuRef = useRef<HTMLDivElement>(null);
 
     // Close on click outside or Escape
@@ -84,6 +86,23 @@ export function CanvasContextMenu({ x, y, flowX, flowY, onClose }: CanvasContext
                     </span>
                 </button>
             ))}
+            {edges.length > 0 && (
+                <>
+                    <div className="canvas-context-menu__divider" />
+                    <div className="canvas-context-menu__section-label">Canvas</div>
+                    <button
+                        className="canvas-context-menu__item canvas-context-menu__item--danger"
+                        onClick={() => { clearEdges(); onClose(); }}
+                        role="menuitem"
+                    >
+                        <span className="canvas-context-menu__item-icon">🗑️</span>
+                        <span className="canvas-context-menu__item-info">
+                            <span className="canvas-context-menu__item-name">Clear all connections</span>
+                            <span className="canvas-context-menu__item-desc">{edges.length} edge{edges.length !== 1 ? 's' : ''}</span>
+                        </span>
+                    </button>
+                </>
+            )}
         </div>
     );
 }

@@ -30,13 +30,9 @@ export type AppNode =
     | Node<IngredientNodeData, 'ingredient'>
     | Node<PromptNodeData, 'prompt'>;
 
-/** Application edge — extends React Flow's Edge. */
-export type WorkflowEdge = Edge & {
-    sourceHandle?: string | null;
-    targetHandle?: string | null;
-};
-
-export type AppEdge = WorkflowEdge;
+/** Application edge type for React Flow v12. Just use Edge directly
+ * to stay compatible with addEdge() which returns Edge[]. */
+export type AppEdge = Edge;
 
 /* ── Canvas Store State ──────────────────────────────────────────────── */
 
@@ -54,6 +50,7 @@ export interface CanvasState {
     /* ── Custom actions ── */
     addNode: (node: AppNode) => void;
     removeNode: (nodeId: string) => void;
+    clearEdges: () => void;
     updateNodeData: (nodeId: string, dataPatch: any) => void;
     setViewport: (viewport: Viewport) => void;
 

@@ -85,7 +85,7 @@ export const useCanvasStore = create<CanvasState>((set, get) => ({
     },
 
     onConnect: (connection: Connection) => {
-        set({ edges: addEdge(connection, get().edges) });
+        set({ edges: addEdge(connection, get().edges) as AppEdge[] });
         _scheduleAutosave();
     },
 
@@ -100,6 +100,11 @@ export const useCanvasStore = create<CanvasState>((set, get) => ({
             nodes: get().nodes.filter((n) => n.id !== nodeId),
             edges: get().edges.filter((e) => e.source !== nodeId && e.target !== nodeId),
         });
+        _scheduleAutosave();
+    },
+
+    clearEdges: () => {
+        set({ edges: [] });
         _scheduleAutosave();
     },
 

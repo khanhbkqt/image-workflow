@@ -34,6 +34,8 @@ export function BaseNode({ nodeType, children, className = '' }: BaseNodeProps) 
                             id={port.id}
                             position={Position.Left}
                             className={`base-node__handle base-node__handle--${port.dataType}`}
+                            title={`Input: ${port.id} (${port.dataType})`}
+                            onClick={() => console.log('Handle clicked:', port.id)}
                         />
                         <span className="base-node__port-label">{port.label}</span>
                     </div>
@@ -55,6 +57,8 @@ export function BaseNode({ nodeType, children, className = '' }: BaseNodeProps) 
                             id={port.id}
                             position={Position.Right}
                             className={`base-node__handle base-node__handle--${port.dataType}`}
+                            title={`Output: ${port.id} (${port.dataType})`}
+                            onClick={() => console.log('Handle clicked:', port.id)}
                         />
                     </div>
                 ))}

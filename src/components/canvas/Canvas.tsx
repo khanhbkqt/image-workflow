@@ -184,17 +184,19 @@ function CanvasInner() {
         [screenToFlowPosition, addNode, nodes, flashNode],
     );
 
+    // Read live state from store — avoids stale closure in isValidConnection
     const isValidConnectionFn = useCallback(
         (edgeOrConnection: import('@xyflow/react').Edge | import('@xyflow/react').Connection) => {
+            const { nodes: liveNodes, edges: liveEdges } = useCanvasStore.getState();
             const connection: import('@xyflow/react').Connection = {
                 source: edgeOrConnection.source,
                 target: edgeOrConnection.target,
                 sourceHandle: edgeOrConnection.sourceHandle ?? null,
                 targetHandle: edgeOrConnection.targetHandle ?? null,
             };
-            return isValidConnection(connection, nodes, edges);
+            return isValidConnection(connection, liveNodes, liveEdges);
         },
-        [nodes, edges]
+        [] // stable — reads from store directly
     );
 
     return (
