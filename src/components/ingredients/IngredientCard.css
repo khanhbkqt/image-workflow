@@ -8,7 +8,7 @@
     gap: var(--space-2);
     padding: var(--space-2) var(--space-3);
     border-radius: var(--radius-md);
-    cursor: pointer;
+    cursor: grab;
     transition:
         background var(--duration-fast) var(--ease-default),
         transform var(--duration-fast) var(--ease-default);
@@ -81,11 +81,12 @@
 /* ── Thumbnail ───────────────────────────────────────────────────── */
 .ingredient-card__thumb {
     flex-shrink: 0;
-    width: 28px;
-    height: 28px;
-    border-radius: var(--radius-sm);
+    width: 36px;
+    height: 36px;
+    border-radius: var(--radius-md);
     object-fit: cover;
     border: 1px solid var(--border-default);
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12);
 }
 
 /* ── Actions ─────────────────────────────────────────────────────── */
@@ -127,27 +128,28 @@
     color: var(--error);
 }
 
-/* ── Drag ─────────────────────────────────────────────────────────── */
-.ingredient-card {
-    cursor: grab;
-}
-
-.ingredient-card__drag-grip {
-    flex-shrink: 0;
-    font-size: 14px;
-    color: var(--text-muted);
-    opacity: 0;
-    transition: opacity var(--duration-fast) var(--ease-default);
-    cursor: grab;
-    user-select: none;
-    line-height: 1;
-}
-
-.ingredient-card:hover .ingredient-card__drag-grip {
-    opacity: 1;
-}
-
+/* ── Dragging State ──────────────────────────────────────────────── */
 .ingredient-card--dragging {
     opacity: 0.45;
     cursor: grabbing;
+}
+
+/* ── Responsive: 2-column grid for wider sidebars ────────────────── */
+@container sidebar (min-width: 320px) {
+    .il-group__items {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: var(--space-1);
+    }
+
+    /* In grid mode, show compact cards */
+    .ingredient-card {
+        padding: var(--space-1) var(--space-2);
+    }
+
+    .ingredient-card__tag-pills,
+    .ingredient-card__thumb,
+    .ingredient-card__bundle-info {
+        display: none;
+    }
 }

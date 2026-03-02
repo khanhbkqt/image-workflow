@@ -59,7 +59,6 @@ export function IngredientCard({ ingredient, onEdit, onDelete, highlightTags }: 
             onDragEnd={handleDragEnd}
             onClick={() => onEdit(ingredient)}
         >
-            <div className="ingredient-card__drag-grip" title="Drag to canvas">⠿</div>
             <div className="ingredient-card__icon">{meta.icon}</div>
             <div className="ingredient-card__info">
                 <span className="ingredient-card__name">{ingredient.name}</span>
