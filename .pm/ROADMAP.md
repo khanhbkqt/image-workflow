@@ -81,7 +81,8 @@ A macOS desktop app for visual, composable AI image generation. Build workflows 
 | 2 | Generate Node | 3 plans (2 waves) | ✅ completed |
 | 3 | Image-Based Generation | 3 plans (2 waves) | ✅ completed |
 | 4 | Generation Queue | 4 plans (3 waves) | ✅ completed |
-| 5 | Generate Ingredient Node | — | ⬚ not_started |
+| 5 | Flow API Integration (Nano Banana) | — | ⬚ not_started |
+| 6 | Generate Ingredient Node | — | ⬚ not_started |
 
 ---
 
@@ -106,5 +107,5 @@ A macOS desktop app for visual, composable AI image generation. Build workflows 
 | v1.1 Ingredient System | ✅ archived | 5/5 |
 | v1.2 Node-Based Workflows | ✅ completed | 8/8 |
 | v2.0 Prompt Flow Engine | ✅ completed | 3/3 |
-| v1.3 AI Generation Engine | 🔵 active | 5/5 phases (4 complete, 1 not started) |
+| v1.3 AI Generation Engine | 🔵 active | 6/6 phases (4 complete, 2 not started) |
 | v1.4 Export & MCP Server | 📋 planned | 0/4 |

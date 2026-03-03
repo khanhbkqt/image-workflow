@@ -18,11 +18,12 @@ Integrate Google Labs APIs (ImageFX, Whisk, Flow) for text-to-image and image-ba
 | 2 | Generate Node | ✅ completed |
 | 3 | Image-Based Generation | ✅ completed |
 | 4 | Generation Queue | ✅ completed |
-| 5 | Generate Ingredient Node | ⬚ not_started |
+| 5 | Flow API Integration (Nano Banana) | ⬚ not_started |
+| 6 | Generate Ingredient Node | ⬚ not_started |
 
 ### Current Position
 
-Phase 3 (Image-Based Generation) is now complete — all 3 plans across 2 waves executed and verified.
+Phase 4 (Generation Queue) is now complete. Phases 5 and 6 were re-ordered: Flow API Integration (Nano Banana) is now Phase 5, Generate Ingredient Node is Phase 6.
 
 ---
 
@@ -41,7 +42,8 @@ Phase 3 (Image-Based Generation) is now complete — all 3 plans across 2 waves 
 
 ## Next Steps
 
-1. **Execute Phase 5** (Generate Ingredient Node) — not started
+1. **Plan & Execute Phase 5** (Flow API Integration — Nano Banana) — not started
+2. **Plan & Execute Phase 6** (Generate Ingredient Node) — depends on Phase 5
 
 
 ---
