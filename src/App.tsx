@@ -73,6 +73,8 @@ function App() {
   const [recipeDialog, setRecipeDialog] = useState<RecipeDialogType>(null);
   const [selectedRecipe, setSelectedRecipe] = useState<RecipeMeta | null>(null);
 
+  const loadSavedAuth = useAuthStore((s) => s.loadSavedAuth);
+
   /* Load/clear canvas when the active project changes */
   useEffect(() => {
     if (activeProjectId) {
@@ -81,6 +83,11 @@ function App() {
       clearCanvas();
     }
   }, [activeProjectId, loadCanvas, clearCanvas]);
+
+  /* Restore saved auth on mount → also injects cookies into Flow BrowserView */
+  useEffect(() => {
+    loadSavedAuth();
+  }, [loadSavedAuth]);
 
   const handleBack = () => {
     clearCanvas();
