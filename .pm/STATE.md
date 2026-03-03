@@ -1,6 +1,6 @@
 # Image Workflow — Current State
 
-**Last updated:** 2026-03-03T07:50:00+07:00
+**Last updated:** 2026-03-03T10:25:00+07:00
 
 ---
 
@@ -16,31 +16,31 @@ Integrate Google Labs APIs (ImageFX, Whisk, Flow) for text-to-image and image-ba
 |---|-------|--------|
 | 1 | API Integration | ✅ completed |
 | 2 | Generate Node | ✅ completed |
-| 3 | Image-Based Generation | ⬚ not_started |
-| 4 | Generation Queue | ⬚ not_started |
+| 3 | Image-Based Generation | 🔄 planning |
+| 4 | Generation Queue | ✅ completed |
 | 5 | Generate Ingredient Node | ⬚ not_started |
 
 ### Current Position
 
-Phase 2 (Generate Node) is complete — all 3 plans across 2 waves executed and verified.
+Phase 4 (Generation Queue) is complete — all 4 plans across 3 waves executed and verified.
 
 ---
 
 ## What Was Done (Last Session)
 
-- Completed Phase 2 (Generate Node) with 3 plans:
-  - **Plan 2.1** (wave 1): Extended `PromptNodeData` with generation state fields, created `useGenerate()` hook
-  - **Plan 2.2** (wave 2): Added model selector, aspect ratio picker, generate button with loading/error states to PromptNode
-  - **Plan 2.3** (wave 2): Added image results grid with thumbnail selection, output wiring (`outputImage`/`outputSeed`)
-- TypeScript compilation passes cleanly
-- Visual smoke test verified in browser
+- Completed Phase 4 (Generation Queue) with 4 plans:
+  - **Plan 4.1** (wave 1): Added `QueueJob`, `QueueJobStatus`, `GenerationQueueState` types to `generation.ts`; created `generationQueueStore.ts` with full CRUD
+  - **Plan 4.2** (wave 2): Implemented async `processNext()` in queue store — mutex guarded, 2× retry on retryable errors, writes results back to canvasStore
+  - **Plan 4.3** (wave 2): Refactored `useGenerate` to enqueue jobs via queue store; added `queuePosition`, `cancel()`, and updated `PromptNode` UI
+  - **Plan 4.4** (wave 3): Created `QueueBadge` floating component; mounted in `Canvas.tsx` — shows active/pending count with spinner and a clear button
+- TypeScript compilation passes cleanly throughout
 
 ---
 
 ## Next Steps
 
-1. **Plan Phase 3** (Image-Based Generation) — decompose into executable plans
-2. **Execute Phase 3** — integrate Whisk for subject/scene/style image inputs
+1. **Execute Phase 3** (Image-Based Generation) — plans still in `planning` status, need execution
+2. **Execute Phase 5** (Generate Ingredient Node) — not started
 
 ---
 
@@ -69,7 +69,7 @@ src/
 │   └── ui/                    # Shared UI components
 ├── hooks/                     # Custom React hooks
 ├── services/                  # Service layer (storage, generation)
-├── stores/                    # Zustand stores (canvas, project, auth)
+├── stores/                    # Zustand stores (canvas, project, auth, generationQueue)
 ├── styles/                    # Design system tokens
 ├── types/                     # TypeScript type definitions
 └── utils/                     # Utility functions
