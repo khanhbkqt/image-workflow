@@ -57,7 +57,7 @@ export function PromptNode({ id, data }: NodeProps) {
 
     const updateNodeData = useCanvasStore((s) => s.updateNodeData);
     const openSettings = useAuthStore((s) => s.openSettings);
-    const { generate, retry, isGenerating, canGenerate, isAuthenticated, generationMode } =
+    const { generate, retry, cancel, isGenerating, canGenerate, isAuthenticated, generationMode, queuePosition } =
         useGenerate(id);
 
     const [localPrompt, setLocalPrompt] = useState<string>(String(prompt));
@@ -166,25 +166,45 @@ export function PromptNode({ id, data }: NodeProps) {
             );
         }
 
+        if (isGenerating) {
+            // Pending — show queue position + cancel option
+            if (queuePosition !== null) {
+                return (
+                    <button
+                        className="prompt-node__generate-btn prompt-node__generate-btn--loading nodrag"
+                        onClick={cancel}
+                        type="button"
+                    >
+                        <span className="prompt-node__queue-pos">#{queuePosition} in queue</span>
+                        <span className="prompt-node__cancel-hint">✕ Cancel</span>
+                    </button>
+                );
+            }
+            // Running — show spinner + cancel option
+            return (
+                <button
+                    className="prompt-node__generate-btn prompt-node__generate-btn--loading nodrag"
+                    onClick={cancel}
+                    type="button"
+                >
+                    <span className="prompt-node__spinner" />
+                    Generating… ✕
+                </button>
+            );
+        }
+
         return (
             <button
-                className={`prompt-node__generate-btn nodrag ${isGenerating ? 'prompt-node__generate-btn--loading' : ''
-                    }`}
+                className="prompt-node__generate-btn nodrag"
                 onClick={generate}
                 disabled={!canGenerate}
                 type="button"
             >
-                {isGenerating ? (
-                    <>
-                        <span className="prompt-node__spinner" />
-                        Generating…
-                    </>
-                ) : (
-                    '✨ Generate'
-                )}
+                ✨ Generate
             </button>
         );
     };
+
 
     const getSlotImage = (slotType: WhiskSlotType) =>
         whiskSlots.find((s) => s.slotType === slotType)?.imageData;

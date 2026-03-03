@@ -395,6 +395,31 @@
     }
 }
 
+/* ── Queue Position & Cancel ────────────────────────────────────────── */
+
+.prompt-node__generate-btn--loading {
+    cursor: pointer;
+    /* override wait cursor so cancel is clickable */
+}
+
+.prompt-node__queue-pos {
+    font-size: 10px;
+    color: rgba(255, 255, 255, 0.7);
+    letter-spacing: 0.02em;
+}
+
+.prompt-node__cancel-hint {
+    font-size: 9px;
+    color: rgba(255, 255, 255, 0.4);
+    transition: color 0.15s ease;
+}
+
+.prompt-node__generate-btn--loading:hover .prompt-node__cancel-hint {
+    color: rgba(248, 113, 113, 0.85);
+}
+
+
+
 /* ── Error Banner ────────────────────────────────────────────────────── */
 
 .prompt-node__error {

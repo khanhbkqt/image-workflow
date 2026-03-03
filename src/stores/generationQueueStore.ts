@@ -1,5 +1,7 @@
 import { create } from 'zustand';
 import type { QueueJob, GenerationQueueState } from '../types/generation';
+import { generationService } from '../services/generationService';
+import { useCanvasStore } from './canvasStore';
 
 function makeJobId(): string {
     return `job-${Date.now()}-${Math.random().toString(36).slice(2, 7)}`;
@@ -63,9 +65,109 @@ export const useGenerationQueueStore = create<GenerationQueueState>((set, get) =
         }));
     },
 
-    // Placeholder — replaced by Plan 4.2 with full async logic
+    // ── Async queue processor ─────────────────────────────────────────
     processNext: async () => {
-        // Will be implemented in Plan 4.2
+        const state = get();
+        if (state.processing) return; // already running — mutex guard
+
+        const nextJob = state.jobs.find((j) => j.status === 'pending');
+        if (!nextJob) return; // queue empty
+
+        // Acquire processing lock
+        set({ processing: true, activeJobId: nextJob.id });
+        get().updateJob(nextJob.id, {
+            status: 'running',
+            startedAt: new Date().toISOString(),
+        });
+
+        try {
+            const req = nextJob.request;
+            let result;
+
+            if (
+                'imageSlots' in req &&
+                req.imageSlots?.length &&
+                req.provider === 'whisk'
+            ) {
+                result = await generationService.generateWhisk({
+                    prompt: req.prompt,
+                    imageSlots: req.imageSlots,
+                    aspectRatio: req.aspectRatio,
+                    seed: req.seed,
+                });
+            } else {
+                result = await generationService.generate(req);
+            }
+
+            if ('error' in result) {
+                const isRetryable =
+                    result.error.retryable && nextJob.retryCount < 2;
+
+                if (isRetryable) {
+                    // Put the job back to pending with incremented retry count
+                    get().updateJob(nextJob.id, {
+                        status: 'pending',
+                        retryCount: nextJob.retryCount + 1,
+                        error: result.error,
+                    });
+                } else {
+                    get().updateJob(nextJob.id, {
+                        status: 'error',
+                        error: result.error,
+                        completedAt: new Date().toISOString(),
+                    });
+                    useCanvasStore.getState().updateNodeData(nextJob.nodeId, {
+                        generationStatus: 'error',
+                        generationError: result.error,
+                    });
+                }
+            } else {
+                get().updateJob(nextJob.id, {
+                    status: 'done',
+                    result,
+                    completedAt: new Date().toISOString(),
+                });
+                // Write result back to node data
+                useCanvasStore.getState().updateNodeData(nextJob.nodeId, {
+                    generationStatus: 'success',
+                    generatedImages: result.images,
+                    selectedImageIndex: 0,
+                    generationError: undefined,
+                    outputImage: result.images[0]?.encodedImage,
+                    outputSeed: result.images[0]?.seed,
+                });
+            }
+        } catch (err: unknown) {
+            const message =
+                err instanceof Error ? err.message : 'Unexpected error during generation';
+            const error = {
+                code: 'UNEXPECTED',
+                message,
+                retryable: true,
+            };
+
+            if (nextJob.retryCount < 2) {
+                get().updateJob(nextJob.id, {
+                    status: 'pending',
+                    retryCount: nextJob.retryCount + 1,
+                    error,
+                });
+            } else {
+                get().updateJob(nextJob.id, {
+                    status: 'error',
+                    error,
+                    completedAt: new Date().toISOString(),
+                });
+                useCanvasStore.getState().updateNodeData(nextJob.nodeId, {
+                    generationStatus: 'error',
+                    generationError: error,
+                });
+            }
+        } finally {
+            set({ processing: false, activeJobId: null });
+            // Chain to next job in queue
+            get().processNext();
+        }
     },
 
     pendingCount: () => {
