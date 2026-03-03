@@ -4,8 +4,16 @@
 /* Enterprise tokens needed for the Flow API.                            */
 
 import { BrowserView, BrowserWindow } from 'electron';
+import type { CookiesSetDetails } from 'electron';
 
 const FLOW_URL = 'https://labs.google/fx/tools/flow';
+
+/** Google domains where cookies should be injected. */
+const GOOGLE_DOMAINS = [
+    '.google.com',
+    '.labs.google',
+    'labs.google',
+];
 
 /** Cache entry for the Bearer token with TTL. */
 interface TokenCache {
@@ -177,6 +185,54 @@ export class FlowBrowserViewManager {
 
         // Default project ID used by labs.google/fx/tools/flow for anonymous users
         return 'labs-goog-website-prod';
+    }
+
+    /**
+     * Inject a raw cookie string (from the existing Google auth) into the
+     * Flow BrowserView session so labs.google treats the user as signed in.
+     *
+     * Call this whenever the user's cookie is set/updated in the app.
+     */
+    async injectCookies(rawCookieString: string): Promise<void> {
+        if (!this.view) return;
+
+        const session = this.view.webContents.session;
+
+        // Parse "name=value; name2=value2" pairs
+        const pairs = rawCookieString.split(';').map((p) => p.trim()).filter(Boolean);
+
+        for (const pair of pairs) {
+            const eqIdx = pair.indexOf('=');
+            if (eqIdx < 0) continue;
+            const name = pair.slice(0, eqIdx).trim();
+            const value = pair.slice(eqIdx + 1).trim();
+            if (!name || !value) continue;
+
+            // Set the cookie across all Google domains
+            for (const domain of GOOGLE_DOMAINS) {
+                const cookieDetails: CookiesSetDetails = {
+                    url: `https://${domain.replace(/^\./, '')}/`,
+                    domain,
+                    name,
+                    value,
+                    path: '/',
+                    secure: true,
+                    httpOnly: false,
+                    sameSite: 'no_restriction',
+                    expirationDate: Math.floor(Date.now() / 1000) + 60 * 60 * 24 * 365, // 1 year
+                };
+                await session.cookies.set(cookieDetails).catch(() => {
+                    // Ignore individual cookie errors (invalid name/value combos)
+                });
+            }
+        }
+
+        // Invalidate any cached Bearer token — it may be for the wrong account
+        this.tokenCache = null;
+        this.loaded = false;
+
+        // Reload the Flow page so it picks up the newly injected session
+        this.view.webContents.loadURL(FLOW_URL).catch(() => { });
     }
 
     /** Destroy the BrowserView and clean up. */

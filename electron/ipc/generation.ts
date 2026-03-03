@@ -31,6 +31,12 @@ function setClientsFromAuth(client: ImageFX, cookie: string, user: typeof lastUs
     whiskClient = new Whisk(cookie);
     currentCookie = cookie;
     lastUser = user;
+
+    // Inject the same Google cookie into the Flow BrowserView session so
+    // labs.google is authenticated automatically (Option 2: share cookies).
+    flowView.injectCookies(cookie).catch(() => {
+        // Non-fatal — Flow generation will show FLOW_AUTH_REQUIRED if it fails
+    });
 }
 
 function clearClients() {
