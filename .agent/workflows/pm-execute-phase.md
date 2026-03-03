@@ -12,8 +12,10 @@ After plans have been created for a phase (via the Plan Phase workflow) and you'
 
 ## Prerequisites
 
-- Phase has plans (`pm plan list --phase <phase-id> --json`)
+- Phase has plans — confirm by resolving `<phase-id>` first (see Step 0), then: `pm plan list --phase <phase-id> --json`
 - Plans are in `pending` status
+
+> ⚠️ `<phase-id>` is the database integer ID, **not** the phase number the user refers to (e.g. "Phase 2"). Always resolve via `pm phase list --json`.
 
 ## Rules
 
@@ -29,12 +31,21 @@ Before executing any plans, quickly understand the current state:
 
 1. **Read `.pm/ROADMAP.md`**
    - Identify the active milestone and its must-haves
-   - Identify the current phase and its objective
+   - Identify the current phase **number** and its objective
 2. **Read `.pm/STATE.md`**
    - Check where the last session left off
 
-3. **Retrieve phase id**
-   - Get the db `<phase-id>` from current milestone and phase number
+3. **Resolve the phase-id from the phase number**
+
+   > ⚠️ **CRITICAL:** The user refers to phases by their **number** (e.g. "Phase 3"). This is NOT the database `<phase-id>`. You MUST look up the actual integer ID before running any `pm` command.
+
+   ```bash
+   pm phase list --json
+   ```
+
+   Find the entry where `"number": <N>` matches the phase the user requested. Use its `"id"` field as `<phase-id>` in all subsequent commands.
+
+   **Example:** If the user says "execute Phase 3", find `"number": 3` in the output and read its `"id"` (e.g. `42`). All further commands use `--phase 42`, not `--phase 3`.
 
 _This ensures you don't execute plans blindly without understanding the wider phase goal._
 

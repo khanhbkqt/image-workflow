@@ -102,3 +102,48 @@ export const IPC_CHANNELS = {
 } as const;
 
 export type IpcChannel = (typeof IPC_CHANNELS)[keyof typeof IPC_CHANNELS];
+
+/* ── Generation Queue ───────────────────────────────────────────────── */
+
+/** Lifecycle status of a single queue job. */
+export type QueueJobStatus = 'pending' | 'running' | 'done' | 'error';
+
+/** A single job in the generation queue. */
+export interface QueueJob {
+    /** Unique job identifier */
+    id: string;
+    /** The canvas node this job belongs to */
+    nodeId: string;
+    /** The generation request payload */
+    request: GenerationRequest;
+    /** Current lifecycle status */
+    status: QueueJobStatus;
+    /** How many times this job has been retried */
+    retryCount: number;
+    /** When the job was enqueued (ISO string) */
+    enqueuedAt: string;
+    /** When the job started processing */
+    startedAt?: string;
+    /** When the job finished (success or final error) */
+    completedAt?: string;
+    /** Result on success */
+    result?: GenerationResult;
+    /** Error on failure */
+    error?: GenerationError;
+}
+
+/** Shape of the Zustand generation queue store. */
+export interface GenerationQueueState {
+    jobs: QueueJob[];
+    activeJobId: string | null;
+    processing: boolean;
+    enqueue: (nodeId: string, request: GenerationRequest) => string; // returns jobId
+    cancelJob: (jobId: string) => void;
+    removeJob: (jobId: string) => void;
+    clearCompleted: () => void;
+    updateJob: (jobId: string, patch: Partial<QueueJob>) => void;
+    processNext: () => Promise<void>;
+    // Derived helpers
+    pendingCount: () => number;
+    jobForNode: (nodeId: string) => QueueJob | undefined;
+}

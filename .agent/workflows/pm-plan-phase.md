@@ -90,27 +90,43 @@ pm context set "phase-{N}-research" "{key findings}" --category decision
 
 ## Step 4: Create Plans
 
-Each `pm plan create` does **two things**:
+For each plan, do **two things in sequence**:
 
-1. **Database** — stores the `--content` as a short brief for dashboard/CLI quick view
-2. **Filesystem** — generates a comprehensive doc from `.pm/templates/PLAN.md` and writes it to `.pm/milestones/<milestone-id>/<phase-number>/<N>-PLAN.md`
+### 4a. Register in the database
 
 ```bash
 pm plan create "<plan-name>" \
   --phase <phase-id> \
   --number <N> \
   --wave <wave-number> \
-  --content "<short brief describing the plan's purpose>"
+  --content "<one-line brief describing the plan's purpose>"
 ```
 
-The generated file is ready to use during execution — no editing needed.
+This stores a short brief in the DB for the dashboard/CLI quick view. Note the returned `<plan-id>`.
 
-To view a plan:
+### 4b. Generate the comprehensive plan file
+
+Read the template:
 ```bash
-# Quick view (brief from DB):
-pm plan show <plan-id>
+cat .pm/templates/PLAN.md
+```
 
-# Full content (comprehensive doc from file):
+Using the template as a base, generate a **comprehensive plan document** that fills in:
+- **Objective** — what this plan achieves
+- **Context** — relevant files, dependencies, prior state
+- **Tasks** — numbered, atomic steps to execute
+- **Verification** — exact commands to prove completion
+- **Success criteria** — measurable outcomes
+
+Write the populated document to:
+```
+.pm/milestones/<milestone-id>/<phase-number>/<N>-PLAN.md
+```
+
+> The `<N>-PLAN.md` file is what the execute-phase workflow reads. It must be written **before** execution begins.
+
+To confirm the plan file exists after writing:
+```bash
 cat .pm/milestones/<milestone-id>/<phase-number>/<plan-number>-PLAN.md
 ```
 
