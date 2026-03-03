@@ -94,9 +94,12 @@ export async function generateImages(params: {
 
     /** clientContext is required at BOTH the top level and inside each request item */
     const clientCtx = {
-        recaptchaContext: recaptchaToken
-            ? { token: recaptchaToken, applicationType: 'RECAPTCHA_APPLICATION_TYPE_WEB' }
-            : undefined,
+        ...(recaptchaToken ? {
+            recaptchaContext: {
+                token: recaptchaToken,
+                applicationType: 'RECAPTCHA_APPLICATION_TYPE_WEB',
+            },
+        } : {}),
         projectId,
         tool: 'PINHOLE',
         sessionId,
