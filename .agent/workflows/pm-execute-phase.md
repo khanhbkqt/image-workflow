@@ -33,13 +33,14 @@ Before executing any plans, quickly understand the current state:
 2. **Read `.pm/STATE.md`**
    - Check where the last session left off
 
+3. **Retrieve phase id**
+   - Get the db `<phase-id>` from current milestone and phase number
+
 _This ensures you don't execute plans blindly without understanding the wider phase goal._
 
 ---
 
 ## Step 1: Review Plans and Wave Order
-
-Retrive target phase of current milestone and get the `<phase-id>`
 
 ```bash
 pm plan list --phase <phase-id> --json
