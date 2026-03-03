@@ -16,6 +16,12 @@ contextBridge.exposeInMainWorld('electronAPI', {
     seed?: number;
     numberOfImages?: number;
   }) => ipcRenderer.invoke('generation:generate', request),
+  generateWhisk: (request: {
+    prompt: string;
+    imageSlots: Array<{ slotType: string; imageData: string }>;
+    aspectRatio?: string;
+    seed?: number;
+  }) => ipcRenderer.invoke('generation:generate-whisk', request),
   getAuthStatus: () =>
     ipcRenderer.invoke('generation:auth-status'),
   setAuthCookie: (cookie: string) =>

@@ -14,9 +14,21 @@ export type AspectRatio =
     | 'IMAGE_ASPECT_RATIO_LANDSCAPE_FOUR_THREE'
     | 'IMAGE_ASPECT_RATIO_UNSPECIFIED';
 
+/* ── Whisk (Image-Based Generation) ────────────────────────────────── */
+
+/** Category of image input for Whisk generation. */
+export type WhiskSlotType = 'subject' | 'scene' | 'style';
+
+/** A single image input slot for Whisk generation. */
+export interface WhiskImageSlot {
+    slotType: WhiskSlotType;
+    /** Base64-encoded image data */
+    imageData: string;
+}
+
 /* ── Request / Response ─────────────────────────────────────────────── */
 
-/** Parameters for a text-to-image generation request. */
+/** Parameters for a generation request (ImageFX text-to-image or Whisk image-based). */
 export interface GenerationRequest {
     prompt: string;
     model?: GenerationModel;
@@ -24,6 +36,8 @@ export interface GenerationRequest {
     seed?: number;
     numberOfImages?: number;
     provider: GenerationProvider;
+    /** Whisk-only: image input slots for subject/scene/style. */
+    imageSlots?: WhiskImageSlot[];
 }
 
 /** A single generated image from the API. */
@@ -80,6 +94,7 @@ export interface AuthState {
 /** Channel names for Electron main ↔ renderer IPC communication. */
 export const IPC_CHANNELS = {
     GENERATE: 'generation:generate',
+    GENERATE_WHISK: 'generation:generate-whisk',
     CANCEL: 'generation:cancel',
     AUTH_VALIDATE: 'generation:auth-validate',
     AUTH_STATUS: 'generation:auth-status',

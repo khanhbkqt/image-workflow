@@ -2,7 +2,7 @@
 /* Renderer-side wrapper around Electron IPC. Falls back to mock         *
  * responses when running in browser dev mode (no Electron).             */
 
-import type { AuthState, GenerationRequest, GenerationResult, GenerationError } from '../types/generation';
+import type { AuthState, GenerationRequest, GenerationResult, GenerationError, WhiskImageSlot } from '../types/generation';
 
 function isElectron(): boolean {
     return typeof window !== 'undefined' && !!window.electronAPI;
@@ -20,7 +20,7 @@ async function validateAuth(cookie: string): Promise<AuthState> {
     return window.electronAPI!.validateAuth(cookie);
 }
 
-/** Generate images from a text prompt. */
+/** Generate images from a text prompt (ImageFX). */
 async function generate(request: GenerationRequest): Promise<GenerationResult | { error: GenerationError }> {
     if (!isElectron()) {
         return {
@@ -32,6 +32,25 @@ async function generate(request: GenerationRequest): Promise<GenerationResult | 
         };
     }
     return window.electronAPI!.generate(request);
+}
+
+/** Generate images using Whisk (image-based generation). */
+async function generateWhisk(request: {
+    prompt: string;
+    imageSlots: WhiskImageSlot[];
+    aspectRatio?: string;
+    seed?: number;
+}): Promise<GenerationResult | { error: GenerationError }> {
+    if (!isElectron()) {
+        return {
+            error: {
+                code: 'NOT_ELECTRON',
+                message: 'Whisk generation requires the Electron desktop app.',
+                retryable: false,
+            },
+        };
+    }
+    return window.electronAPI!.generateWhisk(request);
 }
 
 /** Get current authentication status. */
@@ -63,6 +82,7 @@ async function cancelGeneration(): Promise<void> {
 export const generationService = {
     validateAuth,
     generate,
+    generateWhisk,
     getAuthStatus,
     setAuthCookie,
     cancelGeneration,

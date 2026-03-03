@@ -3,9 +3,11 @@
 
 import { ipcMain } from 'electron';
 import { ImageFX, Prompt as ImageFXPrompt } from '@rohitaryal/imagefx-api';
+import { Whisk } from '@rohitaryal/whisk-api';
 
 /* ── State ── */
 let imagefxClient: ImageFX | null = null;
+let whiskClient: Whisk | null = null;
 let currentCookie: string | null = null;
 let lastUser: { name: string; email: string; image?: string } | null = null;
 
@@ -20,6 +22,21 @@ function getAuthState() {
     };
 }
 
+/** Create both ImageFX and Whisk clients from a validated cookie. */
+function setClientsFromAuth(client: ImageFX, cookie: string, user: typeof lastUser) {
+    imagefxClient = client;
+    whiskClient = new Whisk(cookie);
+    currentCookie = cookie;
+    lastUser = user;
+}
+
+function clearClients() {
+    imagefxClient = null;
+    whiskClient = null;
+    currentCookie = null;
+    lastUser = null;
+}
+
 /* ── Register Handlers ── */
 export function registerGenerationHandlers(): void {
 
@@ -27,29 +44,23 @@ export function registerGenerationHandlers(): void {
     ipcMain.handle('generation:auth-validate', async (_event, cookie: string) => {
         try {
             const client = new ImageFX(cookie);
-            // The Account constructor + refreshSession validates the cookie
-            // The ImageFX constructor creates an Account internally
-            // We try a lightweight operation to confirm the token works
-            // Access the internal account to get user info
             const account = (client as any).account;
             await account.refreshSession();
 
-            imagefxClient = client;
-            currentCookie = cookie;
-            lastUser = account.user ? {
+            const user = account.user ? {
                 name: account.user.name,
                 email: account.user.email,
                 image: account.user.image,
             } : null;
+
+            setClientsFromAuth(client, cookie, user);
 
             return {
                 status: 'valid' as const,
                 user: lastUser ?? undefined,
             };
         } catch (err: any) {
-            imagefxClient = null;
-            currentCookie = null;
-            lastUser = null;
+            clearClients();
             return {
                 status: 'invalid' as const,
                 error: err?.message ?? 'Failed to validate cookie',
@@ -69,13 +80,13 @@ export function registerGenerationHandlers(): void {
             const account = (client as any).account;
             await account.refreshSession();
 
-            imagefxClient = client;
-            currentCookie = cookie;
-            lastUser = account.user ? {
+            const user = account.user ? {
                 name: account.user.name,
                 email: account.user.email,
                 image: account.user.image,
             } : null;
+
+            setClientsFromAuth(client, cookie, user);
 
             return { status: 'valid' as const, user: lastUser ?? undefined };
         } catch (err: any) {
@@ -83,7 +94,7 @@ export function registerGenerationHandlers(): void {
         }
     });
 
-    /* ── Generate Image ── */
+    /* ── Generate Image (ImageFX — text-to-image) ── */
     ipcMain.handle('generation:generate', async (_event, request: {
         prompt: string;
         model?: string;
@@ -128,6 +139,80 @@ export function registerGenerationHandlers(): void {
                 error: {
                     code: 'GENERATION_FAILED',
                     message: err?.message ?? 'Image generation failed',
+                    retryable: true,
+                },
+            };
+        }
+    });
+
+    /* ── Generate Image (Whisk — image-based generation) ── */
+    ipcMain.handle('generation:generate-whisk', async (_event, request: {
+        prompt: string;
+        imageSlots: Array<{ slotType: string; imageData: string }>;
+        aspectRatio?: string;
+        seed?: number;
+    }) => {
+        if (!whiskClient) {
+            return {
+                error: {
+                    code: 'AUTH_REQUIRED',
+                    message: 'Not authenticated. Please set your Google cookie in Settings.',
+                    retryable: false,
+                },
+            };
+        }
+
+        let project: Awaited<ReturnType<Whisk['newProject']>> | null = null;
+
+        try {
+            project = await whiskClient.newProject(`gen-${Date.now()}`);
+
+            // Add image slots to the project
+            for (const slot of request.imageSlots) {
+                const imageInput = { base64: slot.imageData };
+                switch (slot.slotType) {
+                    case 'subject':
+                        await project.addSubject(imageInput);
+                        break;
+                    case 'scene':
+                        await project.addScene(imageInput);
+                        break;
+                    case 'style':
+                        await project.addStyle(imageInput);
+                        break;
+                }
+            }
+
+            // Generate with references
+            const media = await project.generateImageWithReferences({
+                prompt: request.prompt,
+                seed: request.seed,
+                aspectRatio: (request.aspectRatio as any) ?? 'IMAGE_ASPECT_RATIO_SQUARE',
+            });
+
+            // Clean up project (fire-and-forget)
+            project.delete().catch(() => { });
+
+            return {
+                images: [{
+                    encodedImage: media.encodedMedia,
+                    seed: media.seed,
+                    mediaGenerationId: media.mediaGenerationId,
+                    aspectRatio: media.aspectRatio,
+                }],
+                prompt: request.prompt,
+                model: 'IMAGEN_3_5' as const,
+                requestId: `whisk-${Date.now()}`,
+            };
+        } catch (err: any) {
+            // Clean up project on failure too
+            if (project) {
+                project.delete().catch(() => { });
+            }
+            return {
+                error: {
+                    code: 'GENERATION_FAILED',
+                    message: err?.message ?? 'Whisk image generation failed',
                     retryable: true,
                 },
             };
