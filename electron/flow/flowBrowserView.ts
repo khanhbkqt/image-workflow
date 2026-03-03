@@ -102,11 +102,13 @@ export class FlowBrowserViewManager {
 
     /**
      * Returns a valid OAuth2 Bearer token.
-     * Uses the cached token if still valid; otherwise waits for a new one
-     * by triggering a lightweight API probe request from the page context.
+     * Tries multiple extraction strategies:
+     * 1. Cached token from onBeforeSendHeaders intercept
+     * 2. Direct extraction from Google auth SDK (gapi / google.accounts)
+     * 3. Hooking the page's fetch to capture Authorization header
      */
     async getBearerToken(): Promise<string> {
-        // Return cached token if still valid
+        // 1. Return cached token if still valid
         if (this.tokenCache && Date.now() < this.tokenCache.expiresAt) {
             return this.tokenCache.token;
         }
@@ -115,34 +117,142 @@ export class FlowBrowserViewManager {
             throw new Error('FlowBrowserView not initialised');
         }
 
-        // Trigger a minimal fetch inside the page to emit a credentialed request,
-        // which will be intercepted by onBeforeSendHeaders above.
-        const PROBE_SCRIPT = `
+        // Wait for page load if not ready
+        if (!this.loaded) {
+            const loadDeadline = Date.now() + 15_000;
+            while (!this.loaded && Date.now() < loadDeadline) {
+                await new Promise<void>((r) => setTimeout(r, 500));
+            }
+        }
+
+        // 2. Try direct extraction from Google auth SDK
+        const SDK_EXTRACT = `
             (async () => {
+                // Method A: gapi.auth2 (classic Google Sign-In)
                 try {
-                    await fetch('https://aisandbox-pa.googleapis.com/v1/flow/ping', {
-                        method: 'GET',
-                        credentials: 'include',
-                    });
-                } catch (_) {
-                    // Ignore — we only need the auth header side-effect
-                }
+                    if (typeof gapi !== 'undefined' && gapi.auth2) {
+                        const instance = gapi.auth2.getAuthInstance();
+                        if (instance) {
+                            const user = instance.currentUser.get();
+                            if (user && user.isSignedIn()) {
+                                const authResp = user.getAuthResponse(true);
+                                if (authResp && authResp.access_token) {
+                                    return authResp.access_token;
+                                }
+                            }
+                        }
+                    }
+                } catch (_) {}
+
+                // Method B: Scrape from XHR/fetch intercepted token storage
+                // Some Google apps store the token in window.__GOOGLE_AUTH_TOKEN or similar
+                try {
+                    if (window.__GOOGLE_AUTH_TOKEN) return window.__GOOGLE_AUTH_TOKEN;
+                } catch (_) {}
+
+                // Method C: Hook into fetch to capture the next outgoing Authorization header
+                return new Promise((resolve) => {
+                    const origFetch = window.fetch;
+                    let resolved = false;
+                    window.fetch = function(...args) {
+                        const result = origFetch.apply(this, args);
+                        if (!resolved) {
+                            const req = args[1];
+                            const headers = req?.headers;
+                            let auth = null;
+                            if (headers instanceof Headers) {
+                                auth = headers.get('Authorization');
+                            } else if (headers && typeof headers === 'object') {
+                                auth = headers['Authorization'] || headers['authorization'];
+                            }
+                            if (auth && auth.startsWith('Bearer ')) {
+                                resolved = true;
+                                window.fetch = origFetch; // Restore
+                                resolve(auth.slice(7));
+                            }
+                        }
+                        return result;
+                    };
+                    // Trigger a request from the page to capture the token
+                    const btn = document.querySelector('button[aria-label*="Generate"], button[data-action*="generate"]');
+                    if (btn) btn.click();
+                    // Timeout after 5s
+                    setTimeout(() => {
+                        if (!resolved) {
+                            window.fetch = origFetch;
+                            resolve(null);
+                        }
+                    }, 5000);
+                });
             })();
         `;
 
-        await this.view.webContents.executeJavaScript(PROBE_SCRIPT).catch(() => null);
+        const token = await this.view.webContents
+            .executeJavaScript(SDK_EXTRACT, true)
+            .catch(() => null);
 
-        // Wait up to 10 s for the interceptor to capture the token
-        const deadline = Date.now() + 10_000;
-        while (Date.now() < deadline) {
-            if (this.tokenCache && Date.now() < this.tokenCache.expiresAt) {
-                return this.tokenCache.token;
-            }
-            await new Promise<void>((r) => setTimeout(r, 200));
+        if (token && typeof token === 'string') {
+            this.tokenCache = {
+                token,
+                expiresAt: Date.now() + this.TOKEN_TTL_MS,
+            };
+            return token;
         }
 
-        throw new Error('FLOW_AUTH_REQUIRED: Could not obtain Bearer token. Please sign in at labs.google/fx/tools/flow');
+        // 3. Check if onBeforeSendHeaders caught anything while we waited
+        if (this.tokenCache && Date.now() < this.tokenCache.expiresAt) {
+            return this.tokenCache.token;
+        }
+
+        throw new Error('FLOW_AUTH_REQUIRED: Could not obtain Bearer token. Ensure you are signed in at labs.google');
     }
+
+    /**
+     * Execute an authenticated fetch request INSIDE the BrowserView page context.
+     * Passes the Bearer token explicitly in the Authorization header.
+     * Returns the parsed JSON response.
+     */
+    async makeAuthenticatedRequest(url: string, body: object, bearerToken: string, contentType = 'application/json'): Promise<unknown> {
+        if (!this.view) {
+            throw new Error('FlowBrowserView not initialised');
+        }
+
+        const bodyJson = JSON.stringify(body).replace(/\\/g, '\\\\').replace(/'/g, "\\'");
+
+        const script = `
+            (async () => {
+                const resp = await fetch('${url}', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': '${contentType}',
+                        'Authorization': 'Bearer ${bearerToken}',
+                    },
+                    body: '${bodyJson}',
+                });
+                const text = await resp.text();
+                return { status: resp.status, ok: resp.ok, body: text };
+            })();
+        `;
+
+        const result = await this.view.webContents
+            .executeJavaScript(script, true) as { status: number; ok: boolean; body: string };
+
+        if (!result.ok) {
+            if (result.status === 401 || result.status === 403) {
+                // Invalidate cached token
+                this.tokenCache = null;
+                throw new Error(`FLOW_AUTH_REQUIRED: ${result.body.slice(0, 200)}`);
+            }
+            if (result.status === 429) {
+                throw new Error('FLOW_RATE_LIMITED: Too many requests');
+            }
+            throw new Error(`Flow API failed (${result.status}): ${result.body.slice(0, 500)}`);
+        }
+
+        return JSON.parse(result.body);
+    }
+
+
 
     /**
      * Returns the most recently captured reCAPTCHA Enterprise token from the
