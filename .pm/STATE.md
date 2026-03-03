@@ -1,6 +1,6 @@
 # Image Workflow — Current State
 
-**Last updated:** 2026-03-03T10:25:00+07:00
+**Last updated:** 2026-03-03T10:30:00+07:00
 
 ---
 
@@ -16,31 +16,33 @@ Integrate Google Labs APIs (ImageFX, Whisk, Flow) for text-to-image and image-ba
 |---|-------|--------|
 | 1 | API Integration | ✅ completed |
 | 2 | Generate Node | ✅ completed |
-| 3 | Image-Based Generation | 🔄 planning |
+| 3 | Image-Based Generation | ✅ completed |
 | 4 | Generation Queue | ✅ completed |
 | 5 | Generate Ingredient Node | ⬚ not_started |
 
 ### Current Position
 
-Phase 4 (Generation Queue) is complete — all 4 plans across 3 waves executed and verified.
+Phase 3 (Image-Based Generation) is now complete — all 3 plans across 2 waves executed and verified.
 
 ---
 
 ## What Was Done (Last Session)
 
-- Completed Phase 4 (Generation Queue) with 4 plans:
-  - **Plan 4.1** (wave 1): Added `QueueJob`, `QueueJobStatus`, `GenerationQueueState` types to `generation.ts`; created `generationQueueStore.ts` with full CRUD
-  - **Plan 4.2** (wave 2): Implemented async `processNext()` in queue store — mutex guarded, 2× retry on retryable errors, writes results back to canvasStore
-  - **Plan 4.3** (wave 2): Refactored `useGenerate` to enqueue jobs via queue store; added `queuePosition`, `cancel()`, and updated `PromptNode` UI
-  - **Plan 4.4** (wave 3): Created `QueueBadge` floating component; mounted in `Canvas.tsx` — shows active/pending count with spinner and a clear button
+- Fixed blocking bug 294a6aaa: Node connector handles not displaying
+  - Root cause: `backdrop-filter: blur(14px)` on `.prompt-node` creates a stacking context
+  - Fix: added `z-index: 0` and `position: relative` to `.base-node__content` in `BaseNode.css`
+- Completed Phase 3 (Image-Based Generation) — confirming all 3 plans already implemented:
+  - **Plan 3.1** (wave 1): Added `WhiskImageSlot`, `WhiskSlotType`, `WhiskGenerationRequest` types; added `generation:generate-whisk` IPC handler in `electron/ipc/generation.ts`
+  - **Plan 3.2** (wave 1): Added `generateWhisk()` to `generationService.ts`; extended `preload.ts` and ElectronAPI typings
+  - **Plan 3.3** (wave 2): PromptNode mode toggle (Text/Image), Whisk image slots (subject/scene/style), clipboard paste, clear button; `useGenerate` routes to Whisk based on `generationMode`
 - TypeScript compilation passes cleanly throughout
 
 ---
 
 ## Next Steps
 
-1. **Execute Phase 3** (Image-Based Generation) — plans still in `planning` status, need execution
-2. **Execute Phase 5** (Generate Ingredient Node) — not started
+1. **Execute Phase 5** (Generate Ingredient Node) — not started
+
 
 ---
 
