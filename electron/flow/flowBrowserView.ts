@@ -254,10 +254,9 @@ export class FlowBrowserViewManager {
 
     /**
      * Execute an entire Flow generation request inside the BrowserView page.
-     * This is the most reliable method because:
-     * - reCAPTCHA token is generated in the page's own context (always valid)
-     * - Bearer token is extracted from the page's auth SDK
-     * - fetch runs from the page's origin (no CORS issues)
+     * - reCAPTCHA token generated in-page via grecaptcha.enterprise (always valid)
+     * - Auth via session cookies with credentials:'include' (no OAuth Bearer needed for generation)
+     * - fetch runs from page origin (no CORS issues)
      */
     async executeFlowGeneration(requestBody: object): Promise<unknown> {
         if (!this.view) {
@@ -266,25 +265,24 @@ export class FlowBrowserViewManager {
 
         // Wait for page load
         if (!this.loaded) {
-            const deadline = Date.now() + 15_000;
+            const deadline = Date.now() + 20_000;
             while (!this.loaded && Date.now() < deadline) {
                 await new Promise<void>((r) => setTimeout(r, 500));
             }
             if (!this.loaded) {
-                throw new Error('FLOW_AUTH_REQUIRED: BrowserView page did not load');
+                throw new Error('FLOW_AUTH_REQUIRED: BrowserView page did not load — check your internet connection and Google cookie');
             }
         }
 
         const bodyStr = JSON.stringify(requestBody)
             .replace(/\\/g, '\\\\')
-            .replace(/'/g, "\\'")
-            .replace(/\n/g, '\\n');
+            .replace(/`/g, '\\`');
 
         const SITE_KEY = '6LeMltUpAAAAAMSa7ezZBPGkCwA9p3x8JZuZ9P6x';
 
         const script = `
             (async () => {
-                // Step 1: Get reCAPTCHA Enterprise token
+                // Step 1: Get reCAPTCHA Enterprise token from the page's own SDK
                 let recaptchaToken = '';
                 try {
                     if (typeof grecaptcha !== 'undefined' && grecaptcha.enterprise) {
@@ -294,59 +292,51 @@ export class FlowBrowserViewManager {
                         );
                     }
                 } catch (e) {
-                    console.warn('[Flow] reCAPTCHA generation failed:', e);
+                    console.warn('[Flow] reCAPTCHA SDK error:', e && e.message);
                 }
 
-                // Step 2: Get Bearer token from the page's auth
-                let bearerToken = '';
+                // Step 2: Inject reCAPTCHA into request body
+                let body;
                 try {
-                    // Try gapi.auth2
-                    if (typeof gapi !== 'undefined' && gapi.auth2) {
-                        const inst = gapi.auth2.getAuthInstance();
-                        if (inst) {
-                            const user = inst.currentUser.get();
-                            if (user && user.isSignedIn()) {
-                                bearerToken = user.getAuthResponse(true).access_token || '';
-                            }
-                        }
-                    }
-                } catch (_) {}
-
-                if (!bearerToken) {
-                    return { error: true, code: 'NO_BEARER', message: 'Could not extract Bearer token from page auth SDK' };
+                    body = JSON.parse(\`${bodyStr}\`);
+                } catch (e) {
+                    return { error: true, code: 'PARSE_ERROR', message: 'Failed to parse request body: ' + e.message };
                 }
 
-                // Step 3: Inject reCAPTCHA token into the request body
-                let body = JSON.parse('${bodyStr}');
                 if (recaptchaToken) {
                     const ctx = {
                         token: recaptchaToken,
                         applicationType: 'RECAPTCHA_APPLICATION_TYPE_WEB'
                     };
-                    if (body.clientContext) {
-                        body.clientContext.recaptchaContext = ctx;
-                    }
+                    if (body.clientContext) body.clientContext.recaptchaContext = ctx;
                     if (body.requests && body.requests[0] && body.requests[0].clientContext) {
                         body.requests[0].clientContext.recaptchaContext = ctx;
                     }
                 }
 
-                // Step 4: Determine the URL from the body
+                // Step 3: Build URL and fetch with session cookies (no Bearer needed for generation)
                 const projectId = (body.clientContext && body.clientContext.projectId) || 'labs-goog-website-prod';
                 const url = 'https://aisandbox-pa.googleapis.com/v1/projects/' + projectId + '/flowMedia:batchGenerateImages';
 
-                // Step 5: Make the fetch
-                const resp = await fetch(url, {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'Authorization': 'Bearer ' + bearerToken,
-                    },
-                    body: JSON.stringify(body),
-                });
+                let resp;
+                try {
+                    resp = await fetch(url, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        credentials: 'include',
+                        body: JSON.stringify(body),
+                    });
+                } catch (fetchErr) {
+                    return { error: true, code: 'NETWORK_ERROR', message: 'Network error: ' + fetchErr.message };
+                }
 
                 const text = await resp.text();
-                return { error: !resp.ok, status: resp.status, body: text };
+                return {
+                    error: !resp.ok,
+                    status: resp.status,
+                    body: text,
+                    hadRecaptcha: recaptchaToken.length > 0,
+                };
             })();
         `;
 
@@ -357,10 +347,13 @@ export class FlowBrowserViewManager {
                 message?: string;
                 status?: number;
                 body?: string;
+                hadRecaptcha?: boolean;
             };
 
-        if (result.code === 'NO_BEARER') {
-            throw new Error('FLOW_AUTH_REQUIRED: ' + (result.message ?? 'No Bearer token'));
+        console.log(`[FlowBrowserView] executeFlowGeneration: status=${result.status} hadRecaptcha=${result.hadRecaptcha} error=${result.error}`);
+
+        if (result.code === 'PARSE_ERROR' || result.code === 'NETWORK_ERROR') {
+            throw new Error(`FLOW_ERROR: ${result.message}`);
         }
 
         if (result.error) {
@@ -368,7 +361,7 @@ export class FlowBrowserViewManager {
             const body = result.body ?? '';
             if (status === 401 || status === 403) {
                 this.tokenCache = null;
-                throw new Error(`FLOW_AUTH_REQUIRED: ${body.slice(0, 200)}`);
+                throw new Error(`FLOW_AUTH_REQUIRED: ${body.slice(0, 300)}`);
             }
             if (status === 429) {
                 throw new Error('FLOW_RATE_LIMITED: Too many requests');
@@ -376,8 +369,13 @@ export class FlowBrowserViewManager {
             throw new Error(`Flow batchGenerateImages failed (${status}): ${body.slice(0, 500)}`);
         }
 
-        return JSON.parse(result.body!);
+        try {
+            return JSON.parse(result.body!);
+        } catch {
+            throw new Error(`Flow API returned invalid JSON: ${result.body?.slice(0, 200)}`);
+        }
     }
+
 
 
 
