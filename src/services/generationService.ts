@@ -2,7 +2,7 @@
 /* Renderer-side wrapper around Electron IPC. Falls back to mock         *
  * responses when running in browser dev mode (no Electron).             */
 
-import type { AuthState, GenerationRequest, GenerationResult, GenerationError, WhiskImageSlot } from '../types/generation';
+import type { AuthState, GenerationRequest, GenerationResult, GenerationError, WhiskImageSlot, FlowImageInput } from '../types/generation';
 
 function isElectron(): boolean {
     return typeof window !== 'undefined' && !!window.electronAPI;
@@ -53,6 +53,44 @@ async function generateWhisk(request: {
     return window.electronAPI!.generateWhisk(request);
 }
 
+/** Generate images using Flow / Nano Banana (NARWHAL model). */
+async function generateFlow(request: {
+    prompt: string;
+    model?: string;
+    aspectRatio?: string;
+    seed?: number;
+    imageInputs?: FlowImageInput[];
+}): Promise<GenerationResult | { error: GenerationError }> {
+    if (!isElectron()) {
+        return {
+            error: {
+                code: 'NOT_ELECTRON',
+                message: 'Flow generation requires the Electron desktop app.',
+                retryable: false,
+            },
+        };
+    }
+    return window.electronAPI!.generateFlow(request);
+}
+
+/** Upload an image to the Flow asset store, returns the asset UUID. */
+async function flowUploadImage(params: {
+    imageBase64: string;
+    mimeType: string;
+    fileName: string;
+}): Promise<{ assetId: string } | { error: GenerationError }> {
+    if (!isElectron()) {
+        return {
+            error: {
+                code: 'NOT_ELECTRON',
+                message: 'Flow image upload requires the Electron desktop app.',
+                retryable: false,
+            },
+        };
+    }
+    return window.electronAPI!.flowUploadImage(params);
+}
+
 /** Get current authentication status. */
 async function getAuthStatus(): Promise<AuthState> {
     if (!isElectron()) {
@@ -83,7 +121,10 @@ export const generationService = {
     validateAuth,
     generate,
     generateWhisk,
+    generateFlow,
+    flowUploadImage,
     getAuthStatus,
     setAuthCookie,
     cancelGeneration,
 };
+

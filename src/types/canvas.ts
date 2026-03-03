@@ -7,6 +7,7 @@ import type {
     GeneratedImage,
     GenerationError,
     WhiskImageSlot,
+    FlowModel,
 } from './generation';
 
 /* ── Base Node Data ──────────────────────────────────────────────────── */
@@ -31,7 +32,7 @@ export interface PromptNodeData extends NodeData {
     prompt?: string;
 
     /* ── Generation config ── */
-    generationMode?: 'text' | 'whisk';
+    generationMode?: 'text' | 'whisk' | 'flow';
 
     /* ── Generation state (all optional for backward compat) ── */
     generationStatus?: GenerationStatus;
@@ -44,6 +45,11 @@ export interface PromptNodeData extends NodeData {
 
     /* ── Whisk image slots ── */
     whiskSlots?: WhiskImageSlot[];
+
+    /* ── Flow (Nano Banana) ── */
+    flowModel?: FlowModel;
+    /** Reference images for Flow generation (uploaded = have assetId; local-only = no assetId) */
+    flowReferenceImages?: Array<{ assetId?: string; imageData: string; mimeType?: string }>;
 
     /* ── Output wiring ── */
     outputImage?: string;

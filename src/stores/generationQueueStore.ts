@@ -95,6 +95,13 @@ export const useGenerationQueueStore = create<GenerationQueueState>((set, get) =
                     aspectRatio: req.aspectRatio,
                     seed: req.seed,
                 });
+            } else if (req.provider === 'flow') {
+                result = await generationService.generateFlow({
+                    prompt: req.prompt,
+                    aspectRatio: req.aspectRatio,
+                    seed: req.seed,
+                    imageInputs: req.flowImageInputs,
+                });
             } else {
                 result = await generationService.generate(req);
             }

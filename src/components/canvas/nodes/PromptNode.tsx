@@ -1,4 +1,4 @@
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useRef } from 'react';
 import type { NodeProps } from '@xyflow/react';
 import { BaseNode } from './BaseNode';
 import type { PromptNodeData } from '../../../types/canvas';
@@ -6,6 +6,7 @@ import type { GenerationModel, AspectRatio, WhiskSlotType } from '../../../types
 import { useCanvasStore } from '../../../stores/canvasStore';
 import { useAuthStore } from '../../../stores/authStore';
 import { useGenerate } from '../../../hooks/useGenerate';
+import { generationService } from '../../../services/generationService';
 import './PromptNode.css';
 
 /* ── Constants ───────────────────────────────────────────────────────── */
@@ -53,6 +54,7 @@ export function PromptNode({ id, data }: NodeProps) {
         generatedImages,
         selectedImageIndex = 0,
         whiskSlots = [],
+        flowReferenceImages = [],
     } = nodeData;
 
     const updateNodeData = useCanvasStore((s) => s.updateNodeData);
@@ -61,6 +63,9 @@ export function PromptNode({ id, data }: NodeProps) {
         useGenerate(id);
 
     const [localPrompt, setLocalPrompt] = useState<string>(String(prompt));
+    /** Track which flow reference image slots are currently uploading */
+    const [uploadingSlots, setUploadingSlots] = useState<Set<number>>(new Set());
+    const flowDropRef = useRef<HTMLDivElement>(null);
 
     /* ── Handlers ── */
 
@@ -101,7 +106,7 @@ export function PromptNode({ id, data }: NodeProps) {
     );
 
     const handleModeChange = useCallback(
-        (mode: 'text' | 'whisk') => {
+        (mode: 'text' | 'whisk' | 'flow') => {
             updateNodeData(id, { generationMode: mode });
         },
         [id, updateNodeData]
@@ -149,6 +154,110 @@ export function PromptNode({ id, data }: NodeProps) {
             updateNodeData(id, { whiskSlots: filtered });
         },
         [id, whiskSlots, updateNodeData]
+    );
+
+    /* ── Flow reference image handlers ── */
+
+    const uploadFlowImage = useCallback(
+        async (imageData: string, mimeType: string, index: number) => {
+            setUploadingSlots((prev) => new Set(prev).add(index));
+            try {
+                const result = await generationService.flowUploadImage({
+                    imageBase64: imageData,
+                    mimeType,
+                    fileName: `ref-${Date.now()}-${index}.${mimeType.split('/')[1] ?? 'png'}`,
+                });
+                if ('assetId' in result) {
+                    const updated = [...flowReferenceImages];
+                    if (updated[index]) {
+                        updated[index] = { ...updated[index], assetId: result.assetId };
+                    }
+                    updateNodeData(id, { flowReferenceImages: updated });
+                }
+            } finally {
+                setUploadingSlots((prev) => {
+                    const next = new Set(prev);
+                    next.delete(index);
+                    return next;
+                });
+            }
+        },
+        [id, flowReferenceImages, updateNodeData]
+    );
+
+    const addFlowImage = useCallback(
+        (imageData: string, mimeType: string) => {
+            if (flowReferenceImages.length >= 3) return;
+            const newIndex = flowReferenceImages.length;
+            const updated = [...flowReferenceImages, { imageData, mimeType }];
+            updateNodeData(id, { flowReferenceImages: updated });
+            // Auto-upload
+            uploadFlowImage(imageData, mimeType, newIndex);
+        },
+        [id, flowReferenceImages, updateNodeData, uploadFlowImage]
+    );
+
+    const removeFlowImage = useCallback(
+        (index: number) => {
+            const updated = flowReferenceImages.filter((_, i) => i !== index);
+            updateNodeData(id, { flowReferenceImages: updated });
+        },
+        [id, flowReferenceImages, updateNodeData]
+    );
+
+    const handleFlowPaste = useCallback(
+        (e: React.ClipboardEvent) => {
+            const items = e.clipboardData?.items;
+            if (!items) return;
+            for (const item of Array.from(items)) {
+                if (item.type.startsWith('image/')) {
+                    e.preventDefault();
+                    const blob = item.getAsFile();
+                    if (!blob) return;
+                    const reader = new FileReader();
+                    reader.onload = () => {
+                        const dataUrl = reader.result as string;
+                        const base64 = dataUrl.split(',')[1];
+                        if (base64) addFlowImage(base64, item.type);
+                    };
+                    reader.readAsDataURL(blob);
+                    return;
+                }
+            }
+        },
+        [addFlowImage]
+    );
+
+    const handleFlowFileInput = useCallback(
+        (e: React.ChangeEvent<HTMLInputElement>) => {
+            const file = e.target.files?.[0];
+            if (!file) return;
+            const reader = new FileReader();
+            reader.onload = () => {
+                const dataUrl = reader.result as string;
+                const base64 = dataUrl.split(',')[1];
+                if (base64) addFlowImage(base64, file.type);
+            };
+            reader.readAsDataURL(file);
+            e.target.value = '';
+        },
+        [addFlowImage]
+    );
+
+    const handleFlowDrop = useCallback(
+        (e: React.DragEvent) => {
+            e.preventDefault();
+            const file = e.dataTransfer.files?.[0];
+            if (!file || !file.type.startsWith('image/')) return;
+            const reader = new FileReader();
+            reader.onload = () => {
+                const dataUrl = reader.result as string;
+                const base64 = dataUrl.split(',')[1];
+                if (base64) addFlowImage(base64, file.type);
+            };
+            reader.readAsDataURL(file);
+        },
+        [addFlowImage]
     );
 
     /* ── Render helpers ── */
@@ -234,6 +343,13 @@ export function PromptNode({ id, data }: NodeProps) {
                     >
                         🖼️ Image
                     </button>
+                    <button
+                        className={`prompt-node__mode-btn nodrag ${generationMode === 'flow' ? 'prompt-node__mode-btn--active prompt-node__mode-btn--flow' : ''}`}
+                        onClick={() => handleModeChange('flow')}
+                        type="button"
+                    >
+                        ⚡ Flow
+                    </button>
                 </div>
 
                 <textarea
@@ -252,6 +368,64 @@ export function PromptNode({ id, data }: NodeProps) {
                         {localPrompt.length} / 2000
                     </span>
                 </div>
+
+                {/* ── Flow Reference Images (Flow mode only) ── */}
+                {generationMode === 'flow' && (
+                    <div
+                        ref={flowDropRef}
+                        className="prompt-node__flow-refs nodrag"
+                        onPaste={handleFlowPaste}
+                        onDrop={handleFlowDrop}
+                        onDragOver={(e) => e.preventDefault()}
+                        tabIndex={0}
+                    >
+                        <div className="prompt-node__flow-refs-header">
+                            <span className="prompt-node__flow-refs-label">Reference Images (optional)</span>
+                            {flowReferenceImages.length < 3 && (
+                                <label className="prompt-node__flow-add nodrag" title="Add reference image">
+                                    + Add
+                                    <input
+                                        type="file"
+                                        accept="image/*"
+                                        style={{ display: 'none' }}
+                                        onChange={handleFlowFileInput}
+                                    />
+                                </label>
+                            )}
+                        </div>
+                        {flowReferenceImages.length === 0 ? (
+                            <div className="prompt-node__flow-empty">
+                                Paste, drag, or click “+ Add” to add reference images
+                            </div>
+                        ) : (
+                            <div className="prompt-node__flow-thumbs">
+                                {flowReferenceImages.map((img, i) => (
+                                    <div key={i} className="prompt-node__flow-thumb-wrap">
+                                        <img
+                                            className="prompt-node__flow-thumb"
+                                            src={`data:${img.mimeType ?? 'image/png'};base64,${img.imageData}`}
+                                            alt={`Reference ${i + 1}`}
+                                        />
+                                        {uploadingSlots.has(i) && (
+                                            <div className="prompt-node__flow-uploading">
+                                                <span className="prompt-node__spinner" />
+                                            </div>
+                                        )}
+                                        {img.assetId && !uploadingSlots.has(i) && (
+                                            <div className="prompt-node__flow-uploaded" title="Uploaded">✓</div>
+                                        )}
+                                        <button
+                                            className="prompt-node__flow-thumb-remove nodrag"
+                                            onClick={() => removeFlowImage(i)}
+                                            type="button"
+                                            title="Remove"
+                                        >×</button>
+                                    </div>
+                                ))}
+                            </div>
+                        )}
+                    </div>
+                )}
 
                 {/* ── Whisk Image Slots (Image mode only) ── */}
                 {generationMode === 'whisk' && (

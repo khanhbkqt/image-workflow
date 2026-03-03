@@ -1,7 +1,7 @@
 /* ── Generation Types ────────────────────────────────────────────────── */
 
 /** Supported AI generation providers. */
-export type GenerationProvider = 'imagefx' | 'whisk';
+export type GenerationProvider = 'imagefx' | 'whisk' | 'flow';
 
 /** Available ImageFX models. */
 export type GenerationModel = 'IMAGEN_3_5' | 'IMAGEN_4';
@@ -26,6 +26,30 @@ export interface WhiskImageSlot {
     imageData: string;
 }
 
+/* ── Flow (Nano Banana) ────────────────────────────────────────────── */
+
+/** Available Flow models. */
+export type FlowModel = 'NARWHAL';
+
+/** Image input type for Flow generation. */
+export type FlowImageInputType = 'IMAGE_INPUT_TYPE_REFERENCE';
+
+/** A single image input for Flow generation (uses uploaded asset UUID). */
+export interface FlowImageInput {
+    imageInputType: FlowImageInputType;
+    /** Asset UUID returned from uploadImage */
+    name: string;
+}
+
+/** Parameters for a Flow generation request. */
+export interface FlowGenerationRequest {
+    prompt: string;
+    model: FlowModel;
+    aspectRatio?: string;
+    seed?: number;
+    imageInputs?: FlowImageInput[];
+}
+
 /* ── Request / Response ─────────────────────────────────────────────── */
 
 /** Parameters for a generation request (ImageFX text-to-image or Whisk image-based). */
@@ -38,6 +62,8 @@ export interface GenerationRequest {
     provider: GenerationProvider;
     /** Whisk-only: image input slots for subject/scene/style. */
     imageSlots?: WhiskImageSlot[];
+    /** Flow-only: pre-uploaded reference image asset IDs. */
+    flowImageInputs?: FlowImageInput[];
 }
 
 /** A single generated image from the API. */
@@ -95,6 +121,8 @@ export interface AuthState {
 export const IPC_CHANNELS = {
     GENERATE: 'generation:generate',
     GENERATE_WHISK: 'generation:generate-whisk',
+    GENERATE_FLOW: 'generation:generate-flow',
+    FLOW_UPLOAD_IMAGE: 'generation:flow-upload-image',
     CANCEL: 'generation:cancel',
     AUTH_VALIDATE: 'generation:auth-validate',
     AUTH_STATUS: 'generation:auth-status',

@@ -53,6 +53,11 @@ export function useGenerate(nodeId: string) {
             return hasPrompt && hasSlots;
         }
 
+        // Flow mode: only requires prompt (reference images optional)
+        if (generationMode === 'flow') {
+            return hasPrompt;
+        }
+
         return hasPrompt;
     }, [isGenerating, isAuthenticated, nodeData, generationMode, queueJob]);
 
@@ -67,21 +72,39 @@ export function useGenerate(nodeId: string) {
         });
 
         // Build request based on mode
-        const request: GenerationRequest =
-            generationMode === 'whisk' && nodeData.whiskSlots?.length
-                ? {
-                    prompt: nodeData.prompt!,
-                    imageSlots: nodeData.whiskSlots.filter((s) => !!s.imageData),
-                    aspectRatio: nodeData.aspectRatio ?? 'IMAGE_ASPECT_RATIO_SQUARE',
-                    seed: nodeData.seed,
-                    provider: 'whisk',
-                }
-                : {
-                    prompt: nodeData.prompt!,
-                    model: nodeData.model ?? 'IMAGEN_3_5',
-                    aspectRatio: nodeData.aspectRatio ?? 'IMAGE_ASPECT_RATIO_SQUARE',
-                    provider: 'imagefx',
-                };
+        let request: GenerationRequest;
+
+        if (generationMode === 'whisk' && nodeData.whiskSlots?.length) {
+            request = {
+                prompt: nodeData.prompt!,
+                imageSlots: nodeData.whiskSlots.filter((s) => !!s.imageData),
+                aspectRatio: nodeData.aspectRatio ?? 'IMAGE_ASPECT_RATIO_SQUARE',
+                seed: nodeData.seed,
+                provider: 'whisk',
+            };
+        } else if (generationMode === 'flow') {
+            // Include only images that have been uploaded (have assetId)
+            const uploadedInputs = (nodeData.flowReferenceImages ?? [])
+                .filter((img) => !!img.assetId)
+                .map((img) => ({
+                    imageInputType: 'IMAGE_INPUT_TYPE_REFERENCE' as const,
+                    name: img.assetId!,
+                }));
+            request = {
+                prompt: nodeData.prompt!,
+                aspectRatio: nodeData.aspectRatio ?? 'IMAGE_ASPECT_RATIO_SQUARE',
+                seed: nodeData.seed,
+                provider: 'flow',
+                flowImageInputs: uploadedInputs.length > 0 ? uploadedInputs : undefined,
+            };
+        } else {
+            request = {
+                prompt: nodeData.prompt!,
+                model: nodeData.model ?? 'IMAGEN_3_5',
+                aspectRatio: nodeData.aspectRatio ?? 'IMAGE_ASPECT_RATIO_SQUARE',
+                provider: 'imagefx',
+            };
+        }
 
         enqueue(nodeId, request);
     }, [canGenerate, generationMode, nodeData, nodeId, updateNodeData, enqueue]);

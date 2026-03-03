@@ -4,6 +4,9 @@
 import { ipcMain } from 'electron';
 import { ImageFX, Prompt as ImageFXPrompt } from '@rohitaryal/imagefx-api';
 import { Whisk } from '@rohitaryal/whisk-api';
+import { flowView } from '../flow/flowBrowserView';
+import { flowApiClient } from '../flow/flowApiClient';
+
 
 /* ── State ── */
 let imagefxClient: ImageFX | null = null;
@@ -214,6 +217,88 @@ export function registerGenerationHandlers(): void {
                     code: 'GENERATION_FAILED',
                     message: err?.message ?? 'Whisk image generation failed',
                     retryable: true,
+                },
+            };
+        }
+    });
+
+    /* ── Flow: Upload Image ── */
+    ipcMain.handle('generation:flow-upload-image', async (_event, params: {
+        imageBase64: string;
+        mimeType: string;
+        fileName: string;
+    }) => {
+        try {
+            const bearerToken = await flowView.getBearerToken();
+            const projectId = await flowApiClient.getProjectId(bearerToken);
+            const assetId = await flowApiClient.uploadImage({
+                bearerToken,
+                projectId,
+                imageBase64: params.imageBase64,
+                mimeType: params.mimeType,
+                fileName: params.fileName,
+            });
+            return { assetId };
+        } catch (err: any) {
+            const code = (err?.message ?? '').startsWith('FLOW_AUTH_REQUIRED')
+                ? 'FLOW_AUTH_REQUIRED'
+                : 'UPLOAD_FAILED';
+            return {
+                error: {
+                    code,
+                    message: err?.message ?? 'Flow image upload failed',
+                    retryable: code !== 'FLOW_AUTH_REQUIRED',
+                },
+            };
+        }
+    });
+
+    /* ── Flow: Generate Images (Nano Banana / NARWHAL) ── */
+    ipcMain.handle('generation:generate-flow', async (_event, request: {
+        prompt: string;
+        model?: string;
+        aspectRatio?: string;
+        seed?: number;
+        imageInputs?: Array<{ imageInputType: string; name: string }>;
+    }) => {
+        try {
+            const bearerToken = await flowView.getBearerToken();
+            const recaptchaToken = await flowView.getRecaptchaToken('batchGenerateImages');
+            const projectId = await flowApiClient.getProjectId(bearerToken);
+
+            const { images } = await flowApiClient.generateImages({
+                bearerToken,
+                recaptchaToken,
+                projectId,
+                prompt: request.prompt,
+                model: request.model ?? 'NARWHAL',
+                aspectRatio: request.aspectRatio,
+                seed: request.seed,
+                imageInputs: request.imageInputs,
+            });
+
+            return {
+                images: images.map((img) => ({
+                    encodedImage: img.encodedImage,
+                    seed: img.seed,
+                    mediaGenerationId: img.mediaId,
+                    aspectRatio: request.aspectRatio ?? 'IMAGE_ASPECT_RATIO_SQUARE',
+                })),
+                prompt: request.prompt,
+                model: (request.model ?? 'NARWHAL') as any,
+                requestId: `flow-${Date.now()}`,
+            };
+        } catch (err: any) {
+            const code = (err?.message ?? '').startsWith('FLOW_AUTH_REQUIRED')
+                ? 'FLOW_AUTH_REQUIRED'
+                : (err?.message ?? '').startsWith('FLOW_RATE_LIMITED')
+                    ? 'RATE_LIMITED'
+                    : 'GENERATION_FAILED';
+            return {
+                error: {
+                    code,
+                    message: err?.message ?? 'Flow image generation failed',
+                    retryable: code !== 'FLOW_AUTH_REQUIRED',
                 },
             };
         }

@@ -1,10 +1,11 @@
 import { app, BrowserWindow } from 'electron'
 import path from 'path'
 import { registerIpcHandlers } from './ipc'
+import { flowView } from './flow/flowBrowserView'
 
 const isDev = process.env.NODE_ENV === 'development'
 
-function createWindow() {
+function createWindow(): BrowserWindow {
   const win = new BrowserWindow({
     width: 1400,
     height: 900,
@@ -21,11 +22,16 @@ function createWindow() {
   } else {
     win.loadFile(path.join(__dirname, '../dist/index.html'))
   }
+
+  return win
 }
 
 app.whenReady().then(() => {
   registerIpcHandlers()
-  createWindow()
+  const win = createWindow()
+
+  // Attach hidden Flow BrowserView for auth token extraction (fire-and-forget)
+  flowView.init(win)
 
   app.on('activate', () => {
     if (BrowserWindow.getAllWindows().length === 0) createWindow()
@@ -33,5 +39,6 @@ app.whenReady().then(() => {
 })
 
 app.on('window-all-closed', () => {
+  flowView.destroy()
   if (process.platform !== 'darwin') app.quit()
 })

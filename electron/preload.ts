@@ -22,6 +22,18 @@ contextBridge.exposeInMainWorld('electronAPI', {
     aspectRatio?: string;
     seed?: number;
   }) => ipcRenderer.invoke('generation:generate-whisk', request),
+  generateFlow: (request: {
+    prompt: string;
+    model?: string;
+    aspectRatio?: string;
+    seed?: number;
+    imageInputs?: Array<{ imageInputType: string; name: string }>;
+  }) => ipcRenderer.invoke('generation:generate-flow', request),
+  flowUploadImage: (params: {
+    imageBase64: string;
+    mimeType: string;
+    fileName: string;
+  }) => ipcRenderer.invoke('generation:flow-upload-image', params),
   getAuthStatus: () =>
     ipcRenderer.invoke('generation:auth-status'),
   setAuthCookie: (cookie: string) =>
@@ -29,3 +41,4 @@ contextBridge.exposeInMainWorld('electronAPI', {
   cancelGeneration: () =>
     ipcRenderer.invoke('generation:cancel'),
 })
+
