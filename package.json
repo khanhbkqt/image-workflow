@@ -10,8 +10,10 @@
     "lint": "eslint .",
     "format": "prettier --write \"src/**/*.{ts,tsx,css}\" \"electron/**/*.ts\"",
     "preview": "vite preview",
-    "electron:compile": "tsc -p tsconfig.electron.json",
-    "electron:dev": "concurrently -k \"npm run dev\" \"wait-on http://localhost:5173 && NODE_ENV=development electron dist-electron/main.js\"",
+    "electron:compile:main": "tsc -p tsconfig.electron.json",
+    "electron:compile:preload": "tsc -p tsconfig.electron.preload.json",
+    "electron:compile": "rm -rf dist-electron && npm run electron:compile:main && npm run electron:compile:preload",
+    "electron:dev": "concurrently -k \"npm run dev\" \"wait-on http://localhost:5173 && npm run electron:compile && NODE_ENV=development electron dist-electron/main.js\"",
     "electron:build": "npm run build && npm run electron:compile && electron-builder"
   },
   "dependencies": {

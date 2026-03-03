@@ -1,8 +1,8 @@
 {
     "compilerOptions": {
         "target": "ES2022",
-        "module": "ESNext",
-        "moduleResolution": "bundler",
+        "module": "CommonJS",
+        "moduleResolution": "node",
         "outDir": "dist-electron",
         "strict": true,
         "skipLibCheck": true,
@@ -10,9 +10,6 @@
         "resolveJsonModule": true
     },
     "include": [
-        "electron"
-    ],
-    "exclude": [
         "electron/preload.ts"
     ]
 }

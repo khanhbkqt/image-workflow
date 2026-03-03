@@ -1,7 +1,11 @@
 import { app, BrowserWindow } from 'electron'
 import path from 'path'
-import { registerIpcHandlers } from './ipc'
-import { flowView } from './flow/flowBrowserView'
+import { fileURLToPath } from 'url'
+import { registerIpcHandlers } from './ipc/index.js'
+import { flowView } from './flow/flowBrowserView.js'
+
+const __filename = fileURLToPath(import.meta.url)
+const __dirname = path.dirname(__filename)
 
 const isDev = process.env.NODE_ENV === 'development'
 

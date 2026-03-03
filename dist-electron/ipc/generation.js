@@ -1,110 +1,89 @@
 /* ── Generation IPC Handlers ─────────────────────────────────────────── */
 /* Runs in Electron main process. Wraps ImageFX/Whisk API libraries.    */
-
 import { ipcMain } from 'electron';
 import { ImageFX, Prompt as ImageFXPrompt } from '@rohitaryal/imagefx-api';
 import { Whisk } from '@rohitaryal/whisk-api';
 import { flowView } from '../flow/flowBrowserView.js';
 import { flowApiClient } from '../flow/flowApiClient.js';
-
-
 /* ── State ── */
-let imagefxClient: ImageFX | null = null;
-let whiskClient: Whisk | null = null;
-let currentCookie: string | null = null;
-let lastUser: { name: string; email: string; image?: string } | null = null;
-
+let imagefxClient = null;
+let whiskClient = null;
+let currentCookie = null;
+let lastUser = null;
 /* ── Helpers ── */
 function getAuthState() {
     if (!imagefxClient || !currentCookie) {
-        return { status: 'unconfigured' as const };
+        return { status: 'unconfigured' };
     }
     return {
-        status: 'valid' as const,
+        status: 'valid',
         user: lastUser ?? undefined,
     };
 }
-
 /** Create both ImageFX and Whisk clients from a validated cookie. */
-function setClientsFromAuth(client: ImageFX, cookie: string, user: typeof lastUser) {
+function setClientsFromAuth(client, cookie, user) {
     imagefxClient = client;
     whiskClient = new Whisk(cookie);
     currentCookie = cookie;
     lastUser = user;
 }
-
 function clearClients() {
     imagefxClient = null;
     whiskClient = null;
     currentCookie = null;
     lastUser = null;
 }
-
 /* ── Register Handlers ── */
-export function registerGenerationHandlers(): void {
-
+export function registerGenerationHandlers() {
     /* ── Auth: Validate Cookie ── */
-    ipcMain.handle('generation:auth-validate', async (_event, cookie: string) => {
+    ipcMain.handle('generation:auth-validate', async (_event, cookie) => {
         try {
             const client = new ImageFX(cookie);
-            const account = (client as any).account;
+            const account = client.account;
             await account.refreshSession();
-
             const user = account.user ? {
                 name: account.user.name,
                 email: account.user.email,
                 image: account.user.image,
             } : null;
-
             setClientsFromAuth(client, cookie, user);
-
             return {
-                status: 'valid' as const,
+                status: 'valid',
                 user: lastUser ?? undefined,
             };
-        } catch (err: any) {
+        }
+        catch (err) {
             clearClients();
             return {
-                status: 'invalid' as const,
+                status: 'invalid',
                 error: err?.message ?? 'Failed to validate cookie',
             };
         }
     });
-
     /* ── Auth: Get Status ── */
     ipcMain.handle('generation:auth-status', async () => {
         return getAuthState();
     });
-
     /* ── Auth: Set Cookie (quick store, no validation) ── */
-    ipcMain.handle('generation:auth-set-cookie', async (_event, cookie: string) => {
+    ipcMain.handle('generation:auth-set-cookie', async (_event, cookie) => {
         try {
             const client = new ImageFX(cookie);
-            const account = (client as any).account;
+            const account = client.account;
             await account.refreshSession();
-
             const user = account.user ? {
                 name: account.user.name,
                 email: account.user.email,
                 image: account.user.image,
             } : null;
-
             setClientsFromAuth(client, cookie, user);
-
-            return { status: 'valid' as const, user: lastUser ?? undefined };
-        } catch (err: any) {
-            return { status: 'invalid' as const, error: err?.message ?? 'Invalid cookie' };
+            return { status: 'valid', user: lastUser ?? undefined };
+        }
+        catch (err) {
+            return { status: 'invalid', error: err?.message ?? 'Invalid cookie' };
         }
     });
-
     /* ── Generate Image (ImageFX — text-to-image) ── */
-    ipcMain.handle('generation:generate', async (_event, request: {
-        prompt: string;
-        model?: string;
-        aspectRatio?: string;
-        seed?: number;
-        numberOfImages?: number;
-    }) => {
+    ipcMain.handle('generation:generate', async (_event, request) => {
         if (!imagefxClient) {
             return {
                 error: {
@@ -114,18 +93,15 @@ export function registerGenerationHandlers(): void {
                 },
             };
         }
-
         try {
             const prompt = new ImageFXPrompt({
                 prompt: request.prompt,
                 seed: request.seed ?? 0,
                 numberOfImages: request.numberOfImages ?? 4,
-                aspectRatio: (request.aspectRatio as any) ?? 'IMAGE_ASPECT_RATIO_SQUARE',
-                generationModel: (request.model as any) ?? 'IMAGEN_3_5',
+                aspectRatio: request.aspectRatio ?? 'IMAGE_ASPECT_RATIO_SQUARE',
+                generationModel: request.model ?? 'IMAGEN_3_5',
             });
-
             const images = await imagefxClient.generateImage(prompt);
-
             return {
                 images: images.map((img) => ({
                     encodedImage: img.encodedImage,
@@ -137,7 +113,8 @@ export function registerGenerationHandlers(): void {
                 model: request.model ?? 'IMAGEN_3_5',
                 requestId: `gen-${Date.now()}`,
             };
-        } catch (err: any) {
+        }
+        catch (err) {
             return {
                 error: {
                     code: 'GENERATION_FAILED',
@@ -147,14 +124,8 @@ export function registerGenerationHandlers(): void {
             };
         }
     });
-
     /* ── Generate Image (Whisk — image-based generation) ── */
-    ipcMain.handle('generation:generate-whisk', async (_event, request: {
-        prompt: string;
-        imageSlots: Array<{ slotType: string; imageData: string }>;
-        aspectRatio?: string;
-        seed?: number;
-    }) => {
+    ipcMain.handle('generation:generate-whisk', async (_event, request) => {
         if (!whiskClient) {
             return {
                 error: {
@@ -164,12 +135,9 @@ export function registerGenerationHandlers(): void {
                 },
             };
         }
-
-        let project: Awaited<ReturnType<Whisk['newProject']>> | null = null;
-
+        let project = null;
         try {
             project = await whiskClient.newProject(`gen-${Date.now()}`);
-
             // Add image slots to the project
             for (const slot of request.imageSlots) {
                 const imageInput = { base64: slot.imageData };
@@ -185,29 +153,27 @@ export function registerGenerationHandlers(): void {
                         break;
                 }
             }
-
             // Generate with references
             const media = await project.generateImageWithReferences({
                 prompt: request.prompt,
                 seed: request.seed,
-                aspectRatio: (request.aspectRatio as any) ?? 'IMAGE_ASPECT_RATIO_SQUARE',
+                aspectRatio: request.aspectRatio ?? 'IMAGE_ASPECT_RATIO_SQUARE',
             });
-
             // Clean up project (fire-and-forget)
             project.delete().catch(() => { });
-
             return {
                 images: [{
-                    encodedImage: media.encodedMedia,
-                    seed: media.seed,
-                    mediaGenerationId: media.mediaGenerationId,
-                    aspectRatio: media.aspectRatio,
-                }],
+                        encodedImage: media.encodedMedia,
+                        seed: media.seed,
+                        mediaGenerationId: media.mediaGenerationId,
+                        aspectRatio: media.aspectRatio,
+                    }],
                 prompt: request.prompt,
-                model: 'IMAGEN_3_5' as const,
+                model: 'IMAGEN_3_5',
                 requestId: `whisk-${Date.now()}`,
             };
-        } catch (err: any) {
+        }
+        catch (err) {
             // Clean up project on failure too
             if (project) {
                 project.delete().catch(() => { });
@@ -221,13 +187,8 @@ export function registerGenerationHandlers(): void {
             };
         }
     });
-
     /* ── Flow: Upload Image ── */
-    ipcMain.handle('generation:flow-upload-image', async (_event, params: {
-        imageBase64: string;
-        mimeType: string;
-        fileName: string;
-    }) => {
+    ipcMain.handle('generation:flow-upload-image', async (_event, params) => {
         try {
             const bearerToken = await flowView.getBearerToken();
             const projectId = await flowApiClient.getProjectId(bearerToken);
@@ -239,7 +200,8 @@ export function registerGenerationHandlers(): void {
                 fileName: params.fileName,
             });
             return { assetId };
-        } catch (err: any) {
+        }
+        catch (err) {
             const code = (err?.message ?? '').startsWith('FLOW_AUTH_REQUIRED')
                 ? 'FLOW_AUTH_REQUIRED'
                 : 'UPLOAD_FAILED';
@@ -252,20 +214,12 @@ export function registerGenerationHandlers(): void {
             };
         }
     });
-
     /* ── Flow: Generate Images (Nano Banana / NARWHAL) ── */
-    ipcMain.handle('generation:generate-flow', async (_event, request: {
-        prompt: string;
-        model?: string;
-        aspectRatio?: string;
-        seed?: number;
-        imageInputs?: Array<{ imageInputType: string; name: string }>;
-    }) => {
+    ipcMain.handle('generation:generate-flow', async (_event, request) => {
         try {
             const bearerToken = await flowView.getBearerToken();
             const recaptchaToken = await flowView.getRecaptchaToken('batchGenerateImages');
             const projectId = await flowApiClient.getProjectId(bearerToken);
-
             const { images } = await flowApiClient.generateImages({
                 bearerToken,
                 recaptchaToken,
@@ -276,7 +230,6 @@ export function registerGenerationHandlers(): void {
                 seed: request.seed,
                 imageInputs: request.imageInputs,
             });
-
             return {
                 images: images.map((img) => ({
                     encodedImage: img.encodedImage,
@@ -285,10 +238,11 @@ export function registerGenerationHandlers(): void {
                     aspectRatio: request.aspectRatio ?? 'IMAGE_ASPECT_RATIO_SQUARE',
                 })),
                 prompt: request.prompt,
-                model: (request.model ?? 'NARWHAL') as any,
+                model: (request.model ?? 'NARWHAL'),
                 requestId: `flow-${Date.now()}`,
             };
-        } catch (err: any) {
+        }
+        catch (err) {
             const code = (err?.message ?? '').startsWith('FLOW_AUTH_REQUIRED')
                 ? 'FLOW_AUTH_REQUIRED'
                 : (err?.message ?? '').startsWith('FLOW_RATE_LIMITED')
@@ -303,7 +257,6 @@ export function registerGenerationHandlers(): void {
             };
         }
     });
-
     /* ── Cancel (placeholder — the API doesn't support cancellation) ── */
     ipcMain.handle('generation:cancel', async () => {
         // No-op for now; the ImageFX API doesn't support request cancellation

@@ -1,17 +1,17 @@
-"use strict";
-var __importDefault = (this && this.__importDefault) || function (mod) {
-    return (mod && mod.__esModule) ? mod : { "default": mod };
-};
-Object.defineProperty(exports, "__esModule", { value: true });
-const electron_1 = require("electron");
-const path_1 = __importDefault(require("path"));
+import { app, BrowserWindow } from 'electron';
+import path from 'path';
+import { fileURLToPath } from 'url';
+import { registerIpcHandlers } from './ipc/index.js';
+import { flowView } from './flow/flowBrowserView.js';
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 const isDev = process.env.NODE_ENV === 'development';
 function createWindow() {
-    const win = new electron_1.BrowserWindow({
+    const win = new BrowserWindow({
         width: 1400,
         height: 900,
         webPreferences: {
-            preload: path_1.default.join(__dirname, 'preload.js'),
+            preload: path.join(__dirname, 'preload.js'),
             contextIsolation: true,
             nodeIntegration: false,
         },
@@ -21,17 +21,22 @@ function createWindow() {
         win.webContents.openDevTools();
     }
     else {
-        win.loadFile(path_1.default.join(__dirname, '../dist/index.html'));
+        win.loadFile(path.join(__dirname, '../dist/index.html'));
     }
+    return win;
 }
-electron_1.app.whenReady().then(() => {
-    createWindow();
-    electron_1.app.on('activate', () => {
-        if (electron_1.BrowserWindow.getAllWindows().length === 0)
+app.whenReady().then(() => {
+    registerIpcHandlers();
+    const win = createWindow();
+    // Attach hidden Flow BrowserView for auth token extraction (fire-and-forget)
+    flowView.init(win);
+    app.on('activate', () => {
+        if (BrowserWindow.getAllWindows().length === 0)
             createWindow();
     });
 });
-electron_1.app.on('window-all-closed', () => {
+app.on('window-all-closed', () => {
+    flowView.destroy();
     if (process.platform !== 'darwin')
-        electron_1.app.quit();
+        app.quit();
 });

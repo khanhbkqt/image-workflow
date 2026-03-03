@@ -15,9 +15,33 @@ export function SettingsDialog() {
 
     if (!isOpen) return null;
 
+    /**
+     * Accepts either a plain cookie header string ("k=v; k2=v2")
+     * or a JSON export from extensions like EditThisCookie / Cookie-Editor.
+     * Both formats { cookies: [...] } and a bare array [...] are handled.
+     */
+    const parseCookieInput = (raw: string): string => {
+        const trimmed = raw.trim();
+        // Try to parse as JSON
+        if (trimmed.startsWith('{') || trimmed.startsWith('[')) {
+            try {
+                const parsed = JSON.parse(trimmed);
+                // Handle { url: "...", cookies: [...] } format
+                const list: Array<{ name: string; value: string }> =
+                    Array.isArray(parsed) ? parsed : (parsed.cookies ?? []);
+                if (list.length > 0 && list[0].name !== undefined) {
+                    return list.map((c) => `${c.name}=${c.value}`).join('; ');
+                }
+            } catch {
+                // Not valid JSON — fall through
+            }
+        }
+        return trimmed;
+    };
+
     const handleValidate = async () => {
         if (!cookie.trim()) return;
-        await validateCookie(cookie.trim());
+        await validateCookie(parseCookieInput(cookie));
     };
 
     const handleClear = () => {
@@ -77,13 +101,14 @@ export function SettingsDialog() {
                         className="settings-dialog__textarea"
                         value={cookie}
                         onChange={(e) => setCookie(e.target.value)}
-                        placeholder="Paste your Google Labs cookie here…"
+                        placeholder="Paste your Google Labs cookie here… (JSON export or raw cookie string)"
                         rows={4}
                         spellCheck={false}
                         autoComplete="off"
                     />
                     <p className="settings-dialog__hint">
-                        Go to <strong>labs.google</strong> → DevTools → Application → Cookies → Copy all cookie values
+                        Go to <strong>labs.google</strong> → DevTools → Application → Cookies → Copy all cookie values as a header string.<br />
+                        Or paste a <strong>JSON export</strong> from a cookie extension (EditThisCookie, Cookie-Editor, etc.) — it will be parsed automatically.
                     </p>
                 </div>
 
