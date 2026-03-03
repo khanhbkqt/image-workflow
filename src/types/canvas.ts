@@ -6,6 +6,7 @@ import type {
     GenerationStatus,
     GeneratedImage,
     GenerationError,
+    WhiskImageSlot,
 } from './generation';
 
 /* ── Base Node Data ──────────────────────────────────────────────────── */
@@ -29,6 +30,9 @@ export interface IngredientNodeData extends NodeData {
 export interface PromptNodeData extends NodeData {
     prompt?: string;
 
+    /* ── Generation config ── */
+    generationMode?: 'text' | 'whisk';
+
     /* ── Generation state (all optional for backward compat) ── */
     generationStatus?: GenerationStatus;
     generatedImages?: GeneratedImage[];
@@ -37,6 +41,9 @@ export interface PromptNodeData extends NodeData {
     model?: GenerationModel;
     aspectRatio?: AspectRatio;
     seed?: number;
+
+    /* ── Whisk image slots ── */
+    whiskSlots?: WhiskImageSlot[];
 
     /* ── Output wiring ── */
     outputImage?: string;

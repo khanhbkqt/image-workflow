@@ -1,5 +1,6 @@
 /* ── useGenerate Hook ────────────────────────────────────────────────── */
-/* Manages the full text-to-image generation lifecycle for a Prompt node. */
+/* Manages the full generation lifecycle for a Prompt node.               */
+/* Routes between ImageFX (text-to-image) and Whisk (image-based).       */
 
 import { useCallback, useMemo } from 'react';
 import { useCanvasStore } from '../stores/canvasStore';
@@ -19,13 +20,23 @@ export function useGenerate(nodeId: string) {
         return (node?.data ?? {}) as PromptNodeData;
     }, [nodes, nodeId]);
 
+    const generationMode = nodeData.generationMode ?? 'text';
     const isGenerating = nodeData.generationStatus === 'generating';
     const isAuthenticated = authState.status === 'valid';
 
-    const canGenerate =
-        !!nodeData.prompt?.trim() &&
-        isAuthenticated &&
-        !isGenerating;
+    const canGenerate = useMemo(() => {
+        if (isGenerating || !isAuthenticated) return false;
+        const hasPrompt = !!nodeData.prompt?.trim();
+
+        if (generationMode === 'whisk') {
+            // Whisk requires at least one filled image slot AND a prompt
+            const hasSlots = (nodeData.whiskSlots ?? []).some((s) => !!s.imageData);
+            return hasPrompt && hasSlots;
+        }
+
+        // Text mode: just needs a prompt
+        return hasPrompt;
+    }, [isGenerating, isAuthenticated, nodeData.prompt, generationMode, nodeData.whiskSlots]);
 
     /* ── Generate action ── */
     const generate = useCallback(async () => {
@@ -38,12 +49,25 @@ export function useGenerate(nodeId: string) {
         });
 
         try {
-            const result = await generationService.generate({
-                prompt: nodeData.prompt!,
-                model: nodeData.model ?? 'IMAGEN_3_5',
-                aspectRatio: nodeData.aspectRatio ?? 'IMAGE_ASPECT_RATIO_SQUARE',
-                provider: 'imagefx',
-            });
+            let result;
+
+            if (generationMode === 'whisk' && nodeData.whiskSlots?.length) {
+                // Whisk path — image-based generation
+                result = await generationService.generateWhisk({
+                    prompt: nodeData.prompt!,
+                    imageSlots: nodeData.whiskSlots.filter((s) => !!s.imageData),
+                    aspectRatio: nodeData.aspectRatio ?? 'IMAGE_ASPECT_RATIO_SQUARE',
+                    seed: nodeData.seed,
+                });
+            } else {
+                // ImageFX path — text-to-image
+                result = await generationService.generate({
+                    prompt: nodeData.prompt!,
+                    model: nodeData.model ?? 'IMAGEN_3_5',
+                    aspectRatio: nodeData.aspectRatio ?? 'IMAGE_ASPECT_RATIO_SQUARE',
+                    provider: 'imagefx',
+                });
+            }
 
             if ('error' in result) {
                 updateNodeData(nodeId, {
@@ -73,7 +97,7 @@ export function useGenerate(nodeId: string) {
                 generationError: error,
             });
         }
-    }, [canGenerate, nodeData.prompt, nodeData.model, nodeData.aspectRatio, nodeId, updateNodeData]);
+    }, [canGenerate, generationMode, nodeData.prompt, nodeData.model, nodeData.aspectRatio, nodeData.seed, nodeData.whiskSlots, nodeId, updateNodeData]);
 
     /* ── Retry action ── */
     const retry = useCallback(() => {
@@ -91,5 +115,6 @@ export function useGenerate(nodeId: string) {
         isGenerating,
         canGenerate,
         isAuthenticated,
+        generationMode,
     };
 }
