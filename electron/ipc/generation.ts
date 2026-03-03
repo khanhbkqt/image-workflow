@@ -268,47 +268,102 @@ export function registerGenerationHandlers(): void {
         imageInputs?: Array<{ imageInputType: string; name: string }>;
     }) => {
         try {
-            const bearerToken = await flowView.getBearerToken();
-            const recaptchaToken = await flowView.getRecaptchaToken('batchGenerateImages');
-            const projectId = await flowApiClient.getProjectId(bearerToken);
+            const model = request.model ?? 'NARWHAL';
+            const aspectRatio = request.aspectRatio ?? 'IMAGE_ASPECT_RATIO_SQUARE';
+            const seed = request.seed ?? Math.floor(Math.random() * 2 ** 31);
+            const sessionId = `;${Date.now()}`;
+            const batchId = crypto.randomUUID();
+            const projectId = 'labs-goog-website-prod';
 
-            const { images } = await flowApiClient.generateImages({
-                bearerToken,
-                recaptchaToken,
+            // Build the request body WITHOUT recaptchaContext
+            // executeFlowGeneration() will inject it from the page context
+            const clientCtx = {
                 projectId,
-                prompt: request.prompt,
-                model: request.model ?? 'NARWHAL',
-                aspectRatio: request.aspectRatio,
-                seed: request.seed,
-                imageInputs: request.imageInputs,
-            });
+                tool: 'PINHOLE',
+                sessionId,
+            };
+
+            const requestBody = {
+                clientContext: clientCtx,
+                mediaGenerationContext: { batchId },
+                useNewMedia: true,
+                requests: [{
+                    clientContext: clientCtx,
+                    imageModelName: model,
+                    imageAspectRatio: aspectRatio,
+                    structuredPrompt: { parts: [{ text: request.prompt }] },
+                    seed,
+                    imageInputs: request.imageInputs ?? [],
+                }],
+            };
+
+            // Execute entirely inside the BrowserView page context
+            const data = await flowView.executeFlowGeneration(requestBody) as Record<string, unknown>;
+
+            // Parse response
+            const images: Array<{ encodedImage: string; seed: number; mediaGenerationId: string; aspectRatio: string }> = [];
+            const responses = (data['responses'] ?? []) as Array<Record<string, unknown>>;
+
+            for (const resp of responses) {
+                const mediaLists = [
+                    ...((resp['generatedImages'] ?? []) as Array<Record<string, unknown>>),
+                    ...((resp['media'] ?? []) as Array<Record<string, unknown>>),
+                    ...((resp['generatedMedia'] ?? []) as Array<Record<string, unknown>>),
+                ];
+                for (const media of mediaLists) {
+                    const encoded = (media['encodedMedia'] ?? media['encodedImage'] ?? '') as string;
+                    if (!encoded) continue;
+                    images.push({
+                        encodedImage: encoded,
+                        seed: (media['seed'] as number | undefined) ?? seed,
+                        mediaGenerationId: (media['mediaGenerationId'] ?? media['name'] ?? `flow-${Date.now()}`) as string,
+                        aspectRatio,
+                    });
+                }
+            }
+
+            // Fallback: top-level generatedMedia
+            if (images.length === 0) {
+                const topMedia = (data['generatedMedia'] ?? data['media'] ?? []) as Array<Record<string, unknown>>;
+                for (const media of topMedia) {
+                    const encoded = (media['encodedMedia'] ?? media['encodedImage'] ?? '') as string;
+                    if (!encoded) continue;
+                    images.push({
+                        encodedImage: encoded,
+                        seed: (media['seed'] as number | undefined) ?? seed,
+                        mediaGenerationId: (media['mediaGenerationId'] ?? media['name'] ?? `flow-${Date.now()}`) as string,
+                        aspectRatio,
+                    });
+                }
+            }
+
+            if (images.length === 0) {
+                console.warn('[Flow IPC] No images parsed from response:', JSON.stringify(data).slice(0, 500));
+            }
 
             return {
-                images: images.map((img) => ({
-                    encodedImage: img.encodedImage,
-                    seed: img.seed,
-                    mediaGenerationId: img.mediaId,
-                    aspectRatio: request.aspectRatio ?? 'IMAGE_ASPECT_RATIO_SQUARE',
-                })),
+                images,
                 prompt: request.prompt,
-                model: (request.model ?? 'NARWHAL') as any,
+                model: model as any,
                 requestId: `flow-${Date.now()}`,
             };
         } catch (err: any) {
-            const code = (err?.message ?? '').startsWith('FLOW_AUTH_REQUIRED')
+            const msg = err?.message ?? '';
+            const code = msg.startsWith('FLOW_AUTH_REQUIRED')
                 ? 'FLOW_AUTH_REQUIRED'
-                : (err?.message ?? '').startsWith('FLOW_RATE_LIMITED')
+                : msg.startsWith('FLOW_RATE_LIMITED')
                     ? 'RATE_LIMITED'
                     : 'GENERATION_FAILED';
             return {
                 error: {
                     code,
-                    message: err?.message ?? 'Flow image generation failed',
+                    message: msg || 'Flow image generation failed',
                     retryable: code !== 'FLOW_AUTH_REQUIRED',
                 },
             };
         }
     });
+
 
     /* ── Cancel (placeholder — the API doesn't support cancellation) ── */
     ipcMain.handle('generation:cancel', async () => {
