@@ -81,7 +81,7 @@ A macOS desktop app for visual, composable AI image generation. Build workflows 
 | 2 | Generate Node | 3 plans (2 waves) | ✅ completed |
 | 3 | Image-Based Generation | 3 plans (2 waves) | ✅ completed |
 | 4 | Generation Queue | 4 plans (3 waves) | ✅ completed |
-| 5 | Flow API Integration (Nano Banana) | — | ⬚ not_started |
+| 5 | Flow API Integration (Nano Banana) | 4 plans (3 waves) | 📝 planning |
 | 6 | Generate Ingredient Node | — | ⬚ not_started |
 
 ---
