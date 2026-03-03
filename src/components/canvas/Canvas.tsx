@@ -15,6 +15,7 @@ import { NodeContextMenu } from './NodeContextMenu';
 import type { AppNode, AppEdge, IngredientNodeData } from '../../types/canvas';
 import type { IngredientType } from '../../types/ingredient';
 import { isValidConnection } from '../../utils/connectionValidator';
+import { QueueBadge } from './QueueBadge';
 import '@xyflow/react/dist/style.css';
 import '../../styles/canvas.css';
 
@@ -232,6 +233,7 @@ function CanvasInner() {
                 <MiniMap pannable zoomable position="bottom-left" />
                 <ZoomControls />
             </ReactFlow>
+            <QueueBadge />
             {contextMenu && (
                 <CanvasContextMenu
                     x={contextMenu.screenX}
