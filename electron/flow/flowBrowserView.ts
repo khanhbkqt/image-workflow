@@ -87,7 +87,49 @@ export class FlowBrowserViewManager {
 
         this.view.webContents.on('did-finish-load', () => {
             this.loaded = true;
+
+            // Inject a passive fetch+XHR hook to capture the Bearer token
+            // from any outgoing request the page makes to googleapis.com
+            const hook = `
+                (function() {
+                    if (window.__FLOW_BEARER_HOOKED__) return;
+                    window.__FLOW_BEARER_HOOKED__ = true;
+                    window.__FLOW_BEARER__ = null;
+
+                    // Hook fetch
+                    const origFetch = window.fetch;
+                    window.fetch = function(...args) {
+                        try {
+                            const req = args[1];
+                            const headers = req && req.headers;
+                            let auth = null;
+                            if (headers instanceof Headers) {
+                                auth = headers.get('Authorization') || headers.get('authorization');
+                            } else if (headers && typeof headers === 'object') {
+                                auth = headers['Authorization'] || headers['authorization'];
+                            }
+                            if (auth && auth.startsWith('Bearer ') && auth.length > 20) {
+                                window.__FLOW_BEARER__ = auth.slice(7);
+                            }
+                        } catch (_) {}
+                        return origFetch.apply(this, args);
+                    };
+
+                    // Hook XHR
+                    const origOpen = XMLHttpRequest.prototype.open;
+                    const origSetHeader = XMLHttpRequest.prototype.setRequestHeader;
+                    XMLHttpRequest.prototype.setRequestHeader = function(name, value) {
+                        if ((name.toLowerCase() === 'authorization') &&
+                            value && value.startsWith('Bearer ') && value.length > 20) {
+                            window.__FLOW_BEARER__ = value.slice(7);
+                        }
+                        return origSetHeader.apply(this, arguments);
+                    };
+                })();
+            `;
+            this.view?.webContents.executeJavaScript(hook).catch(() => { });
         });
+
 
         // Fire-and-forget — don't block app startup
         this.view.webContents.loadURL(FLOW_URL).catch(() => {
@@ -113,99 +155,43 @@ export class FlowBrowserViewManager {
             return this.tokenCache.token;
         }
 
-        if (!this.view) {
-            throw new Error('FlowBrowserView not initialised');
-        }
+        if (!this.view) throw new Error('FlowBrowserView not initialised');
 
-        // Wait for page load if not ready
+        // Wait for page load
         if (!this.loaded) {
-            const loadDeadline = Date.now() + 15_000;
+            const loadDeadline = Date.now() + 20_000;
             while (!this.loaded && Date.now() < loadDeadline) {
                 await new Promise<void>((r) => setTimeout(r, 500));
             }
         }
 
-        // 2. Try direct extraction from Google auth SDK
-        const SDK_EXTRACT = `
-            (async () => {
-                // Method A: gapi.auth2 (classic Google Sign-In)
-                try {
-                    if (typeof gapi !== 'undefined' && gapi.auth2) {
-                        const instance = gapi.auth2.getAuthInstance();
-                        if (instance) {
-                            const user = instance.currentUser.get();
-                            if (user && user.isSignedIn()) {
-                                const authResp = user.getAuthResponse(true);
-                                if (authResp && authResp.access_token) {
-                                    return authResp.access_token;
-                                }
-                            }
-                        }
-                    }
-                } catch (_) {}
+        // 2. Check window.__FLOW_BEARER__ set by the did-finish-load fetch hook
+        // Poll for up to 30s — the page will make background API calls once it
+        // detects the user is signed in via the injected Google session cookies.
+        const deadline = Date.now() + 30_000;
+        while (Date.now() < deadline) {
+            // Check hook storage
+            const hookToken = await this.view.webContents
+                .executeJavaScript('window.__FLOW_BEARER__ || null', true)
+                .catch(() => null) as string | null;
 
-                // Method B: Scrape from XHR/fetch intercepted token storage
-                // Some Google apps store the token in window.__GOOGLE_AUTH_TOKEN or similar
-                try {
-                    if (window.__GOOGLE_AUTH_TOKEN) return window.__GOOGLE_AUTH_TOKEN;
-                } catch (_) {}
+            if (hookToken && hookToken.length > 20) {
+                this.tokenCache = { token: hookToken, expiresAt: Date.now() + this.TOKEN_TTL_MS };
+                console.log('[FlowBrowserView] Captured Bearer token from page fetch hook');
+                return hookToken;
+            }
 
-                // Method C: Hook into fetch to capture the next outgoing Authorization header
-                return new Promise((resolve) => {
-                    const origFetch = window.fetch;
-                    let resolved = false;
-                    window.fetch = function(...args) {
-                        const result = origFetch.apply(this, args);
-                        if (!resolved) {
-                            const req = args[1];
-                            const headers = req?.headers;
-                            let auth = null;
-                            if (headers instanceof Headers) {
-                                auth = headers.get('Authorization');
-                            } else if (headers && typeof headers === 'object') {
-                                auth = headers['Authorization'] || headers['authorization'];
-                            }
-                            if (auth && auth.startsWith('Bearer ')) {
-                                resolved = true;
-                                window.fetch = origFetch; // Restore
-                                resolve(auth.slice(7));
-                            }
-                        }
-                        return result;
-                    };
-                    // Trigger a request from the page to capture the token
-                    const btn = document.querySelector('button[aria-label*="Generate"], button[data-action*="generate"]');
-                    if (btn) btn.click();
-                    // Timeout after 5s
-                    setTimeout(() => {
-                        if (!resolved) {
-                            window.fetch = origFetch;
-                            resolve(null);
-                        }
-                    }, 5000);
-                });
-            })();
-        `;
+            // Also check onBeforeSendHeaders cache
+            if (this.tokenCache && Date.now() < this.tokenCache.expiresAt) {
+                return this.tokenCache.token;
+            }
 
-        const token = await this.view.webContents
-            .executeJavaScript(SDK_EXTRACT, true)
-            .catch(() => null);
-
-        if (token && typeof token === 'string') {
-            this.tokenCache = {
-                token,
-                expiresAt: Date.now() + this.TOKEN_TTL_MS,
-            };
-            return token;
+            await new Promise<void>((r) => setTimeout(r, 1_000));
         }
 
-        // 3. Check if onBeforeSendHeaders caught anything while we waited
-        if (this.tokenCache && Date.now() < this.tokenCache.expiresAt) {
-            return this.tokenCache.token;
-        }
-
-        throw new Error('FLOW_AUTH_REQUIRED: Could not obtain Bearer token. Ensure you are signed in at labs.google');
+        throw new Error('FLOW_AUTH_REQUIRED: Could not capture Bearer token from page. Ensure your Google cookie is valid and labs.google is accessible.');
     }
+
 
     /**
      * Execute an authenticated fetch request INSIDE the BrowserView page context.
@@ -314,16 +300,24 @@ export class FlowBrowserViewManager {
                     }
                 }
 
-                // Step 3: Build URL and fetch with session cookies (no Bearer needed for generation)
+                // Step 3: Build URL and fetch with Bearer token + cookies
+                // The Bearer token comes from window.__FLOW_BEARER__ (captured by the hook)
+                const bearerToken = window.__FLOW_BEARER__ || '';
                 const projectId = (body.clientContext && body.clientContext.projectId) || 'labs-goog-website-prod';
                 const url = 'https://aisandbox-pa.googleapis.com/v1/projects/' + projectId + '/flowMedia:batchGenerateImages';
+
+                if (!bearerToken) {
+                    return { error: true, code: 'NO_BEARER', message: 'No Bearer token captured yet. Waiting for page auth...' };
+                }
 
                 let resp;
                 try {
                     resp = await fetch(url, {
                         method: 'POST',
-                        headers: { 'Content-Type': 'application/json' },
-                        credentials: 'include',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'Authorization': 'Bearer ' + bearerToken,
+                        },
                         body: JSON.stringify(body),
                     });
                 } catch (fetchErr) {
@@ -340,6 +334,7 @@ export class FlowBrowserViewManager {
             })();
         `;
 
+
         const result = await this.view.webContents
             .executeJavaScript(script, true) as {
                 error: boolean;
@@ -354,6 +349,11 @@ export class FlowBrowserViewManager {
 
         if (result.code === 'PARSE_ERROR' || result.code === 'NETWORK_ERROR') {
             throw new Error(`FLOW_ERROR: ${result.message}`);
+        }
+
+        if (result.code === 'NO_BEARER') {
+            // Bearer token not yet captured from page — page may not have signed in yet
+            throw new Error('FLOW_AUTH_REQUIRED: Bearer token not available. Ensure your Google cookie is set and the app has had time to authenticate.');
         }
 
         if (result.error) {
