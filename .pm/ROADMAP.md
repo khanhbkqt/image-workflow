@@ -79,7 +79,7 @@ A macOS desktop app for visual, composable AI image generation. Build workflows 
 |---|-------|-------|--------|
 | 1 | API Integration | 3 plans (2 waves) | ✅ completed |
 | 2 | Generate Node | 3 plans (2 waves) | ✅ completed |
-| 3 | Image-Based Generation | — | ⬚ not_started |
+| 3 | Image-Based Generation | 3 plans (2 waves) | 🔄 planning |
 | 4 | Generation Queue | — | ⬚ not_started |
 | 5 | Generate Ingredient Node | — | ⬚ not_started |
 
