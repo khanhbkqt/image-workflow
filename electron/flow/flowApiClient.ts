@@ -88,29 +88,40 @@ export async function generateImages(params: {
     } = params;
 
     const sessionId = `;${Date.now()}`;
+    const batchId = crypto.randomUUID();
     const resolvedAspect = toFlowAspect(aspectRatio);
+    const resolvedSeed = seed ?? Math.floor(Math.random() * 2 ** 31);
+
+    /** clientContext is required at BOTH the top level and inside each request item */
+    const clientCtx = {
+        recaptchaContext: recaptchaToken
+            ? { token: recaptchaToken, applicationType: 'RECAPTCHA_APPLICATION_TYPE_WEB' }
+            : undefined,
+        projectId,
+        tool: 'PINHOLE',
+        sessionId,
+    };
 
     const requestBody = {
-        clientContext: {
-            projectId,
-            tool: 'PINHOLE',
-            sessionId,
-            recaptchaToken: recaptchaToken || undefined,
-        },
+        clientContext: clientCtx,
         mediaGenerationContext: {
-            model,
-            aspectRatio: resolvedAspect,
+            batchId,
         },
+        useNewMedia: true,
         requests: [
             {
-                generationContext: {
-                    prompt,
-                    seed: seed ?? Math.floor(Math.random() * 2 ** 31),
-                    imageInputs: imageInputs.length > 0 ? imageInputs : undefined,
+                clientContext: clientCtx,
+                imageModelName: model,
+                imageAspectRatio: resolvedAspect,
+                structuredPrompt: {
+                    parts: [{ text: prompt }],
                 },
+                seed: resolvedSeed,
+                imageInputs: imageInputs.length > 0 ? imageInputs : [],
             },
         ],
     };
+
 
     const response = await fetch(
         `https://aisandbox-pa.googleapis.com/v1/projects/${projectId}/flowMedia:batchGenerateImages`,
@@ -137,29 +148,73 @@ export async function generateImages(params: {
 
     const data = await response.json() as Record<string, unknown>;
 
-    // Parse response — extract base64 images from nested structure
-    const mediaList = (data['generatedMedia'] ?? data['responses'] ?? []) as Array<Record<string, unknown>>;
-
+    // The Flow API returns images nested under responses[].generatedImages[] or responses[].media[]
+    // Try several known shapes from the research
     const images: FlowGeneratedImage[] = [];
-    for (const media of mediaList) {
-        // The response may nest image data under generationResult or directly
-        const generationResult = (media['generationResult'] ?? media) as Record<string, unknown>;
-        const encodedImage =
-            (generationResult['encodedMedia'] as string | undefined) ??
-            (generationResult['encodedImage'] as string | undefined) ??
-            '';
-        if (!encodedImage) continue;
 
-        images.push({
-            encodedImage,
-            seed: (generationResult['seed'] as number | undefined) ?? (seed ?? 0),
-            mediaId: (generationResult['mediaGenerationId'] as string | undefined) ??
-                (media['name'] as string | undefined) ??
-                `flow-${Date.now()}`,
-        });
+    const topLevelResponses = (data['responses'] ?? []) as Array<Record<string, unknown>>;
+    const topLevelMedia = (data['generatedMedia'] ?? data['media'] ?? []) as Array<Record<string, unknown>>;
+
+    // Shape 1: responses[] array (observed in research)
+    for (const resp of topLevelResponses) {
+        const mediaList = ([
+            ...(resp['generatedImages'] as Array<Record<string, unknown>> ?? []),
+            ...(resp['media'] as Array<Record<string, unknown>> ?? []),
+            ...(resp['generatedMedia'] as Array<Record<string, unknown>> ?? []),
+        ]);
+        for (const media of mediaList) {
+            const encoded =
+                (media['encodedMedia'] as string | undefined) ??
+                (media['encodedImage'] as string | undefined) ?? '';
+            if (!encoded) continue;
+            images.push({
+                encodedImage: encoded,
+                seed: (media['seed'] as number | undefined) ?? resolvedSeed,
+                mediaId: (media['mediaGenerationId'] as string | undefined) ??
+                    (media['name'] as string | undefined) ??
+                    `flow-${Date.now()}`,
+            });
+        }
+
+        // Also check if the response item itself has encodedMedia directly
+        const directEncoded =
+            (resp['encodedMedia'] as string | undefined) ??
+            (resp['encodedImage'] as string | undefined);
+        if (directEncoded && images.length === 0) {
+            images.push({
+                encodedImage: directEncoded,
+                seed: (resp['seed'] as number | undefined) ?? resolvedSeed,
+                mediaId: (resp['mediaGenerationId'] as string | undefined) ??
+                    (resp['name'] as string | undefined) ??
+                    `flow-${Date.now()}`,
+            });
+        }
+    }
+
+    // Shape 2: top-level generatedMedia[] (fallback)
+    if (images.length === 0) {
+        for (const media of topLevelMedia) {
+            const encoded =
+                (media['encodedMedia'] as string | undefined) ??
+                (media['encodedImage'] as string | undefined) ?? '';
+            if (!encoded) continue;
+            images.push({
+                encodedImage: encoded,
+                seed: (media['seed'] as number | undefined) ?? resolvedSeed,
+                mediaId: (media['mediaGenerationId'] as string | undefined) ??
+                    (media['name'] as string | undefined) ??
+                    `flow-${Date.now()}`,
+            });
+        }
+    }
+
+    // Log the raw response for debugging if we got no images
+    if (images.length === 0) {
+        console.warn('[flowApiClient] No images extracted from response:', JSON.stringify(data).slice(0, 500));
     }
 
     return { images };
+
 }
 
 /** Get the Flow project ID.
