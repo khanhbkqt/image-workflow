@@ -1,5 +1,12 @@
 import type { Node, Edge, Viewport } from '@xyflow/react';
 import type { IngredientType } from './ingredient';
+import type {
+    GenerationModel,
+    AspectRatio,
+    GenerationStatus,
+    GeneratedImage,
+    GenerationError,
+} from './generation';
 
 /* ── Base Node Data ──────────────────────────────────────────────────── */
 
@@ -21,6 +28,19 @@ export interface IngredientNodeData extends NodeData {
 /** Data shape for a prompt node. */
 export interface PromptNodeData extends NodeData {
     prompt?: string;
+
+    /* ── Generation state (all optional for backward compat) ── */
+    generationStatus?: GenerationStatus;
+    generatedImages?: GeneratedImage[];
+    selectedImageIndex?: number;
+    generationError?: GenerationError;
+    model?: GenerationModel;
+    aspectRatio?: AspectRatio;
+    seed?: number;
+
+    /* ── Output wiring ── */
+    outputImage?: string;
+    outputSeed?: number;
 }
 
 /* ── App-Level Node & Edge Types ─────────────────────────────────────── */

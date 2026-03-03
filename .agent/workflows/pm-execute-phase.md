@@ -39,6 +39,8 @@ _This ensures you don't execute plans blindly without understanding the wider ph
 
 ## Step 1: Review Plans and Wave Order
 
+Retrive target phase of current milestone and get the `<phase-id>`
+
 ```bash
 pm plan list --phase <phase-id> --json
 ```
