@@ -92,7 +92,22 @@ pm progress
 - [ ] No orphaned dependencies
 - [ ] `pm progress` reflects updated structure
 
-## Next Steps
+## Offer Next Steps
 
-→ [Check Progress](pm-progress.md) — verify milestone structure
-→ [Plan Phase](pm-plan-phase.md) — plan remaining phases
+Present the result and confirm the updated structure:
+
+```
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+ PM CLI ► PHASE REMOVED
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+Phase removed. Remaining phases renumbered.
+
+───────────────────────────────────────────────────────
+
+▶ NEXT
+
+/pm-progress   — Verify the updated milestone structure
+/pm-plan-phase — Plan remaining phases
+───────────────────────────────────────────────────────
+```

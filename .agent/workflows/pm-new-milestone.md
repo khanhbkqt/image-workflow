@@ -110,7 +110,23 @@ git commit -m "docs: create milestone <slug> with {N} phases"
 | Plan Phase | Create executable plans for Phase 1 |
 | Progress | Check milestone progress |
 
-## Next Steps
+## Offer Next Steps
 
-→ [Discuss Phase](pm-discuss-phase.md) — clarify Phase 1 scope (optional)
-→ [Plan Phase](pm-plan-phase.md) — create executable plans for Phase 1
+Present the new milestone structure and suggest the first action:
+
+```
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+ PM CLI ► MILESTONE CREATED
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+Milestone: {slug}
+Phases created: {N}
+
+───────────────────────────────────────────────────────
+
+▶ NEXT
+
+/pm-discuss-phase — Clarify Phase 1 scope before planning (optional)
+/pm-plan-phase    — Create executable plans for Phase 1
+───────────────────────────────────────────────────────
+```

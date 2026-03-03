@@ -48,6 +48,8 @@ pm --help
 | update | Update pm-cli to latest |
 | whats-new | Show recent changes |
 | web-search | Search the web for research |
+| report-bug | Format a bug report from brief |
+| fix-bug | Fix a reported bug with systematic tracking |
 
 ## Quick Start
 
@@ -62,3 +64,24 @@ pm --help
 ## Success Criteria
 
 - [ ] User understands available commands and workflows
+
+## Offer Next Steps
+
+Point the user toward the most useful starting workflows:
+
+```
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+ PM CLI ► READY
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+All available pm workflows are listed above.
+
+───────────────────────────────────────────────────────
+
+▶ WHERE TO START
+
+/pm-new-project   — Bootstrap a new project from scratch
+/pm-progress      — Check where you left off in an existing project
+/pm-execute-phase — Jump straight into executing pending plans
+───────────────────────────────────────────────────────
+```

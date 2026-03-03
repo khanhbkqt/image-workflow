@@ -68,17 +68,25 @@ Based on results:
 - Recommend adding to phase research notes
 - Offer to implement based on findings
 
-## Integration with PM Workflows
+## Offer Next Steps
 
-| Workflow | How web-search helps |
-|----------|---------------------|
-| [Research Phase](pm-research-phase.md) | Gather information for phase research |
-| [Plan Phase](pm-plan-phase.md) | Evaluate technology options during planning |
-| [Debug](pm-debug.md) | Find solutions to error messages |
+Present the findings and suggest the next action:
 
-## Success Criteria
+```
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+ PM CLI ► RESEARCH COMPLETE
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
-- [ ] Relevant information found and summarized
-- [ ] Sources cited
-- [ ] Actionable recommendation provided
-- [ ] Findings recorded if project-relevant
+Topic: {topic}
+Findings recorded via pm context set.
+
+───────────────────────────────────────────────────────
+
+▶ NEXT
+
+/pm-research-phase — Deep-dive further for phase research
+/pm-plan-phase     — Use findings to create plans
+/pm-debug          — Find solutions to error messages
+───────────────────────────────────────────────────────
+```
+

@@ -119,7 +119,24 @@ Often the first thing a fresh context sees is the obvious solution that a tired 
 | Verify Work | Validate completed phase |
 | Progress | Check overall milestone state |
 
-## Next Steps
+## Offer Next Steps
 
-→ [Execute Phase](pm-execute-phase.md) — continue executing plans
-→ [Progress](pm-progress.md) — if you need more context
+Present the restored context and suggest continuing:
+
+```
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+ PM CLI ► SESSION RESUMED
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+Context restored from .pm/STATE.md
+Current position: {phase N — plan X}
+
+───────────────────────────────────────────────────────
+
+▶ NEXT
+
+/pm-execute-phase — Continue executing plans
+/pm-progress     — Check overall milestone state if you need more context
+───────────────────────────────────────────────────────
+```
+

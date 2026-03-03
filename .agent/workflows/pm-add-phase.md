@@ -89,7 +89,23 @@ git commit -m "docs: add phase {N} - <name>"
 | Plan Phase | Create plans for the new phase |
 | Insert Phase | Insert between existing phases |
 
-## Next Steps
+## Offer Next Steps
 
-→ [Discuss Phase](pm-discuss-phase.md) — clarify scope (if needed)
-→ [Plan Phase](pm-plan-phase.md) — create plans for the new phase
+Present the result and suggest what to do next:
+
+```
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+ PM CLI ► PHASE ADDED
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+Phase {N}: {Name} has been added to the milestone.
+
+───────────────────────────────────────────────────────
+
+▶ NEXT
+
+/pm-discuss-phase — Clarify scope before creating plans (optional)
+/pm-plan-phase    — Decompose the new phase into executable plans
+/pm-progress      — Review the updated milestone structure
+───────────────────────────────────────────────────────
+```

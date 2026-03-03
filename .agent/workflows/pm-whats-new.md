@@ -46,7 +46,24 @@ If an update is available, use [Update](pm-update.md) to install it.
 - [ ] Recent changes reviewed
 - [ ] Update availability checked
 
-## Next Steps
+## Offer Next Steps
 
-→ [Update](pm-update.md) — install the latest version
-→ [Help](pm-help.md) — see all available commands
+Present what's new and suggest next actions:
+
+```
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+ PM CLI ► WHAT'S NEW REVIEWED
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+Current version: {version}
+Update available: {yes / no}
+
+───────────────────────────────────────────────────────
+
+▶ NEXT
+
+/pm-update — Install the latest version
+/pm-help   — Review available workflows
+───────────────────────────────────────────────────────
+```
+

@@ -175,3 +175,26 @@ Next: Execute Phase to run fix plans
 | Debug | Diagnose verification failures |
 | Plan Phase | Create gap closure plans from failures |
 | Progress | Check overall milestone status |
+
+## Offer Next Steps
+
+Present the verification verdict and suggest next actions:
+
+```
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+ PM CLI ► PHASE VERIFIED
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+Phase {N}: {name}
+Result: {PASS ✓ / GAPS FOUND ⚠}
+Must-haves verified: {X}/{Y}
+
+───────────────────────────────────────────────────────
+
+▶ NEXT
+
+/pm-execute-phase   — Run the next phase (if PASS) or fix gap plans (if FAIL)
+/pm-audit-milestone — Review milestone quality before completing
+/pm-debug           — Diagnose persistent failures
+───────────────────────────────────────────────────────
+```

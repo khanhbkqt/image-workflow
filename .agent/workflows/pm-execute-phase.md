@@ -40,6 +40,23 @@ _This ensures you don't execute plans blindly without understanding the wider ph
 
 ---
 
+## Step 0.5: Check Blocking Bugs
+
+Before executing plans, check for unresolved blocking bugs:
+
+```bash
+pm bug list --blocking --status open
+```
+
+**If blocking bugs exist:**
+1. Display the blocking bugs to the user
+2. Recommend fixing them first → [Fix Bug](pm-fix-bug.md)
+3. Do NOT proceed with plan execution until blocking bugs are resolved
+
+**If no blocking bugs:** Proceed to Step 1.
+
+---
+
 ## Step 1: Review Plans and Wave Order
 
 ```bash
@@ -193,5 +210,30 @@ pm progress
 | Plan Phase | Creates plans that this workflow executes |
 | Verify Work | Validates deliverables after execution |
 | Debug | Use when plans fail verification |
+| Fix Bug | Fix blocking bugs before execution |
 | Pause | Use after 3 debugging failures |
 | Progress | Check milestone progress |
+
+## Offer Next Steps
+
+Present the phase result and suggest next actions:
+
+```
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+ PM CLI ► PHASE EXECUTED
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+Phase {N}: {name}
+Plans completed: {X}/{Y}
+Status: {completed ✓ / in_progress ⚠ / failed ✗}
+
+───────────────────────────────────────────────────────
+
+▶ NEXT
+
+/pm-verify-work  — Validate deliverables with empirical evidence
+/pm-progress     — Check overall milestone progress
+/pm-execute-phase — Continue to the next phase
+/pm-pause        — Pause session and save state
+───────────────────────────────────────────────────────
+```

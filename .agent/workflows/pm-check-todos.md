@@ -59,7 +59,23 @@ pm plan create "<description>" --phase <phase-id> --number <n>
 - [ ] All pending todos reviewed
 - [ ] Next action selected (or all items addressed)
 
-## Next Steps
+## Offer Next Steps
 
-→ [Execute Phase](pm-execute-phase.md) — work on a plan
-→ [Add Todo](pm-add-todo.md) — capture new items
+Present the todo list and recommend what to tackle next:
+
+```
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+ PM CLI ► TODO REVIEW COMPLETE
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+Pending todos: {N} items reviewed
+Critical: {X} | High: {Y} | Medium: {Z} | Low: {W}
+
+───────────────────────────────────────────────────────
+
+▶ NEXT
+
+/pm-execute-phase — Work on the current phase plan
+/pm-add-todo      — Capture additional items discovered
+───────────────────────────────────────────────────────
+```

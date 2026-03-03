@@ -74,7 +74,23 @@ For high-risk assumptions:
 - [ ] High-risk assumptions validated or flagged
 - [ ] Assumptions recorded in context for team visibility
 
-## Next Steps
+## Offer Next Steps
 
-→ [Research Phase](pm-research-phase.md) — deep dive on uncertain areas
-→ [Execute Phase](pm-execute-phase.md) — proceed with validated assumptions
+Present the assumptions list and suggest how to address risks:
+
+```
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+ PM CLI ► ASSUMPTIONS SURFACED
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+Phase {N}: {name}
+Assumptions found: {X} ({Y} high-risk)
+
+───────────────────────────────────────────────────────
+
+▶ NEXT
+
+/pm-research-phase — Deep-dive on high-risk uncertain areas
+/pm-execute-phase  — Proceed with validated assumptions
+───────────────────────────────────────────────────────
+```

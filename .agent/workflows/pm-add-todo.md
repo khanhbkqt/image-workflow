@@ -41,6 +41,23 @@ pm context set "todo:add-tests" "Add integration tests for milestone completion 
 - [ ] Todo recorded via `pm context set`
 - [ ] Searchable with `pm context search "todo"`
 
-## Next Steps
+## Offer Next Steps
 
-→ [Check Todos](pm-check-todos.md) — review and prioritize pending items
+Present the result and suggest what to do next:
+
+```
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+ PM CLI ► TODO CAPTURED
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+Todo recorded. You can continue your current work without
+losing track of this item.
+
+───────────────────────────────────────────────────────
+
+▶ NEXT
+
+/pm-check-todos   — Review and prioritize all pending items
+/pm-execute-phase — Continue executing the current phase
+───────────────────────────────────────────────────────
+```

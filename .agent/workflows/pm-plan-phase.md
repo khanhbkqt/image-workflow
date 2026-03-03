@@ -181,3 +181,28 @@ Next: Execute Phase → pm-execute-phase workflow
 | Discuss Phase | Clarify scope before planning |
 | Execute Phase | Runs the plans created here |
 | Verify Work | Validates executed plans |
+
+## Offer Next Steps
+
+Present the planning summary and suggest the next action:
+
+```
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+ PM CLI ► PHASE PLANNED
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+Phase {N}: {name}
+Plans created: {X} across {Y} waves
+
+  • {N}.1: {Name} (wave 1)
+  • {N}.2: {Name} (wave 1)
+  • {N}.3: {Name} (wave 2)
+
+───────────────────────────────────────────────────────
+
+▶ NEXT
+
+/pm-execute-phase — Start executing this phase's plans
+/pm-discuss-phase — Revisit scope if something changed
+───────────────────────────────────────────────────────
+```

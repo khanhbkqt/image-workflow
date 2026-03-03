@@ -122,6 +122,23 @@ git commit -m "docs(phase-{N}): scope decisions recorded"
 | Research Phase | Deep research if needed |
 | Add Phase | If new phase is warranted |
 
-## Next Steps
+## Offer Next Steps
 
-→ [Plan Phase](pm-plan-phase.md) — decompose the phase into plans
+Present the recorded decisions and suggest the next action:
+
+```
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+ PM CLI ► SCOPE DISCUSSION COMPLETE
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+Phase {N}: {name} — scope is now clear.
+Key decisions recorded via pm context.
+
+───────────────────────────────────────────────────────
+
+▶ NEXT
+
+/pm-plan-phase    — Decompose the phase into executable plans
+/pm-research-phase — Deep-dive on uncertain areas first
+───────────────────────────────────────────────────────
+```

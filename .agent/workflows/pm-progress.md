@@ -91,7 +91,26 @@ Based on state, recommend the next action:
 
 | Workflow | Relationship |
 |----------|-------------|
-| Execute Phase | Continue working on plans |
-| Verify Work | Validate completed phase |
-| Audit Milestone | Review milestone quality |
-| Complete Milestone | Archive completed milestone |
+## Offer Next Steps
+
+Based on the current state, present the recommended action:
+
+```
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+ PM CLI ► PROGRESS SNAPSHOT
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+Milestone: {slug}
+Progress: {X}% complete
+Current phase: {N} — {name} ({status})
+
+───────────────────────────────────────────────────────
+
+▶ NEXT
+
+/pm-execute-phase   — Continue working on current phase
+/pm-verify-work     — Validate a completed phase
+/pm-audit-milestone — Full quality review before completing
+/pm-pause           — Save state for session handoff
+───────────────────────────────────────────────────────
+```

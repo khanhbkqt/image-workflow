@@ -4,7 +4,7 @@ description: Track and resolve bugs systematically
 
 # Debug Workflow
 
-Use context and plans to track a debugging session — from discovery through resolution.
+Use the bug system and plans to track a debugging session — from discovery through resolution.
 
 ## When to Use
 
@@ -28,41 +28,51 @@ _This provides the necessary context to understand why the bug matters and what 
 
 ## Step 1: Record the Bug
 
-Log the issue as context for tracking:
+Check if the bug was already reported:
 
 ```bash
-pm context set "debug:issue" "<description of what's wrong>" --category note
+pm bug list --status open
+```
+
+**If an existing bug matches:** Note the ID and skip to Step 2 using that ID.
+
+**If no existing bug:** Report a new one:
+
+```bash
+pm bug report "<description>" --priority <level> --blocking
 ```
 
 **Example:**
 
 ```bash
-pm context set "debug:issue" "API returns 500 on milestone creation when goal contains special characters" --category note
+pm bug report "API returns 500 on milestone creation when goal contains special characters" --priority high --blocking
 ```
+
+Use `--blocking` if this bug blocks plan execution or other work.
 
 ---
 
 ## Step 2: Investigate
 
-As you investigate, record findings:
+Set the bug to investigating status:
 
 ```bash
-pm context set "debug:hypothesis" "<your theory>"
-pm context set "debug:findings" "<what you discovered>"
+pm bug update <id> --status investigating
 ```
 
-**Example:**
-
-```bash
-pm context set "debug:hypothesis" "SQL injection protection is too aggressive"
-pm context set "debug:findings" "Found: goal parameter not properly escaped in db.ts line 42"
-```
+Investigate the codebase — search for the root cause, check logs, reproduce the issue.
 
 ---
 
 ## Step 3: Fix and Verify
 
-Implement the fix, then verify it works with empirical evidence (test output, curl response, etc.).
+Update bug status:
+
+```bash
+pm bug update <id> --status fixing
+```
+
+Implement the fix, then verify it works with empirical evidence (test output, curl response, etc.):
 
 ```bash
 npm test
@@ -75,7 +85,13 @@ pm progress  # verify state is consistent
 ## Step 4: Record Resolution
 
 ```bash
-pm context set "debug:resolution" "<what fixed the issue and how>"
+pm bug update <id> --status resolved --description "<root cause and fix>"
+```
+
+**Example:**
+
+```bash
+pm bug update 42 --status resolved --description "Goal parameter was not escaped in db.ts line 42 — fixed with parameterized query"
 ```
 
 ---
@@ -93,16 +109,44 @@ git commit -m "fix: <description of what was fixed>"
 
 If debugging takes more than 3 attempts without progress:
 1. Stop the current approach
-2. Record what was tried via `pm context set`
+2. Update the bug: `pm bug update <id> --status open --description "<what was tried>"`
 3. Consider pausing → [Pause Work](pm-pause.md) for fresh session
 
 ## Success Criteria
 
-- [ ] Bug identified and documented
-- [ ] Fix implemented and verified with proof
-- [ ] Resolution recorded in context
+- [ ] Bug reported via `pm bug report` with correct priority
+- [ ] Fix implemented and verified with empirical proof
+- [ ] Bug resolved via `pm bug update <id> --status resolved`
+- [ ] Fix committed
 
-## Next Steps
+## Related Workflows
 
-→ [Resume Work](pm-resume.md) — if you paused during debugging
-→ [Check Progress](pm-progress.md) — verify overall state
+| Workflow | Relationship |
+|----------|-------------|
+| Fix Bug | Dedicated workflow for fixing a specific reported bug |
+| Resume Work | If you paused during debugging |
+| Check Progress | Verify overall state after fix |
+| Pause | Use after 3 failed debugging attempts |
+
+## Offer Next Steps
+
+Present the resolution and suggest what to do next:
+
+```
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+ PM CLI ► BUG RESOLVED
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+Bug #{id}: {description}
+Status: resolved ✓
+Root cause: {summary}
+
+───────────────────────────────────────────────────────
+
+▶ NEXT
+
+/pm-execute-phase — Resume plan execution after the fix
+/pm-fix-bug       — Fix another reported bug
+/pm-pause         — Pause for fresh session (if 3-strike reached)
+───────────────────────────────────────────────────────
+```

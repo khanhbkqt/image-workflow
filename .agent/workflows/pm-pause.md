@@ -128,6 +128,24 @@ A fresh context often sees solutions that a polluted context missed.
 | Debug | Use before pause when debugging fails |
 | Progress | Check milestone state before pausing |
 
-## Next Steps
+## Offer Next Steps
 
-→ [Resume Work](pm-resume.md) — pick up where you left off
+Confirm the state has been saved and give clear resume instructions:
+
+```
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+ PM CLI ► SESSION PAUSED
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+State saved to .pm/STATE.md
+Committed: docs: pause session - {reason}
+
+To continue in a new session, start with /resume
+
+───────────────────────────────────────────────────────
+
+▶ NEXT
+
+/pm-resume — Restore context and pick up where you left off
+───────────────────────────────────────────────────────
+```

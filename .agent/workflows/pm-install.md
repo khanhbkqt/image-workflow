@@ -86,7 +86,23 @@ This removes all pm-generated config files for the specified client.
 - [ ] Workflow instructions accessible to the AI client
 - [ ] No existing non-pm config files overwritten
 
-## Next Steps
+## Offer Next Steps
 
-→ [New Project](pm-new-project.md) — initialize a project with pm
-→ [Help](pm-help.md) — see all available workflows
+Present the installation result and guide the user:
+
+```
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+ PM CLI ► PM AGENT INSTALLED
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+Agent config installed for: {client}
+Workflows are now available in your AI assistant.
+
+───────────────────────────────────────────────────────
+
+▶ NEXT
+
+/pm-new-project — Initialize a project with pm
+/pm-help        — See all available workflows
+───────────────────────────────────────────────────────
+```

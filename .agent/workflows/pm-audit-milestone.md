@@ -131,7 +131,27 @@ git commit -m "docs: milestone audit - <slug>"
 | Verify Work | Verify individual phases |
 | Plan Milestone Gaps | Create plans for found gaps |
 
-## Next Steps
+## Offer Next Steps
 
-→ [Complete Milestone](pm-complete-milestone.md) — finalize the milestone
-→ [Plan Milestone Gaps](pm-plan-milestone-gaps.md) — address found gaps
+Present the audit result and suggest how to proceed:
+
+```
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+ PM CLI ► AUDIT COMPLETE
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+Milestone: {slug}
+Status: {PASS ✓ / GAPS FOUND ⚠}
+
+{If PASS:}  All phases accounted for. Ready to complete.
+{If GAPS:}  {N} gap(s) found. See audit findings above.
+
+───────────────────────────────────────────────────────
+
+▶ NEXT
+
+/pm-complete-milestone   — Finalize and archive the milestone (if PASS)
+/pm-plan-milestone-gaps  — Create plans to close identified gaps (if GAPS)
+/pm-execute-phase        — Finish incomplete phases before completing
+───────────────────────────────────────────────────────
+```

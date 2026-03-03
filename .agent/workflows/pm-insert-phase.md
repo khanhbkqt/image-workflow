@@ -81,7 +81,22 @@ Phase insertion can be disruptive. Consider:
 - [ ] Subsequent phases renumbered correctly
 - [ ] `pm progress` reflects updated structure
 
-## Next Steps
+## Offer Next Steps
 
-→ [Plan Phase](pm-plan-phase.md) — create plans for the new phase
-→ [Check Progress](pm-progress.md) — see updated roadmap
+Present the result and suggest what to do next:
+
+```
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+ PM CLI ► PHASE INSERTED
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+Phase {N}: {name} inserted. Subsequent phases renumbered.
+
+───────────────────────────────────────────────────────
+
+▶ NEXT
+
+/pm-plan-phase — Create plans for the new phase
+/pm-progress   — See the updated roadmap
+───────────────────────────────────────────────────────
+```

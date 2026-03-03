@@ -104,7 +104,23 @@ git commit -m "docs(phase-<N>): research complete"
 - [ ] Dependencies identified
 - [ ] Findings recorded via `pm context set`
 
-## Next Steps
+## Offer Next Steps
 
-→ [Plan Phase](pm-plan-phase.md) — create plans informed by research
-→ [Discuss Phase](pm-discuss-phase.md) — clarify scope with user
+Present the research findings and suggest the next action:
+
+```
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+ PM CLI ► RESEARCH COMPLETE
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+Phase {N} research done.
+Findings recorded via pm context set.
+
+───────────────────────────────────────────────────────
+
+▶ NEXT
+
+/pm-plan-phase    — Create plans informed by research
+/pm-discuss-phase — Clarify scope with user
+───────────────────────────────────────────────────────
+```

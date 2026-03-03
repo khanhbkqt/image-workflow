@@ -62,7 +62,24 @@ This regenerates the agent config files with the latest workflow content.
 - [ ] Commands work correctly
 - [ ] Agent config re-installed if needed
 
-## Next Steps
+## Offer Next Steps
 
-→ [What's New](pm-whats-new.md) — see what changed in the update
-→ [Help](pm-help.md) — review available commands
+Present the update result and suggest next actions:
+
+```
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+ PM CLI ► PM-CLI UPDATED
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+pm-cli updated to latest version.
+Agent config re-installed if needed.
+
+───────────────────────────────────────────────────────
+
+▶ NEXT
+
+/pm-whats-new — See what changed in the update
+/pm-help      — Review available workflows
+───────────────────────────────────────────────────────
+```
+

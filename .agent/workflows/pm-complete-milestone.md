@@ -117,6 +117,26 @@ planned → active → completed → archived
 | New Milestone | Start the next body of work |
 | Verify Work | Ensure phases were properly verified |
 
-## Next Steps
+## Offer Next Steps
 
-→ [New Milestone](pm-new-milestone.md) — start the next body of work
+Present the completion result and suggest what comes next:
+
+```
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+ PM CLI ► MILESTONE COMPLETE 🎉
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+Milestone: {slug}
+Status: completed ✓
+
+All phases have been accounted for and the milestone
+has been formally closed.
+
+───────────────────────────────────────────────────────
+
+▶ NEXT
+
+/pm-new-milestone — Start the next body of work
+/pm-progress      — Review overall project state
+───────────────────────────────────────────────────────
+```

@@ -90,7 +90,23 @@ git commit -m "docs: create gap closure plans"
 - [ ] Plans created for each actionable gap
 - [ ] Gap context recorded for team visibility
 
-## Next Steps
+## Offer Next Steps
 
-→ [Execute Phase](pm-execute-phase.md) — execute gap closure plans
-→ [Check Progress](pm-progress.md) — review milestone progress
+Present the gap closure plan and suggest next action:
+
+```
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+ PM CLI ► GAP PLANS CREATED
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+Gap closure phase: {name}
+Plans created: {N}
+
+───────────────────────────────────────────────────────
+
+▶ NEXT
+
+/pm-execute-phase — Start executing gap closure plans
+/pm-progress      — Review updated milestone progress
+───────────────────────────────────────────────────────
+```

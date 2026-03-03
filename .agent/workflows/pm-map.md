@@ -117,7 +117,23 @@ git commit -m "docs: map existing codebase"
 - [ ] Technical debt identified
 - [ ] Findings recorded via `pm context set`
 
-## Next Steps
+## Offer Next Steps
 
-→ [Plan Phase](pm-plan-phase.md) — create plans with full codebase context
-→ [Research Phase](pm-research-phase.md) — deep dive on specific areas
+Present the architecture summary and suggest next actions:
+
+```
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+ PM CLI ► CODEBASE MAPPED
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+docs/ARCHITECTURE.md updated.
+Technical debt and key patterns documented.
+
+───────────────────────────────────────────────────────
+
+▶ NEXT
+
+/pm-plan-phase    — Create plans with full codebase context
+/pm-research-phase — Deep-dive on specific areas
+───────────────────────────────────────────────────────
+```

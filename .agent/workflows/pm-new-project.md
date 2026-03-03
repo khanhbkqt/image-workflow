@@ -156,7 +156,25 @@ git commit -m "chore: initialize project
 | Discuss Phase | Clarify scope before planning (optional) |
 | Plan Phase | Create Phase 1 execution plans |
 
-## Next Steps
+## Offer Next Steps
 
-→ [Discuss Phase](pm-discuss-phase.md) — clarify Phase 1 scope (optional)
-→ [Plan Phase](pm-plan-phase.md) — create executable plans for Phase 1
+Present the initialized project and suggest the first action:
+
+```
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+ PM CLI ► PROJECT INITIALIZED
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+Project: {name}
+SPEC.md: {DRAFT / FINALIZED}
+
+⚠ No code will be written until Status: FINALIZED
+
+───────────────────────────────────────────────────────
+
+▶ NEXT
+
+/pm-discuss-phase — Clarify Phase 1 scope before planning (optional)
+/pm-plan-phase    — Create executable plans for Phase 1
+───────────────────────────────────────────────────────
+```

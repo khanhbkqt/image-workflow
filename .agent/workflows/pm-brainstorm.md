@@ -110,10 +110,25 @@ Tell the user to manually change the status to `FINALIZED` when they are satisfi
 - [ ] **Zero implementation code written.**
 - [ ] User instructed to review and change status to `FINALIZED`.
 
-## Next Steps
+## Offer Next Steps
 
-If creating a new project:
-→ [New Project](pm-new-project.md) — to set up the initial Milestone and Phases after the Spec is finalized.
+Present the drafted SPEC and guide the user on what to do next:
 
-If in an existing project:
-→ [New Milestone](pm-new-milestone.md) — to group the new features into a deliverable.
+```
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+ PM CLI ► BRAINSTORM COMPLETE
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+SPEC.md has been drafted. Review it and change the status
+to FINALIZED when you're satisfied.
+
+⚠ No code will be written until Status: FINALIZED
+
+───────────────────────────────────────────────────────
+
+▶ NEXT
+
+/pm-new-project   — Set up the initial Milestone and Phases (new project)
+/pm-new-milestone — Create a milestone for the new features (existing project)
+───────────────────────────────────────────────────────
+```
